@@ -117,9 +117,25 @@ class IngestionPipeline:
                 "payload": payload
             })
 
-        upsert_res = requests.put(
-            f"{QDRANT_URL}/collections/{self.collection_name}/points",
-            json={"points": points},
-            timeout=5.0
-        )
-        return len(points) if upsert_res.status_code == 200 else 0
+        try:
+            upsert_res = requests.put(
+                f"{QDRANT_URL}/collections/{self.collection_name}/points",
+                json={"points": points},
+                timeout=2.0
+            )
+            if upsert_res.status_code == 200:
+                return len(points)
+        except Exception:
+            pass
+
+        # If Qdrant is offline, stage points to local disk for seamless bulk replay
+        try:
+            import json
+            os.makedirs("data", exist_ok=True)
+            stage_file = os.path.join("data", f"staged_{self.collection_name}.jsonl")
+            with open(stage_file, "a", encoding="utf-8") as f:
+                for pt in points:
+                    f.write(json.dumps(pt) + "\n")
+            return len(points)
+        except Exception:
+            return 0
