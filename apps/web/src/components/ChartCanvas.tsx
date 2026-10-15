@@ -238,9 +238,10 @@ export const ChartCanvas: React.FC<ChartCanvasProps> = ({
 
     // 4. Hybrid Reality Cone (10th - 90th percentile fan)
     if (realityCone && realityCone.p50 && realityCone.p50.length > 0) {
-      const lastCandle = candles[candles.length - 1];
-      const startConeX = (candles.length - 1) * candleWidth + candleWidth / 2;
-      const basePrice = lastCandle.close;
+      const anchorIdx = Math.min(selectedRange[1], candles.length - 1);
+      const anchorCandle = candles[anchorIdx];
+      const startConeX = anchorIdx * candleWidth + candleWidth / 2;
+      const basePrice = anchorCandle.close;
 
       const p10Prices = realityCone.p10.map((pct) => basePrice * (1 + pct / 100));
       const p25Prices = realityCone.p25.map((pct) => basePrice * (1 + pct / 100));
@@ -285,9 +286,10 @@ export const ChartCanvas: React.FC<ChartCanvasProps> = ({
 
     // 5. Ghost Analog Replay Path
     if (activeGhostTwin && activeGhostTwin.fwd_20_normalized_path) {
-      const lastCandle = candles[candles.length - 1];
-      const startConeX = (candles.length - 1) * candleWidth + candleWidth / 2;
-      const basePrice = lastCandle.close;
+      const anchorIdx = Math.min(selectedRange[1], candles.length - 1);
+      const anchorCandle = candles[anchorIdx];
+      const startConeX = anchorIdx * candleWidth + candleWidth / 2;
+      const basePrice = anchorCandle.close;
 
       ctx.strokeStyle = "#F59E0B";
       ctx.lineWidth = 2.5;

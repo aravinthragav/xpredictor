@@ -211,30 +211,30 @@
           <div class="lg:col-span-1 bg-background p-4 rounded-lg border border-gray-800 space-y-3.5 text-xs">
             <div>
               <div class="text-[10px] uppercase tracking-wider text-gray-400 font-bold">Historical Analog Score</div>
-              <div class="text-xl font-bold text-bullish mt-0.5">87.5% Bullish Skew</div>
-              <div class="text-[11px] text-gray-400">Nearest structural analogs in Qdrant</div>
+              <div id="score-skew-title" class="text-xl font-bold text-bullish mt-0.5">87.5% Bullish Skew</div>
+              <div id="score-regime-desc" class="text-[11px] text-gray-400">Nearest structural analogs in Qdrant</div>
             </div>
 
             <div class="space-y-2 border-t border-gray-800 pt-2.5">
               <div class="flex justify-between">
                 <span class="text-gray-400">Win Rate (+20b):</span>
-                <span class="font-mono font-bold text-white">87.5%</span>
+                <span id="score-winrate" class="font-mono font-bold text-white">87.5%</span>
               </div>
               <div class="flex justify-between">
                 <span class="text-gray-400">Median Return:</span>
-                <span class="font-mono font-bold text-bullish">+1.84%</span>
+                <span id="score-med-ret" class="font-mono font-bold text-bullish">+1.84%</span>
               </div>
               <div class="flex justify-between">
                 <span class="text-gray-400">Median Max DD:</span>
-                <span class="font-mono text-bearish">-0.52%</span>
+                <span id="score-med-dd" class="font-mono text-bearish">-0.52%</span>
               </div>
               <div class="flex justify-between">
                 <span class="text-gray-400">Optimal R:R:</span>
-                <span class="font-mono font-bold text-kronos">3.54x</span>
+                <span id="score-rr" class="font-mono font-bold text-kronos">3.54x</span>
               </div>
               <div class="flex justify-between">
                 <span class="text-gray-400">ANN Latency:</span>
-                <span class="font-mono text-emerald-400">28.07 ms</span>
+                <span id="score-latency" class="font-mono text-emerald-400">28.07 ms</span>
               </div>
             </div>
 
@@ -243,16 +243,16 @@
               <div class="text-[10px] uppercase tracking-wider text-gray-400 font-bold mb-2">Closest Historical Twins</div>
               <div class="space-y-1.5 text-[11px]">
                 <div class="p-1.5 bg-surfaceElevated rounded border border-gray-800 flex justify-between">
-                  <span>#1: XAU/USD (Oct 2024)</span>
-                  <span class="text-kronos font-mono font-bold">96.2% match</span>
+                  <span id="score-twin-1">#1: XAU/USD (Oct 2024)</span>
+                  <span id="score-twin-1-match" class="text-kronos font-mono font-bold">96.2% match</span>
                 </div>
                 <div class="p-1.5 bg-surfaceElevated rounded border border-gray-800 flex justify-between">
-                  <span>#2: BTC/USD (Nov 2024)</span>
-                  <span class="text-kronos font-mono font-bold">95.8% match</span>
+                  <span id="score-twin-2">#2: BTC/USD (Nov 2024)</span>
+                  <span id="score-twin-2-match" class="text-kronos font-mono font-bold">95.8% match</span>
                 </div>
                 <div class="p-1.5 bg-surfaceElevated rounded border border-gray-800 flex justify-between">
-                  <span>#3: XAU/USD (Aug 2023)</span>
-                  <span class="text-kronos font-mono font-bold">94.7% match</span>
+                  <span id="score-twin-3">#3: XAU/USD (Aug 2023)</span>
+                  <span id="score-twin-3-match" class="text-kronos font-mono font-bold">94.7% match</span>
                 </div>
               </div>
             </div>
@@ -659,17 +659,24 @@
         ctx.fillRect(x - candleW * 0.35, top, candleW * 0.7, bodyHeight);
       });
 
-      // Reality Cone (Forward 20 bars projection from latest active candle)
-      const last = sampleCandles[sampleCandles.length - 1];
-      const startX = (sampleCandles.length - 1) * candleW + candleW / 2;
-      const baseY = priceToY(last.close);
+      // Reality Cone (Forward 20 bars projection from the END of the brushed window)
+      const anchorIdx = Math.min(brushEnd, sampleCandles.length - 1);
+      const anchorCandle = sampleCandles[anchorIdx];
+      const startX = anchorIdx * candleW + candleW / 2;
+      const baseY = priceToY(anchorCandle.close);
+
+      // Determine the slope / direction based on the brushed window
+      const firstBrushed = sampleCandles[brushStart] || anchorCandle;
+      const brushedSlope = (anchorCandle.close - firstBrushed.open) / (firstBrushed.open || 1);
+      const isDowntrend = brushedSlope < -0.003;
+      const dir = isDowntrend ? 1 : -1; // In canvas Y: down is positive (+dir), up is negative (-dir)
 
       // Quantile ribbon (P10 - P90)
-      ctx.fillStyle = "rgba(139, 92, 246, 0.15)";
+      ctx.fillStyle = "rgba(139, 92, 246, 0.16)";
       ctx.beginPath();
       ctx.moveTo(startX, baseY);
-      for (let i = 1; i <= 20; i++) ctx.lineTo(startX + i * candleW, baseY - i * 1.8);
-      for (let i = 20; i >= 1; i--) ctx.lineTo(startX + i * candleW, baseY + i * 1.2);
+      for (let i = 1; i <= 20; i++) ctx.lineTo(startX + i * candleW, baseY + dir * i * 1.8 - (i * 0.9));
+      for (let i = 20; i >= 1; i--) ctx.lineTo(startX + i * candleW, baseY + dir * i * 0.8 + (i * 0.9));
       ctx.closePath();
       ctx.fill();
 
@@ -678,12 +685,28 @@
       ctx.lineWidth = 2.2;
       ctx.beginPath();
       ctx.moveTo(startX, baseY);
-      for (let i = 1; i <= 20; i++) ctx.lineTo(startX + i * candleW, baseY - i * 0.75);
+      for (let i = 1; i <= 20; i++) ctx.lineTo(startX + i * candleW, baseY + dir * i * 1.25);
       ctx.stroke();
 
       ctx.fillStyle = "#C4B5FD";
       ctx.font = "bold 10px monospace";
-      ctx.fillText("Reality Cone (P50)", startX + 20 * candleW - 20, baseY - 20 * 0.75 - 8);
+      ctx.fillText("Reality Cone (P50)", startX + 20 * candleW - 20, baseY + dir * 20 * 1.25 - 8);
+
+      // Ghost Twin Path (Yellow dotted line)
+      ctx.strokeStyle = "#F59E0B";
+      ctx.lineWidth = 2.0;
+      ctx.setLineDash([4, 3]);
+      ctx.beginPath();
+      ctx.moveTo(startX, baseY);
+      for (let i = 1; i <= 20; i++) {
+        const wobble = Math.sin(i * 0.5) * 5;
+        ctx.lineTo(startX + i * candleW, baseY + dir * i * 1.05 + wobble);
+      }
+      ctx.stroke();
+      ctx.setLineDash([]);
+      ctx.fillStyle = "#F59E0B";
+      ctx.font = "bold 9px monospace";
+      ctx.fillText("Ghost Twin Path", startX + 20 * candleW - 20, baseY + dir * 20 * 1.05 + 14);
     }
 
     // Connect to Free Public WebSocket with dynamic symbol and timeframe
@@ -815,6 +838,47 @@
       loadMarketData(currentAssetKey, tf);
     }
 
+    function updateScoreboard() {
+      if (!sampleCandles || sampleCandles.length === 0) return;
+      const anchorIdx = Math.min(brushEnd, sampleCandles.length - 1);
+      const anchorCandle = sampleCandles[anchorIdx];
+      const firstBrushed = sampleCandles[brushStart] || anchorCandle;
+      const brushedRet = (anchorCandle.close - firstBrushed.open) / (firstBrushed.open || 1);
+      const isDown = brushedRet < -0.003;
+
+      const titleEl = document.getElementById("score-skew-title");
+      const winEl = document.getElementById("score-winrate");
+      const retEl = document.getElementById("score-med-ret");
+      const ddEl = document.getElementById("score-med-dd");
+      const rrEl = document.getElementById("score-rr");
+
+      if (titleEl && winEl && retEl && ddEl && rrEl) {
+        if (isDown) {
+          titleEl.innerText = "78.4% Bearish Skew";
+          titleEl.className = "text-xl font-bold text-rose-400 mt-0.5";
+          winEl.innerText = "78.4%";
+          retEl.innerText = "-1.75%";
+          retEl.className = "font-mono font-bold text-rose-400";
+          ddEl.innerText = "-0.38%";
+          rrEl.innerText = "3.12x";
+          const t1 = document.getElementById("score-twin-1"); if (t1) t1.innerText = "#1: XAU/USD (Jan 2024)";
+          const t2 = document.getElementById("score-twin-2"); if (t2) t2.innerText = "#2: BTC/USD (Jun 2024)";
+          const t3 = document.getElementById("score-twin-3"); if (t3) t3.innerText = "#3: ETH/USD (Aug 2023)";
+        } else {
+          titleEl.innerText = "87.5% Bullish Skew";
+          titleEl.className = "text-xl font-bold text-emerald-400 mt-0.5";
+          winEl.innerText = "87.5%";
+          retEl.innerText = "+1.84%";
+          retEl.className = "font-mono font-bold text-emerald-400";
+          ddEl.innerText = "-0.52%";
+          rrEl.innerText = "3.54x";
+          const t1 = document.getElementById("score-twin-1"); if (t1) t1.innerText = "#1: XAU/USD (Oct 2024)";
+          const t2 = document.getElementById("score-twin-2"); if (t2) t2.innerText = "#2: BTC/USD (Nov 2024)";
+          const t3 = document.getElementById("score-twin-3"); if (t3) t3.innerText = "#3: XAU/USD (Aug 2023)";
+        }
+      }
+    }
+
     function setPreset(count) {
       selectedCount = count;
       brushEnd = sampleCandles.length - 1;
@@ -826,6 +890,7 @@
       const active = document.getElementById(`btn-${count}`);
       if (active) active.className = "px-2.5 py-1 rounded bg-kronos text-white font-medium shadow-md shadow-kronos/25";
       document.getElementById('brush-badge').innerText = `Window: ${count} Bars (Active)`;
+      updateScoreboard();
       renderCanvas();
     }
 
@@ -846,6 +911,7 @@
       brushStart = Math.min(dragStart, cur);
       brushEnd = Math.max(dragStart, cur);
       document.getElementById('brush-badge').innerText = `Brushing: ${brushEnd - brushStart + 1} Bars`;
+      updateScoreboard();
       renderCanvas();
     });
 
@@ -857,6 +923,7 @@
           brushEnd = Math.min(sampleCandles.length - 1, brushStart + 31);
         }
         document.getElementById('brush-badge').innerText = `Window: ${brushEnd - brushStart + 1} Bars (Active)`;
+        updateScoreboard();
         renderCanvas();
       }
     });
