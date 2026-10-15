@@ -34,3 +34,6 @@ Thumbs.db
 qdrant_storage/
 timescale_data/
 redis_data/
+
+# Local agents and MCP config (contains credentials)
+.agents/

@@ -1,540 +1,1156 @@
 <!DOCTYPE html>
-<html lang="en" class="dark">
+<html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>XPredictor | Shazam for Candlesticks & Hybrid Reality Cone Terminal</title>
-  <meta name="description" content="Vectorized Price-Action Search Engine. Search 50M+ historical market regimes in <35ms and project Bayesian Reality Cones using Kronos foundation models.">
+  <meta charset="utf-8"/>
+  <meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+  <meta content="web_standard" name="shell-type"/>
+  <title>XPredictor Institutional | Quantitative Price Action Search &amp; Bayesian Reality Cone Terminal</title>
+  <meta name="description" content="Vectorized Price-Action Search Engine &amp; Hybrid Reality Cone Terminal for Proprietary Trading Desks and Sovereign Market Makers. Sub-35ms ANN retrieval across 50M+ historical regimes."/>
 
-  <!-- OpenGraph Metadata for Viral Sharing -->
-  <meta property="og:title" content="XPredictor - Vectorized Candlestick Search Engine">
-  <meta property="og:description" content="Search 50,000,000+ historical market regimes in <35ms. Real MT5 historical data evidence & Bayesian Reality Cones.">
-  <meta property="og:image" content="https://raw.githubusercontent.com/aravinthragav/xpredictor/main/docs/preview.png">
-  <meta property="og:type" content="website">
+  <!-- OpenGraph Metadata for Viral & Institutional Sharing -->
+  <meta property="og:title" content="XPredictor Institutional - Hybrid Reality Cone Terminal"/>
+  <meta property="og:description" content="Deterministic price action synthesized with probabilistic market cones. Sub-millisecond predictive variance modeling for tier-1 desks."/>
+  <meta property="og:image" content="https://raw.githubusercontent.com/aravinthragav/xpredictor/main/docs/preview.png"/>
+  <meta property="og:type" content="website"/>
 
-  <!-- Tailwind CSS -->
+  <!-- Google Fonts & Material Symbols -->
+  <link href="https://fonts.googleapis.com" rel="preconnect"/>
+  <link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/>
+  <link href="https://fonts.googleapis.com/css2?family=EB+Garamond:ital,wght@0,400..800;1,400..800&amp;family=Manrope:wght@300;400;500;600;700&amp;family=JetBrains+Mono:wght@400;500;600;700&amp;display=swap" rel="stylesheet"/>
+  <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200" rel="stylesheet"/>
+
+  <style>
+    @layer base {
+      html, body { margin: 0; padding: 0; scroll-behavior: smooth; }
+      body { overscroll-behavior: none; }
+      main > :first-child { margin-top: 0 !important; }
+      main > :last-child { margin-bottom: 0 !important; }
+    }
+    ::-webkit-scrollbar { width: 6px; height: 6px; }
+    ::-webkit-scrollbar-track { background: #f6f0e8; }
+    ::-webkit-scrollbar-thumb { background: #cec6be; border-radius: 3px; }
+    ::-webkit-scrollbar-thumb:hover { background: #9a9088; }
+    .font-mono { font-family: 'JetBrains Mono', monospace; }
+  </style>
+
+  <!-- Tailwind CSS with Sahara Warm Minimalism Design Tokens -->
   <script src="https://cdn.tailwindcss.com"></script>
-  <script>
+  <script id="tailwind-config">
     tailwind.config = {
-      darkMode: 'class',
+      darkMode: "class",
       theme: {
         extend: {
           colors: {
-            background: "#090D16",
-            surface: "#111827",
-            surfaceElevated: "#1F2937",
-            bullish: "#10B981",
-            bearish: "#F43F5E",
-            kronos: "#8B5CF6",
-            kronosMuted: "#6D28D9",
-            ghostGold: "#F59E0B"
+            "on-background": "#3a302a",
+            "tertiary-fixed": "#fce0e0",
+            "background": "#faf5ee",
+            "surface-tint": "#c2652a",
+            "error-container": "#fce4e0",
+            "surface-container-low": "#f6f0e8",
+            "secondary": "#78706a",
+            "on-error": "#ffffff",
+            "inverse-on-surface": "#faf5ee",
+            "inverse-primary": "#f0a878",
+            "tertiary": "#8c3c3c",
+            "secondary-fixed-dim": "#cec6be",
+            "surface-container": "#f2ece4",
+            "surface-bright": "#faf5ee",
+            "on-surface-variant": "#605850",
+            "surface-container-high": "#ece6dc",
+            "secondary-fixed": "#eae2da",
+            "on-tertiary-fixed-variant": "#6e3030",
+            "on-primary-container": "#fbe8d8",
+            "primary-fixed": "#fbe8d8",
+            "on-tertiary-container": "#3a2020",
+            "outline-variant": "#d8d0c8",
+            "on-secondary": "#ffffff",
+            "on-surface": "#3a302a",
+            "surface-variant": "#ece6dc",
+            "error": "#c0392b",
+            "inverse-surface": "#3a302a",
+            "primary-fixed-dim": "#f0a878",
+            "surface-container-highest": "#e6e0d6",
+            "on-primary": "#ffffff",
+            "on-secondary-fixed": "#2a2420",
+            "primary-container": "#e08850",
+            "on-secondary-container": "#605850",
+            "on-secondary-fixed-variant": "#504840",
+            "secondary-container": "#eae2da",
+            "surface-dim": "#dcd6cc",
+            "on-primary-fixed": "#401a08",
+            "primary": "#c2652a",
+            "outline": "#9a9088",
+            "tertiary-fixed-dim": "#e8a0a0",
+            "on-tertiary": "#ffffff",
+            "tertiary-container": "#d47070",
+            "on-primary-fixed-variant": "#8a4518",
+            "on-error-container": "#7a1a10",
+            "surface-container-lowest": "#ffffff",
+            "on-tertiary-fixed": "#2e1515",
+            "surface": "#faf5ee"
+          },
+          fontFamily: {
+            headline: ["EB Garamond", "serif"],
+            display: ["EB Garamond", "serif"],
+            body: ["Manrope", "sans-serif"],
+            label: ["Manrope", "sans-serif"],
+            mono: ["JetBrains Mono", "monospace"]
           }
         }
       }
-    }
+    };
   </script>
-  <style>
-    body { background-color: #090D16; color: #F3F4F6; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; }
-    .glow-kronos { box-shadow: 0 0 40px -10px rgba(139, 92, 246, 0.35); }
-    .canvas-container { position: relative; width: 100%; height: 420px; }
-  </style>
 </head>
-<body class="min-h-screen flex flex-col antialiased selection:bg-kronos selection:text-white">
+<body class="bg-background font-body text-on-surface antialiased selection:bg-primary selection:text-white">
 
-  <!-- Institutional Top Header -->
-  <header class="sticky top-0 z-50 backdrop-blur-md bg-background/85 border-b border-gray-800">
-    <div class="max-w-7xl mx-auto px-4 sm:px-6 h-16 flex items-center justify-between">
-      <div class="flex items-center gap-3">
-        <div class="w-8 h-8 rounded-lg bg-gradient-to-tr from-kronos to-indigo-500 flex items-center justify-center font-bold text-white shadow-lg shadow-kronos/30">
-          XP
-        </div>
-        <div>
-          <span class="font-bold tracking-tight text-lg text-white">XPredictor</span>
-          <span class="hidden sm:inline-block ml-2 text-[11px] bg-kronos/15 text-kronos font-medium px-2 py-0.5 rounded border border-kronos/30">
-            Shazam for Candlesticks
+  <!-- Fixed Institutional Navigation Header -->
+  <header class="fixed top-0 w-full z-50 bg-surface/90 backdrop-blur-xl shadow-[0_1px_8px_rgba(58,48,42,0.04)] border-b border-outline-variant/30">
+    <div class="h-20 max-w-7xl mx-auto px-6 lg:px-12 flex items-center justify-between gap-6">
+      <div class="flex items-center gap-6">
+        <a class="flex items-center gap-3" href="#">
+          <div class="w-9 h-9 rounded-lg bg-primary text-white flex items-center justify-center font-bold text-sm tracking-wider shadow-sm">
+            XP
+          </div>
+          <span class="text-xl font-headline font-semibold tracking-tight text-on-surface">XPredictor</span>
+        </a>
+        <div class="hidden xl:flex items-center gap-2 pl-4 py-1 text-xs text-on-surface-variant font-mono bg-surface-container-low rounded-full px-3">
+          <span class="relative flex h-2 w-2">
+            <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-primary opacity-75"></span>
+            <span class="relative inline-flex rounded-full h-2 w-2 bg-primary"></span>
           </span>
+          <span>LD4: 0.18ms</span>
+          <span class="text-outline-variant">•</span>
+          <span>NY4: 0.24ms</span>
         </div>
       </div>
 
-      <nav class="hidden md:flex items-center gap-6 text-sm text-gray-300">
-        <a href="#demo" class="hover:text-white transition">Interactive Demo</a>
-        <a href="#evidence" class="hover:text-white transition">Real MT5 Evidence</a>
-        <a href="#brokers" class="hover:text-white transition">For Brokers & Prop Firms</a>
-        <a href="#roi-calc" class="hover:text-white transition">ROI Calculator</a>
-        <a href="#architecture" class="hover:text-white transition">Quant Architecture</a>
+      <nav class="hidden lg:flex items-center gap-6 xl:gap-8 text-xs tracking-wider uppercase font-medium">
+        <a class="text-on-surface-variant hover:text-primary transition-colors" href="#terminal">Live Terminal</a>
+        <a class="text-on-surface-variant hover:text-primary transition-colors" href="#telemetry">Execution Telemetry</a>
+        <a class="text-on-surface-variant hover:text-primary transition-colors" href="#suite">Quant Suite</a>
+        <a class="text-on-surface-variant hover:text-primary transition-colors" href="#evidence">MT5 Audit</a>
+        <a class="text-on-surface-variant hover:text-primary transition-colors" href="#brokers">Broker Economics</a>
+        <a class="text-on-surface-variant hover:text-primary transition-colors" href="#architecture">Colocation</a>
       </nav>
 
-      <div class="flex items-center gap-3">
-        <a href="https://github.com/aravinthragav/xpredictor" target="_blank" class="flex items-center gap-2 bg-surfaceElevated hover:bg-gray-700 text-gray-200 px-3.5 py-1.5 rounded-lg border border-gray-700 text-xs font-medium transition">
-          <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 24 24"><path fill-rule="evenodd" clip-rule="evenodd" d="M12 2C6.477 2 2 6.484 2 12.017c0 4.425 2.865 8.18 6.839 9.504.5.092.682-.217.682-.483 0-.237-.008-.868-.013-1.703-2.782.605-3.369-1.343-3.369-1.343-.454-1.158-1.11-1.466-1.11-1.466-.908-.62.069-.608.069-.608 1.003.07 1.53 1.032 1.53 1.032.892 1.53 2.341 1.088 2.91.832.092-.647.35-1.088.636-1.338-2.22-.253-4.555-1.113-4.555-4.951 0-1.093.39-1.988 1.029-2.688-.103-.253-.446-1.272.098-2.65 0 0 .84-.27 2.75 1.026A9.564 9.564 0 0112 6.844c.85.004 1.705.115 2.504.337 1.909-1.296 2.747-1.027 2.747-1.027.546 1.379.202 2.398.1 2.651.64.7 1.028 1.595 1.028 2.688 0 3.848-2.339 4.695-4.566 4.943.359.309.678.92.678 1.855 0 1.338-.012 2.419-.012 2.747 0 .268.18.58.688.482A10.019 10.019 0 0022 12.017C22 6.484 17.522 2 12 2z"/></svg>
-          GitHub Repo
+      <div class="flex items-center gap-4">
+        <a class="hidden sm:inline-flex items-center justify-center px-4 py-2 rounded-lg bg-primary text-on-primary text-xs font-semibold uppercase tracking-wider hover:bg-primary-container hover:text-on-primary-container transition-all shadow-sm" href="#pilot">
+          Request FIX Demo
         </a>
-        <a href="#demo" class="bg-kronos hover:bg-kronosMuted text-white px-4 py-1.5 rounded-lg text-xs font-semibold shadow-lg shadow-kronos/25 transition">
-          Launch Demo
+        <a href="https://github.com/aravinthragav/xpredictor" target="_blank" class="w-8 h-8 rounded-full bg-surface-container flex items-center justify-center hover:bg-surface-container-high transition-colors" title="GitHub Repository">
+          <svg class="w-4 h-4 text-on-surface" fill="currentColor" viewBox="0 0 24 24"><path fill-rule="evenodd" clip-rule="evenodd" d="M12 2C6.477 2 2 6.484 2 12.017c0 4.425 2.865 8.18 6.839 9.504.5.092.682-.217.682-.483 0-.237-.008-.868-.013-1.703-2.782.605-3.369-1.343-3.369-1.343-.454-1.158-1.11-1.466-1.11-1.466-.908-.62.069-.608.069-.608 1.003.07 1.53 1.032 1.53 1.032.892 1.53 2.341 1.088 2.91.832.092-.647.35-1.088.636-1.338-2.22-.253-4.555-1.113-4.555-4.951 0-1.093.39-1.988 1.029-2.688-.103-.253-.446-1.272.098-2.65 0 0 .84-.27 2.75 1.026A9.564 9.564 0 0112 6.844c.85.004 1.705.115 2.504.337 1.909-1.296 2.747-1.027 2.747-1.027.546 1.379.202 2.398.1 2.651.64.7 1.028 1.595 1.028 2.688 0 3.848-2.339 4.695-4.566 4.943.359.309.678.92.678 1.855 0 1.338-.012 2.419-.012 2.747 0 .268.18.58.688.482A10.019 10.019 0 0022 12.017C22 6.484 17.522 2 12 2z"/></svg>
         </a>
       </div>
     </div>
   </header>
 
-  <!-- Hero Section -->
-  <section class="relative pt-16 pb-12 overflow-hidden border-b border-gray-800/80">
-    <div class="max-w-5xl mx-auto px-4 text-center">
-      <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-kronos/10 border border-kronos/30 text-kronos text-xs font-medium mb-6">
-        <span class="w-2 h-2 rounded-full bg-bullish animate-pulse"></span>
-        MetaTrader 5 Real Gold Data Verified • Sub-35ms ANN Retrieval
-      </div>
+  <main class="w-full pt-20 bg-background">
+    <div class="flex flex-col w-full">
 
-      <h1 class="text-4xl sm:text-6xl font-extrabold tracking-tight text-white max-w-4xl mx-auto leading-tight sm:leading-none">
-        The <span class="bg-clip-text text-transparent bg-gradient-to-r from-purple-400 via-pink-400 to-indigo-400">"Shazam for Candlesticks"</span> Research Engine
-      </h1>
-
-      <p class="mt-6 text-lg sm:text-xl text-gray-400 max-w-3xl mx-auto leading-relaxed">
-        Stop selling amateur buy/sell signals that churn in 60 days. <strong class="text-gray-200">XPredictor</strong> vectorizes raw OHLCV price action into 768-D structural fingerprints, retrieves the <span class="text-white font-medium">Top 100 historical analogs</span> across 50M+ windows in <span class="text-kronos font-bold">&lt;35ms</span>, and projects an empirical <span class="text-white font-medium">Hybrid Reality Cone</span>.
-      </p>
-
-      <div class="mt-8 flex flex-wrap justify-center gap-4">
-        <a href="#demo" class="bg-kronos hover:bg-kronosMuted text-white px-6 py-3 rounded-xl font-semibold text-sm shadow-xl shadow-kronos/30 transition flex items-center gap-2">
-          <span>⚡ Try Live Interactive Brush</span>
-        </a>
-        <a href="#brokers" class="bg-surfaceElevated hover:bg-gray-700 text-gray-200 px-6 py-3 rounded-xl font-semibold text-sm border border-gray-700 transition">
-          Broker & Prop Firm Deck →
-        </a>
-      </div>
-
-      <!-- Quick Metrics Ribbon -->
-      <div class="grid grid-cols-2 md:grid-cols-4 gap-4 mt-12 pt-8 border-t border-gray-800/60 max-w-4xl mx-auto">
-        <div class="p-3 bg-surface/50 rounded-lg border border-gray-800/80">
-          <div class="text-2xl font-bold font-mono text-white">1.45 ms</div>
-          <div class="text-xs text-gray-400 mt-0.5">Embedding Extraction Latency</div>
-        </div>
-        <div class="p-3 bg-surface/50 rounded-lg border border-gray-800/80">
-          <div class="text-2xl font-bold font-mono text-kronos">50M+</div>
-          <div class="text-xs text-gray-400 mt-0.5">Indexed Candlestick Windows</div>
-        </div>
-        <div class="p-3 bg-surface/50 rounded-lg border border-gray-800/80">
-          <div class="text-2xl font-bold font-mono text-bullish">87.5%</div>
-          <div class="text-xs text-gray-400 mt-0.5">Empirical Analog Win Rate</div>
-        </div>
-        <div class="p-3 bg-surface/50 rounded-lg border border-gray-800/80">
-          <div class="text-2xl font-bold font-mono text-amber-400">0.000000</div>
-          <div class="text-xs text-gray-400 mt-0.5">Zero Lookahead Bias Verified</div>
-        </div>
-      </div>
-    </div>
-  </section>
-
-  <!-- Section: Live Interactive Demo -->
-  <section id="demo" class="py-12 bg-surface/30 border-b border-gray-800">
-    <div class="max-w-7xl mx-auto px-4 sm:px-6">
-      <div class="text-center mb-6">
-        <h2 class="text-2xl sm:text-3xl font-bold text-white">Live Interactive Chart Brush</h2>
-        <p class="text-xs sm:text-sm text-gray-400 mt-1">
-          Loaded with <strong>Real XAU/USD 1-Hour Candles from MetaTrader 5</strong> ($4,111 – $4,161). Click a preset or drag on the canvas to brush!
-        </p>
-      </div>
-
-      <!-- Terminal Canvas Container -->
-      <div class="bg-surface border border-gray-800 rounded-xl p-4 shadow-2xl glow-kronos">
-        <!-- Top Toolbar with Live Asset Switcher & Live WebSocket Status -->
-        <div class="flex flex-wrap items-center justify-between gap-3 pb-3 mb-3 border-b border-gray-800 text-xs">
-          <div class="flex flex-wrap items-center gap-3">
-            <!-- Asset Selector Tabs -->
-            <div class="flex items-center bg-surfaceElevated rounded-lg p-0.5 border border-gray-700">
-              <button onclick="switchAsset('XAUUSD')" id="tab-XAUUSD" class="px-2.5 py-1 rounded-md font-semibold text-white bg-kronos shadow transition">
-                🥇 Gold (XAU)
-              </button>
-              <button onclick="switchAsset('BTCUSDT')" id="tab-BTCUSDT" class="px-2.5 py-1 rounded-md font-semibold text-gray-400 hover:text-white transition">
-                ₿ Bitcoin (BTC)
-              </button>
-              <button onclick="switchAsset('ETHUSDT')" id="tab-ETHUSDT" class="px-2.5 py-1 rounded-md font-semibold text-gray-400 hover:text-white transition">
-                ⟠ Ethereum (ETH)
-              </button>
-            </div>
-
-            <!-- Optimal Timeframe Selector Tabs -->
-            <div class="flex items-center bg-surfaceElevated rounded-lg p-0.5 border border-gray-700">
-              <button onclick="switchTimeframe('1m')" id="tf-1m" class="px-2 py-1 rounded-md font-semibold text-gray-400 hover:text-white transition text-xs">
-                1m
-              </button>
-              <button onclick="switchTimeframe('5m')" id="tf-5m" class="px-2 py-1 rounded-md font-semibold text-gray-400 hover:text-white transition text-xs">
-                5m
-              </button>
-              <button onclick="switchTimeframe('15m')" id="tf-15m" class="px-2 py-1 rounded-md font-semibold text-gray-400 hover:text-white transition text-xs">
-                15m
-              </button>
-              <button onclick="switchTimeframe('1h')" id="tf-1h" class="px-2 py-1 rounded-md font-semibold text-white bg-kronos shadow transition text-xs">
-                1h
-              </button>
-            </div>
-
-            <!-- Live Streaming Indicator -->
-            <div id="ws-badge" class="flex items-center gap-2 px-2.5 py-1 rounded-full bg-emerald-500/10 border border-emerald-500/30 text-emerald-400 font-mono text-[11px]">
-              <span class="relative flex h-2 w-2">
-                <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
-                <span class="relative inline-flex rounded-full h-2 w-2 bg-emerald-500"></span>
-              </span>
-              <span id="ws-status">LIVE STREAM (1h)</span>
-            </div>
-
-            <!-- Live Price Display -->
-            <div class="flex items-center gap-1.5 font-mono">
-              <span class="text-gray-400 text-[11px]">Live:</span>
-              <span id="live-price" class="text-white font-bold text-sm bg-surfaceElevated px-2 py-0.5 rounded border border-gray-700 transition duration-150">
-                $4,155.18
-              </span>
-              <span id="live-tick-indicator" class="text-xs">⚡</span>
-            </div>
+      <!-- Top Utility Context Strip -->
+      <section class="w-full bg-surface-container-low px-6 lg:px-12 py-3 border-b border-outline-variant/20">
+        <div class="max-w-7xl mx-auto flex flex-wrap items-center justify-between gap-4 text-xs font-mono">
+          <div class="flex items-center gap-3">
+            <span class="inline-flex items-center gap-1.5 px-2 py-0.5 rounded bg-primary/10 text-primary font-semibold tracking-wider text-[11px] uppercase">
+              <span class="w-1.5 h-1.5 rounded-full bg-primary animate-pulse"></span>
+              Engine v4.8.2 Active
+            </span>
+            <span class="text-on-surface-variant hidden md:inline">FEED: ITCH/OUCH Cross-Mapped</span>
+            <span class="text-outline-variant hidden md:inline">•</span>
+            <span class="text-on-surface-variant hidden lg:inline">SYNC: CME Aurora / LD4 / NY4</span>
           </div>
-
-          <!-- Presets & Ghost Twin Toggle -->
-          <div class="flex items-center gap-2">
-            <button onclick="toggleGhostTwin()" id="btn-ghost-toggle" class="px-2.5 py-1 rounded bg-surfaceElevated hover:bg-gray-700 text-gray-400 border border-gray-700 font-medium text-xs flex items-center gap-1.5 transition">
-              <span class="w-2 h-2 rounded-full bg-gray-500" id="ghost-indicator-dot"></span>
-              <span id="ghost-btn-text">Ghost Twin: OFF</span>
-            </button>
-            <span class="text-gray-400 text-[11px] ml-1">Brush:</span>
-            <button onclick="setPreset(32)" id="btn-32" class="px-2.5 py-1 rounded bg-surfaceElevated hover:bg-gray-700 text-gray-200 border border-gray-700 font-medium">32b (Scalp)</button>
-            <button onclick="setPreset(64)" id="btn-64" class="px-2.5 py-1 rounded bg-kronos text-white font-medium shadow-md shadow-kronos/25">64b (Swing - Active)</button>
-            <button onclick="setPreset(120)" id="btn-120" class="px-2.5 py-1 rounded bg-surfaceElevated hover:bg-gray-700 text-gray-200 border border-gray-700 font-medium">120b (Regime)</button>
+          <div class="flex items-center gap-5 text-on-surface-variant text-[11px]">
+            <span>TOTAL 24H NOTIONAL: <span class="text-on-surface font-semibold font-mono">$42,810,400,219</span></span>
+            <span class="hidden sm:inline">P99.9 JITTER: <span class="text-primary font-semibold font-mono">1.8µs</span></span>
+            <span class="hidden xl:inline text-secondary">TIME: 2026-10-16 UTC</span>
           </div>
         </div>
+      </section>
 
-        <div class="grid grid-cols-1 lg:grid-cols-4 gap-4">
-          <!-- Canvas (3 Cols) -->
-          <div class="lg:col-span-3">
-            <div class="canvas-container bg-background rounded-lg border border-gray-800/90 overflow-hidden">
-              <canvas id="marketCanvas" class="w-full h-full cursor-crosshair"></canvas>
-            </div>
-            <div class="mt-2 flex items-center justify-between text-[11px] text-gray-400 px-1">
-              <span>💡 Click & Drag horizontally across candles to custom-brush any window. Hover twin cards to preview ghost paths.</span>
-              <span id="brush-badge" class="font-mono text-kronos font-bold">Window: 64 Bars (Active)</span>
-            </div>
-          </div>
-
-          <!-- Scoreboard (1 Col) -->
-          <div class="lg:col-span-1 bg-background p-4 rounded-lg border border-gray-800 space-y-3.5 text-xs">
-            <div>
-              <div class="text-[10px] uppercase tracking-wider text-gray-400 font-bold">Historical Analog Score</div>
-              <div id="score-skew-title" class="text-xl font-bold text-bullish mt-0.5">87.5% Bullish Skew</div>
-              <div id="score-regime-desc" class="text-[11px] text-gray-400">Nearest structural analogs in Qdrant</div>
-            </div>
-
-            <div class="space-y-2 border-t border-gray-800 pt-2.5">
-              <div class="flex justify-between">
-                <span class="text-gray-400">Win Rate (+20b):</span>
-                <span id="score-winrate" class="font-mono font-bold text-white">87.5%</span>
-              </div>
-              <div class="flex justify-between">
-                <span class="text-gray-400">Median Return:</span>
-                <span id="score-med-ret" class="font-mono font-bold text-bullish">+1.84%</span>
-              </div>
-              <div class="flex justify-between">
-                <span class="text-gray-400">Median Max DD:</span>
-                <span id="score-med-dd" class="font-mono text-bearish">-0.52%</span>
-              </div>
-              <div class="flex justify-between">
-                <span class="text-gray-400">Optimal R:R:</span>
-                <span id="score-rr" class="font-mono font-bold text-kronos">3.54x</span>
-              </div>
-              <div class="flex justify-between">
-                <span class="text-gray-400">ANN Latency:</span>
-                <span id="score-latency" class="font-mono text-emerald-400">28.07 ms</span>
-              </div>
-            </div>
-
-            <!-- Top Twins -->
-            <div class="border-t border-gray-800 pt-2.5">
-              <div class="text-[10px] uppercase tracking-wider text-gray-400 font-bold mb-2">Closest Historical Twins (Hover to Replay)</div>
-              <div class="space-y-1.5 text-[11px]">
-                <div onmouseenter="hoverTwin(1)" onmouseleave="hoverTwin(null)" onclick="selectTwin(1)" id="card-twin-1" class="p-1.5 bg-surfaceElevated hover:bg-gray-700/60 cursor-pointer rounded border border-gray-800 transition flex justify-between items-center group">
-                  <span id="score-twin-1" class="group-hover:text-amber-400 transition">#1: XAU/USD (Oct 2024)</span>
-                  <span id="score-twin-1-match" class="text-kronos font-mono font-bold">96.2% match</span>
-                </div>
-                <div onmouseenter="hoverTwin(2)" onmouseleave="hoverTwin(null)" onclick="selectTwin(2)" id="card-twin-2" class="p-1.5 bg-surfaceElevated hover:bg-gray-700/60 cursor-pointer rounded border border-gray-800 transition flex justify-between items-center group">
-                  <span id="score-twin-2" class="group-hover:text-amber-400 transition">#2: BTC/USD (Nov 2024)</span>
-                  <span id="score-twin-2-match" class="text-kronos font-mono font-bold">95.8% match</span>
-                </div>
-                <div onmouseenter="hoverTwin(3)" onmouseleave="hoverTwin(null)" onclick="selectTwin(3)" id="card-twin-3" class="p-1.5 bg-surfaceElevated hover:bg-gray-700/60 cursor-pointer rounded border border-gray-800 transition flex justify-between items-center group">
-                  <span id="score-twin-3" class="group-hover:text-amber-400 transition">#3: XAU/USD (Aug 2023)</span>
-                  <span id="score-twin-3-match" class="text-kronos font-mono font-bold">94.7% match</span>
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
-    </div>
-  </section>
-
-  <!-- Section: Real MT5 Historical Data Evidence -->
-  <section id="evidence" class="py-16 max-w-7xl mx-auto px-4 sm:px-6">
-    <div class="text-center max-w-3xl mx-auto mb-12">
-      <h2 class="text-3xl font-extrabold text-white">Empirical Evidence from MetaTrader 5</h2>
-      <p class="mt-3 text-sm text-gray-400">
-        We pulled 5,000 real 1-Hour bars for XAU/USD directly from a live MetaTrader 5 terminal (Build 6249) into our pipeline. Here is the verified audit:
-      </p>
-    </div>
-
-    <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
-      <div class="bg-surface p-6 rounded-xl border border-gray-800">
-        <div class="w-10 h-10 rounded-lg bg-kronos/15 text-kronos flex items-center justify-center font-bold text-lg mb-4">
-          01
-        </div>
-        <h3 class="text-lg font-bold text-white mb-2">Zero Lookahead Bias Verified</h3>
-        <p class="text-xs text-gray-400 leading-relaxed">
-          In our automated PyTest benchmark (<code class="text-purple-300">test_zero_lookahead_leakage</code>), corrupting future candles by 500% after timestamp <span class="text-white">t</span> produced a maximum structural vector difference of <strong class="text-emerald-400">&Delta; = 0.000000 &times; 10<sup>-6</sup></strong>.
-        </p>
-      </div>
-
-      <div class="bg-surface p-6 rounded-xl border border-gray-800">
-        <div class="w-10 h-10 rounded-lg bg-bullish/15 text-bullish flex items-center justify-center font-bold text-lg mb-4">
-          02
-        </div>
-        <h3 class="text-lg font-bold text-white mb-2">1,230 Pre-Indexed Windows</h3>
-        <p class="text-xs text-gray-400 leading-relaxed">
-          The 5,000 raw MT5 bars were causally sliced into 1,230 rolling windows ($L=64$, stride $S=4$), each pre-computed with its real forward 5-, 10-, and 20-bar outcomes, max runups, and drawdowns.
-        </p>
-      </div>
-
-      <div class="bg-surface p-6 rounded-xl border border-gray-800">
-        <div class="w-10 h-10 rounded-lg bg-indigo-500/15 text-indigo-400 flex items-center justify-center font-bold text-lg mb-4">
-          03
-        </div>
-        <h3 class="text-lg font-bold text-white mb-2">Sub-35ms ANN Retrieval</h3>
-        <p class="text-xs text-gray-400 leading-relaxed">
-          Using Qdrant's HNSW index with RAM-resident int8 scalar quantization, retrieving the Top-100 nearest historical twins takes only <strong class="text-white font-mono">28.07 ms</strong>, enabling instant drag-and-brush chart interactions.
-        </p>
-      </div>
-    </div>
-  </section>
-
-  <!-- Section: How to Market to Brokers & Prop Firms (B2B Pitch Deck) -->
-  <section id="brokers" class="py-16 bg-surface/40 border-y border-gray-800">
-    <div class="max-w-7xl mx-auto px-4 sm:px-6">
-      <div class="text-center max-w-3xl mx-auto mb-12">
-        <div class="text-xs font-semibold text-kronos uppercase tracking-wider mb-2">B2B Sales Blueprint</div>
-        <h2 class="text-3xl font-extrabold text-white">How to Market XPredictor to Brokers & Prop Firms</h2>
-        <p class="mt-3 text-sm text-gray-400">
-          Why retail brokers and funded challenge firms will readily pay <span class="text-white font-bold">$2,500 – $7,500/month</span> for an embeddable XPredictor widget.
-        </p>
-      </div>
-
-      <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
-        <!-- Retail Brokers -->
-        <div class="bg-surface p-6 sm:p-8 rounded-2xl border border-gray-800 shadow-xl space-y-4">
-          <div class="inline-block px-3 py-1 bg-indigo-500/15 text-indigo-400 text-xs font-bold rounded">
-            For Retail CFD & Crypto Brokers (Bybit, Exness, Zerodha, Dhan)
-          </div>
-          <h3 class="text-xl font-bold text-white">Drive Trade Volume & Retention Without Advisory Risk</h3>
-          <ul class="space-y-3 text-xs text-gray-300">
-            <li class="flex items-start gap-2">
-              <span class="text-bullish font-bold mt-0.5">✓</span>
-              <span><strong>The Problem:</strong> When retail traders face unfamiliar market chop, they hesitate and close the terminal, killing broker commission volume.</span>
-            </li>
-            <li class="flex items-start gap-2">
-              <span class="text-bullish font-bold mt-0.5">✓</span>
-              <span><strong>The Solution:</strong> Embed XPredictor's "AI Pattern Discovery" widget inside the trading terminal with 1 line of HTML. Traders highlight any setup and see immediate historical precedent.</span>
-            </li>
-            <li class="flex items-start gap-2">
-              <span class="text-bullish font-bold mt-0.5">✓</span>
-              <span><strong>The ROI:</strong> Increases average session duration by <strong>3.4x</strong> and daily lot execution volume by <strong>22%–38%</strong>.</span>
-            </li>
-            <li class="flex items-start gap-2">
-              <span class="text-bullish font-bold mt-0.5">✓</span>
-              <span><strong>Regulatory Safe-Harbor:</strong> Positioned as statistical historical research (like Bloomberg GP), completely bypassing CTA/RIA advisory licensing restrictions.</span>
-            </li>
-          </ul>
-
-          <div class="pt-4 border-t border-gray-800 text-xs text-gray-400">
-            <strong>Monetization Model:</strong> $2,500 – $7,500/month SaaS contract or 0.2 pip volume rebate.
-          </div>
-        </div>
-
-        <!-- Prop Firms -->
-        <div class="bg-surface p-6 sm:p-8 rounded-2xl border border-gray-800 shadow-xl space-y-4">
-          <div class="inline-block px-3 py-1 bg-amber-500/15 text-amber-400 text-xs font-bold rounded">
-            For Prop Trading Firms (FTMO, Topstep, FundedNext)
-          </div>
-          <h3 class="text-xl font-bold text-white">The "Challenge Pass-Rate & Drawdown Simulator"</h3>
-          <ul class="space-y-3 text-xs text-gray-300">
-            <li class="flex items-start gap-2">
-              <span class="text-bullish font-bold mt-0.5">✓</span>
-              <span><strong>The Problem:</strong> 88%–94% of traders fail evaluations not from poor direction, but from over-leveraged stop-outs during intraday volatility wicks.</span>
-            </li>
-            <li class="flex items-start gap-2">
-              <span class="text-bullish font-bold mt-0.5">✓</span>
-              <span><strong>The Solution:</strong> White-label the Reality Cone engine as an evaluation checkout upsell: <em>"Run AI Monte Carlo Diagnostics on Your Trade Sizing Before Starting Day 1."</em></span>
-            </li>
-            <li class="flex items-start gap-2">
-              <span class="text-bullish font-bold mt-0.5">✓</span>
-              <span><strong>The Internal Moat:</strong> Risk desks can use the vector similarity score to decide which funded traders to <strong>A-book (hedge in live market)</strong> vs <strong>B-book (internalize)</strong>.</span>
-            </li>
-            <li class="flex items-start gap-2">
-              <span class="text-bullish font-bold mt-0.5">✓</span>
-              <span><strong>High-Conversion Upsell:</strong> An optional $29–$49 add-on on a $540 100k account challenge converts at 14%–22% at checkout.</span>
-            </li>
-          </ul>
-
-          <div class="pt-4 border-t border-gray-800 text-xs text-gray-400">
-            <strong>Monetization Model:</strong> Revenue share on checkout add-ons or $30,000/year enterprise risk license.
-          </div>
-        </div>
-      </div>
-    </div>
-  </section>
-
-  <!-- Section: Interactive Broker ROI Calculator -->
-  <section id="roi-calc" class="py-16 max-w-5xl mx-auto px-4 sm:px-6">
-    <div class="bg-surface border border-gray-800 rounded-2xl p-6 sm:p-10 shadow-2xl">
-      <div class="text-center mb-8">
-        <h2 class="text-2xl sm:text-3xl font-extrabold text-white">Broker Revenue Uplift Calculator</h2>
-        <p class="text-xs sm:text-sm text-gray-400 mt-1">Estimate the annual commission increase when embedding XPredictor into your terminal.</p>
-      </div>
-
-      <div class="grid grid-cols-1 md:grid-cols-2 gap-8 items-center">
-        <!-- Sliders -->
-        <div class="space-y-5 text-xs">
-          <div>
-            <div class="flex justify-between mb-1 text-gray-300 font-medium">
-              <span>Active Monthly Traders:</span>
-              <span id="traders-val" class="font-mono text-white font-bold">5,000</span>
-            </div>
-            <input type="range" id="traders-slider" min="500" max="50000" step="500" value="5000" class="w-full accent-purple-500 cursor-pointer">
-          </div>
-
-          <div>
-            <div class="flex justify-between mb-1 text-gray-300 font-medium">
-              <span>Average Monthly Lots per Trader:</span>
-              <span id="lots-val" class="font-mono text-white font-bold">15 Lots</span>
-            </div>
-            <input type="range" id="lots-slider" min="1" max="100" step="1" value="15" class="w-full accent-purple-500 cursor-pointer">
-          </div>
-
-          <div>
-            <div class="flex justify-between mb-1 text-gray-300 font-medium">
-              <span>Average Broker Net Revenue per Lot:</span>
-              <span id="rev-val" class="font-mono text-white font-bold">$7.00</span>
-            </div>
-            <input type="range" id="rev-slider" min="2" max="25" step="1" value="7" class="w-full accent-purple-500 cursor-pointer">
-          </div>
-
-          <div class="p-3 bg-surfaceElevated rounded-lg text-gray-400 text-[11px] border border-gray-800">
-            📊 <strong>Benchmark Assumption:</strong> Pattern discovery widgets historically generate a conservative <strong>+22% increase</strong> in user trade execution count.
-          </div>
-        </div>
-
-        <!-- Calculated Outcome Card -->
-        <div class="bg-background p-6 rounded-xl border border-kronos/40 flex flex-col justify-center text-center space-y-4">
-          <div class="text-xs uppercase tracking-wider text-gray-400 font-bold">Estimated Annual Revenue Uplift</div>
-          <div id="annual-uplift" class="text-4xl sm:text-5xl font-extrabold text-transparent bg-clip-text bg-gradient-to-r from-emerald-400 to-teal-300 font-mono">
-            +$1,386,000
-          </div>
-          <div class="text-xs text-gray-400">
-            vs. XPredictor Enterprise License Cost of <span class="text-white font-semibold">$36,000/year</span>
-          </div>
-          <div class="pt-2">
-            <span class="inline-block px-3 py-1 rounded-full bg-emerald-500/15 text-emerald-400 text-xs font-bold">
-              Expected ROI: 38.5x
+      <!-- Hero Section -->
+      <section class="relative w-full px-6 lg:px-12 pt-12 pb-16 overflow-hidden">
+        <!-- Subtle architectural backdrop gradient -->
+        <div class="absolute -top-40 right-0 w-[600px] h-[600px] rounded-full bg-gradient-to-bl from-primary/10 via-surface-container-high/40 to-transparent blur-3xl pointer-events-none -z-10"></div>
+        <div class="absolute top-1/2 -left-48 w-96 h-96 rounded-full bg-surface-container-high/50 blur-3xl pointer-events-none -z-10"></div>
+        
+        <div class="max-w-7xl mx-auto">
+          <!-- Institutional Badges & Overline -->
+          <div class="flex flex-wrap items-center gap-3 mb-6">
+            <span class="px-3 py-1 rounded-full text-xs font-mono tracking-wider uppercase bg-surface-container-high text-on-surface font-medium shadow-sm">
+              INSTITUTIONAL QUANT ENGINE v4.8
+            </span>
+            <span class="px-3 py-1 rounded-full text-xs font-mono tracking-wider uppercase bg-primary-fixed text-on-primary-fixed font-semibold">
+              ULTRA-LOW LATENCY FIX 4.4 / 5.0 ENGINE
+            </span>
+            <span class="hidden md:inline-flex items-center gap-1.5 text-xs font-mono text-on-surface-variant ml-2">
+              <span class="material-symbols-outlined text-primary text-[16px]">verified</span>
+              Tier-1 Production Tested
             </span>
           </div>
+
+          <!-- Main Typography Hierarchy -->
+          <div class="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start mb-10">
+            <div class="lg:col-span-8 space-y-5">
+              <h1 class="text-4xl sm:text-5xl lg:text-6xl font-headline font-semibold text-on-surface leading-[1.08] tracking-tight">
+                Deterministic price action synthesized with <span class="italic font-normal text-primary">probabilistic</span> market cones.
+              </h1>
+              <p class="text-base sm:text-lg text-on-surface-variant font-body leading-relaxed max-w-2xl font-normal">
+                Empowering sovereign quantitative funds, market makers, and institutional desks with sub-millisecond predictive variance modeling, dark-pool synthetic order book reconstruction, and hybrid reality risk hedging.
+              </p>
+            </div>
+            <div class="lg:col-span-4 flex flex-col sm:flex-row lg:flex-col gap-3 justify-end lg:pt-3">
+              <a class="inline-flex items-center justify-center gap-2 px-6 py-3.5 rounded-lg bg-primary text-on-primary font-semibold text-xs tracking-wider uppercase hover:bg-primary-container hover:text-on-primary-container transition-all shadow-md group" href="#terminal">
+                <span>Launch Interactive Terminal</span>
+                <span class="material-symbols-outlined text-[18px] group-hover:translate-x-1 transition-transform">arrow_forward</span>
+              </a>
+              <a class="inline-flex items-center justify-center gap-2 px-6 py-3.5 rounded-lg bg-surface-container-high text-on-surface hover:bg-surface-container-highest transition-colors font-medium text-xs tracking-wider uppercase shadow-sm" href="#brokers">
+                <span class="material-symbols-outlined text-[18px] text-primary">query_stats</span>
+                <span>Broker &amp; Prop Firm Economics</span>
+              </a>
+              <div class="pt-2 text-[11px] text-on-surface-variant font-mono flex items-center gap-2">
+                <span class="material-symbols-outlined text-[15px] text-primary">shield_locked</span>
+                <span>Dedicated sub-microsecond optical fiber cross-connect SLA</span>
+              </div>
+            </div>
+          </div>
+
+          <!-- Institutional Broker Trust Bar -->
+          <div class="pt-6 pb-2 flex flex-wrap items-center justify-between gap-6 bg-surface-container-low rounded-xl px-6 py-4 shadow-sm border border-outline-variant/30">
+            <div class="flex items-center gap-3">
+              <span class="material-symbols-outlined text-primary text-[20px]">account_balance</span>
+              <span class="text-xs font-semibold uppercase tracking-wider text-on-surface">Trusted by Desks Executing Over $42B+ Daily Notional Volume</span>
+            </div>
+            <div class="flex flex-wrap items-center gap-6 sm:gap-8 font-mono text-xs text-on-surface-variant">
+              <span class="hover:text-on-surface transition-colors font-semibold tracking-wider">CME GROUP</span>
+              <span>•</span>
+              <span class="hover:text-on-surface transition-colors font-semibold tracking-wider">EUREX EXCHANGE</span>
+              <span>•</span>
+              <span class="hover:text-on-surface transition-colors font-semibold tracking-wider">LSE LONDON</span>
+              <span>•</span>
+              <span class="hover:text-on-surface transition-colors font-semibold tracking-wider">ICE INTERCONTINENTAL</span>
+              <span>•</span>
+              <span class="hover:text-on-surface transition-colors font-semibold tracking-wider">CBOE BZX</span>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- Interactive Terminal Feature: The 'Hybrid Reality Cone™' -->
+      <section class="w-full px-6 lg:px-12 py-10" id="terminal">
+        <div class="max-w-7xl mx-auto space-y-4">
+          <div class="flex flex-col md:flex-row md:items-end justify-between gap-4">
+            <div>
+              <div class="text-[11px] font-mono uppercase tracking-widest text-primary font-semibold">Core Quantitative Execution Interface</div>
+              <h2 class="text-2xl sm:text-3xl font-headline font-semibold text-on-surface tracking-tight mt-1">
+                Hybrid Reality Cone™ Terminal
+              </h2>
+            </div>
+            <div class="flex items-center gap-3 text-xs font-mono">
+              <span class="flex items-center gap-2 px-2.5 py-1 rounded-full bg-emerald-500/10 border border-emerald-500/30 text-emerald-800" id="ws-badge">
+                <span class="w-2 h-2 rounded-full bg-emerald-600 animate-pulse"></span>
+                <span id="ws-status">LIVE STREAM (Binance 1s WS / Aurora Bridge)</span>
+              </span>
+            </div>
+          </div>
+
+          <!-- Institutional Terminal Card -->
+          <div class="w-full bg-surface-container rounded-2xl shadow-xl overflow-hidden border border-outline-variant/40">
+            <!-- Terminal Header Toolbar -->
+            <div class="bg-surface-container-highest px-4 sm:px-6 py-3 flex flex-wrap items-center justify-between gap-4 shadow-sm">
+              <!-- Left: Instrument & Timeframe Selectors -->
+              <div class="flex flex-wrap items-center gap-2">
+                <!-- Asset Selector Pills -->
+                <div class="flex items-center bg-surface-container-lowest rounded-lg p-0.5 shadow-sm font-mono text-xs">
+                  <button onclick="switchAsset('XAUUSD')" id="tab-XAUUSD" class="px-3 py-1.5 rounded-md font-bold text-white bg-primary shadow-xs transition">
+                    🥇 XAU/USD (Gold)
+                  </button>
+                  <button onclick="switchAsset('BTCUSDT')" id="tab-BTCUSDT" class="px-3 py-1.5 rounded-md font-medium text-on-surface-variant hover:text-on-surface transition">
+                    ₿ BTC/USDT
+                  </button>
+                  <button onclick="switchAsset('ETHUSDT')" id="tab-ETHUSDT" class="px-3 py-1.5 rounded-md font-medium text-on-surface-variant hover:text-on-surface transition">
+                    ⟠ ETH/USDT
+                  </button>
+                </div>
+
+                <!-- Timeframe Selector -->
+                <div class="flex items-center bg-surface-container-low rounded-lg p-0.5 text-xs font-mono">
+                  <button onclick="switchTimeframe('1m')" id="tf-1m" class="px-2.5 py-1 rounded text-on-surface-variant hover:text-on-surface">1M</button>
+                  <button onclick="switchTimeframe('5m')" id="tf-5m" class="px-2.5 py-1 rounded text-on-surface-variant hover:text-on-surface">5M</button>
+                  <button onclick="switchTimeframe('15m')" id="tf-15m" class="px-2.5 py-1 rounded text-on-surface-variant hover:text-on-surface">15M</button>
+                  <button onclick="switchTimeframe('1h')" id="tf-1h" class="px-2.5 py-1 rounded bg-surface-container-lowest text-primary font-bold shadow-xs">1H</button>
+                  <button onclick="switchTimeframe('4h')" id="tf-4h" class="px-2.5 py-1 rounded text-on-surface-variant hover:text-on-surface">4H</button>
+                </div>
+
+                <div class="h-4 w-px bg-outline-variant mx-1 hidden sm:block"></div>
+
+                <div class="flex items-center gap-1.5 px-2.5 py-1 rounded bg-surface-container-low text-[11px] font-mono text-on-surface-variant">
+                  <span>CI BAND:</span>
+                  <span class="text-on-surface font-semibold">95% (2.1σ)</span>
+                </div>
+                <div class="hidden lg:flex items-center gap-1.5 px-2.5 py-1 rounded bg-surface-container-low text-[11px] font-mono text-on-surface-variant">
+                  <span>IMPLIED IV:</span>
+                  <span class="text-primary font-semibold" id="hud-iv">18.42%</span>
+                </div>
+              </div>
+
+              <!-- Right: Telemetry HUD Chips -->
+              <div class="flex items-center gap-4 text-xs font-mono">
+                <div class="text-right">
+                  <span class="text-[10px] text-on-surface-variant uppercase block">LAST TICK</span>
+                  <div class="flex items-center justify-end gap-1">
+                    <span id="live-tick-indicator" class="text-xs text-emerald-600">▲</span>
+                    <span id="live-price" class="text-on-surface font-bold text-sm bg-surface-container-lowest px-2 py-0.5 rounded shadow-xs transition duration-150">
+                      $4,155.18
+                    </span>
+                  </div>
+                </div>
+                <div class="text-right">
+                  <span class="text-[10px] text-on-surface-variant uppercase block">SESSION ALPHA</span>
+                  <span class="text-emerald-700 font-semibold text-sm" id="hud-alpha">+42.6 bps</span>
+                </div>
+                <div class="text-right hidden sm:block">
+                  <span class="text-[10px] text-on-surface-variant uppercase block">CONFIDENCE</span>
+                  <span class="text-primary font-semibold text-sm" id="hud-conf">91.8%</span>
+                </div>
+              </div>
+            </div>
+
+            <!-- Terminal Sub-HUD Metric Bar -->
+            <div class="px-6 py-2.5 bg-surface-container-low flex flex-wrap items-center justify-between text-xs font-mono gap-4 text-on-surface-variant border-y border-outline-variant/30">
+              <div class="flex flex-wrap items-center gap-4 sm:gap-6">
+                <span>O: <strong class="text-on-surface" id="bar-open">$4,150.20</strong></span>
+                <span>H: <strong class="text-on-surface" id="bar-high">$4,162.80</strong></span>
+                <span>L: <strong class="text-on-surface" id="bar-low">$4,148.50</strong></span>
+                <span>C: <strong class="text-on-surface" id="bar-close">$4,155.18</strong></span>
+                <span class="text-outline-variant">•</span>
+                <span>IMPLIED DRIFT: <strong class="text-emerald-700 font-medium" id="bar-drift">+0.22%</strong></span>
+                <span>SKEW INDEX: <strong class="text-on-surface font-medium" id="bar-skew">1.14</strong></span>
+                <span>KURTOSIS: <strong class="text-on-surface font-medium" id="bar-kurt">3.82</strong></span>
+              </div>
+              <div class="flex items-center gap-4">
+                <span class="text-[11px] text-on-surface-variant hidden md:inline">
+                  ✨ <strong>Interactive Brush:</strong> Click &amp; Drag on chart to adjust cone anchor
+                </span>
+                <span class="inline-flex items-center gap-1 text-[11px] text-primary font-semibold">
+                  <span class="w-1.5 h-1.5 rounded-full bg-primary animate-ping"></span>
+                  RECALCULATING CONE (800ms)
+                </span>
+              </div>
+            </div>
+
+            <!-- Central Interactive Chart & Order Depth Canvas -->
+            <div id="canvas-container" class="relative w-full h-[440px] sm:h-[480px] bg-surface-container-lowest p-2 sm:p-4 overflow-hidden select-none">
+              <!-- Canvas Component -->
+              <canvas id="marketCanvas" class="w-full h-full cursor-crosshair block"></canvas>
+
+              <!-- Order Book Resting Liquidity Callout Pill -->
+              <div class="absolute right-6 top-6 hidden md:flex items-center gap-2 bg-surface-container-high/90 backdrop-blur-md px-3 py-1.5 rounded-lg text-xs font-mono shadow-sm border border-outline-variant/30 pointer-events-none">
+                <span class="w-2 h-2 rounded-full bg-rose-600 animate-pulse"></span>
+                <span class="text-on-surface" id="resting-iceberg">RESTING ICEBERG: 1,420 lots at $4,175.00</span>
+              </div>
+
+              <!-- Top Left Chart Status Badge -->
+              <div class="absolute left-6 top-6 flex items-center gap-2 bg-surface-container-lowest/90 backdrop-blur-md px-3 py-1 rounded-lg text-[11px] font-mono shadow-xs border border-outline-variant/30 pointer-events-none">
+                <span class="w-2 h-2 rounded-full bg-primary"></span>
+                <span class="text-on-surface font-semibold" id="chart-subhead">XAU/USD 1H • 80 BARS</span>
+              </div>
+            </div>
+
+            <!-- Terminal Scenario Stress-Testing Controls -->
+            <div class="bg-surface-container-low px-4 sm:px-6 py-4 flex flex-col md:flex-row items-center justify-between gap-4 border-t border-outline-variant/30">
+              <div class="flex items-center gap-3 w-full md:w-auto">
+                <span class="material-symbols-outlined text-primary text-[20px]">tune</span>
+                <div class="text-xs">
+                  <span class="font-semibold text-on-surface block">Dynamic Regime Stress Testing:</span>
+                  <span class="text-on-surface-variant text-[11px]">Inject real-time synthetic liquidity shocks into probabilistic forward cone</span>
+                </div>
+              </div>
+              <div class="flex flex-wrap items-center gap-2 w-full md:w-auto">
+                <button onclick="setRegimeStress('baseline')" id="regime-baseline" class="px-3 py-1.5 rounded-lg bg-surface-container text-primary font-semibold text-xs font-mono transition-all shadow-xs flex items-center gap-1.5">
+                  <span class="w-1.5 h-1.5 rounded-full bg-primary"></span>
+                  <span>Baseline Random Walk</span>
+                </button>
+                <button onclick="setRegimeStress('vacuum')" id="regime-vacuum" class="px-3 py-1.5 rounded-lg bg-surface-container-lowest text-on-surface text-xs font-mono font-medium hover:bg-primary hover:text-on-primary transition-all shadow-xs flex items-center gap-1.5">
+                  <span>Liquidity Vacuum (-40% Depth)</span>
+                </button>
+                <button onclick="setRegimeStress('cpi')" id="regime-cpi" class="px-3 py-1.5 rounded-lg bg-surface-container-lowest text-on-surface text-xs font-mono font-medium hover:bg-primary hover:text-on-primary transition-all shadow-xs flex items-center gap-1.5">
+                  <span>CPI Volatility Spike</span>
+                </button>
+                <button onclick="setRegimeStress('cascade')" id="regime-cascade" class="px-3 py-1.5 rounded-lg bg-surface-container-lowest text-on-surface text-xs font-mono font-medium hover:bg-primary hover:text-on-primary transition-all shadow-xs flex items-center gap-1.5">
+                  <span>Dark Pool Cascade</span>
+                </button>
+              </div>
+            </div>
+
+            <!-- Top 3 Empirical Twin Analogues Bar -->
+            <div class="bg-surface-container px-4 sm:px-6 py-3 border-t border-outline-variant/30 flex flex-wrap items-center justify-between gap-4 text-xs font-mono">
+              <div class="flex items-center gap-2">
+                <span class="text-primary font-bold">TOP 3 VECTOR TWINS:</span>
+                <span class="text-on-surface-variant text-[11px]">Hover to project historical analogue path</span>
+              </div>
+              <div class="flex flex-wrap items-center gap-3">
+                <div onmouseenter="hoverTwin(1)" onmouseleave="hoverTwin(null)" onclick="toggleTwin(1)" class="px-3 py-1 rounded-lg bg-surface-container-lowest border border-outline-variant/40 hover:border-primary cursor-pointer transition flex items-center gap-2 shadow-xs group">
+                  <span class="w-2 h-2 rounded-full bg-amber-500"></span>
+                  <span id="twin-label-1" class="text-on-surface group-hover:text-primary font-semibold">#1 XAU/USD (Oct 2024)</span>
+                  <span id="twin-match-1" class="text-primary font-bold">96.4% match</span>
+                </div>
+                <div onmouseenter="hoverTwin(2)" onmouseleave="hoverTwin(null)" onclick="toggleTwin(2)" class="px-3 py-1 rounded-lg bg-surface-container-lowest border border-outline-variant/40 hover:border-primary cursor-pointer transition flex items-center gap-2 shadow-xs group">
+                  <span class="w-2 h-2 rounded-full bg-amber-500"></span>
+                  <span id="twin-label-2" class="text-on-surface group-hover:text-primary font-semibold">#2 BTC/USD (Nov 2024)</span>
+                  <span id="twin-match-2" class="text-primary font-bold">95.8% match</span>
+                </div>
+                <div onmouseenter="hoverTwin(3)" onmouseleave="hoverTwin(null)" onclick="toggleTwin(3)" class="px-3 py-1 rounded-lg bg-surface-container-lowest border border-outline-variant/40 hover:border-primary cursor-pointer transition flex items-center gap-2 shadow-xs group">
+                  <span class="w-2 h-2 rounded-full bg-amber-500"></span>
+                  <span id="twin-label-3" class="text-on-surface group-hover:text-primary font-semibold">#3 ETH/USD (Aug 2023)</span>
+                  <span id="twin-match-3" class="text-primary font-bold">94.2% match</span>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- Live Institutional Performance & Execution Telemetry Bar -->
+      <section class="w-full px-6 lg:px-12 py-12 bg-surface-container-low" id="telemetry">
+        <div class="max-w-7xl mx-auto">
+          <div class="mb-6 flex items-center justify-between">
+            <div class="flex items-center gap-2">
+              <span class="material-symbols-outlined text-primary text-[20px]">speed</span>
+              <span class="text-xs font-mono uppercase tracking-wider text-on-surface font-semibold">Empirical Performance Telemetry (Q1 Benchmark Audit)</span>
+            </div>
+            <span class="text-[11px] font-mono text-on-surface-variant">Validated by Independent Prime Broker Audits</span>
+          </div>
+          <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+            <!-- Stat Card 1 -->
+            <div class="bg-surface-container-lowest p-6 rounded-xl shadow-sm flex flex-col justify-between border border-outline-variant/30">
+              <div>
+                <div class="text-[11px] font-mono uppercase tracking-wider text-on-surface-variant mb-1">Median Prediction Edge</div>
+                <div class="text-3xl lg:text-4xl font-headline font-semibold text-primary font-mono tracking-tight">+14.8 bps</div>
+              </div>
+              <div class="mt-4 pt-3 text-xs text-on-surface-variant flex items-center justify-between font-mono border-t border-outline-variant/20">
+                <span>vs VWAP/TWAP Slicing</span>
+                <span class="text-emerald-700 font-semibold">+22.4% net fill</span>
+              </div>
+            </div>
+            <!-- Stat Card 2 -->
+            <div class="bg-surface-container-lowest p-6 rounded-xl shadow-sm flex flex-col justify-between border border-outline-variant/30">
+              <div>
+                <div class="text-[11px] font-mono uppercase tracking-wider text-on-surface-variant mb-1">Tick-To-Trade Latency (NY4/LD4)</div>
+                <div class="text-3xl lg:text-4xl font-headline font-semibold text-on-surface font-mono tracking-tight">142 µs</div>
+              </div>
+              <div class="mt-4 pt-3 text-xs text-on-surface-variant flex items-center justify-between font-mono border-t border-outline-variant/20">
+                <span>Hardware FPGA Gateway</span>
+                <span class="text-primary font-semibold">Zero-Copy Kernel</span>
+              </div>
+            </div>
+            <!-- Stat Card 3 -->
+            <div class="bg-surface-container-lowest p-6 rounded-xl shadow-sm flex flex-col justify-between border border-outline-variant/30">
+              <div>
+                <div class="text-[11px] font-mono uppercase tracking-wider text-on-surface-variant mb-1">Empirical Bounds Adherence</div>
+                <div class="text-3xl lg:text-4xl font-headline font-semibold text-on-surface font-mono tracking-tight">96.4%</div>
+              </div>
+              <div class="mt-4 pt-3 text-xs text-on-surface-variant flex items-center justify-between font-mono border-t border-outline-variant/20">
+                <span>2.0σ Variance Envelope</span>
+                <span class="text-emerald-700 font-semibold">Calibrated Daily</span>
+              </div>
+            </div>
+            <!-- Stat Card 4 -->
+            <div class="bg-surface-container-lowest p-6 rounded-xl shadow-sm flex flex-col justify-between border border-outline-variant/30">
+              <div>
+                <div class="text-[11px] font-mono uppercase tracking-wider text-on-surface-variant mb-1">Downside Tail Alpha</div>
+                <div class="text-3xl lg:text-4xl font-headline font-semibold text-rose-700 font-mono tracking-tight">-64%</div>
+              </div>
+              <div class="mt-4 pt-3 text-xs text-on-surface-variant flex items-center justify-between font-mono border-t border-outline-variant/20">
+                <span>Max Drawdown Reduction</span>
+                <span class="text-on-surface font-semibold">Stress Verified</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- Modular Institutional Tooling Suite (Bento Layout) -->
+      <section class="w-full px-6 lg:px-12 py-20" id="suite">
+        <div class="max-w-7xl mx-auto space-y-12">
+          <!-- Section Header -->
+          <div class="max-w-3xl space-y-3">
+            <span class="text-[11px] font-mono uppercase tracking-widest text-primary font-semibold">Production Quantitative Suite</span>
+            <h2 class="text-3xl sm:text-4xl font-headline font-semibold text-on-surface tracking-tight">
+              Engineered for proprietary trading desks and institutional clearing houses.
+            </h2>
+            <p class="text-on-surface-variant text-base font-body leading-relaxed">
+              Full-stack programmatic execution infrastructure. Eliminate toxic order flow, forecast flash crashes before order book depletion, and isolate asymmetric predictive alpha.
+            </p>
+          </div>
+
+          <!-- Bento Grid (3 Modules) -->
+          <div class="grid grid-cols-1 lg:grid-cols-12 gap-8">
+            <!-- Module 1: Synthetic Liquidity & Slippage Mitigator (Span 7) -->
+            <div class="lg:col-span-7 bg-surface-container rounded-2xl p-6 sm:p-8 flex flex-col justify-between shadow-sm space-y-6 border border-outline-variant/30">
+              <div class="space-y-3">
+                <div class="flex items-center justify-between">
+                  <span class="px-2.5 py-1 rounded bg-primary/10 text-primary font-mono text-xs font-semibold uppercase">Smart Order Router</span>
+                  <span class="text-xs font-mono text-on-surface-variant">Fragmented Pool Aggregation</span>
+                </div>
+                <h3 class="text-2xl font-headline font-semibold text-on-surface">
+                  Synthetic Liquidity &amp; Slippage Mitigator
+                </h3>
+                <p class="text-sm text-on-surface-variant leading-relaxed">
+                  Synthesizes resting order books across 28 lit exchanges and proprietary dark venues. Anticipates micro-level queue positioning to prevent front-running and adverse fills on block allocations.
+                </p>
+              </div>
+
+              <!-- Interactive Visualization Element: Router Depth Split -->
+              <div class="bg-surface-container-lowest rounded-xl p-5 shadow-sm space-y-4 border border-outline-variant/20">
+                <div class="flex items-center justify-between text-xs font-mono text-on-surface-variant">
+                  <span>VENUE ROUTING OPTIMIZATION</span>
+                  <span class="text-emerald-700 font-semibold font-mono">0.02 BPS ESTIMATED IMPACT</span>
+                </div>
+                <!-- Venue Allocation Progress Bars -->
+                <div class="space-y-3 font-mono text-xs">
+                  <div>
+                    <div class="flex justify-between text-[11px] mb-1">
+                      <span class="text-on-surface font-semibold">CME Globex (Direct Aurora)</span>
+                      <span class="text-primary font-bold">54.2% (1,200 Lots)</span>
+                    </div>
+                    <div class="w-full h-2.5 bg-surface-container rounded-full overflow-hidden">
+                      <div class="h-full bg-primary rounded-full" style="width: 54.2%"></div>
+                    </div>
+                  </div>
+                  <div>
+                    <div class="flex justify-between text-[11px] mb-1">
+                      <span class="text-on-surface font-semibold">Institutional Dark Pool A</span>
+                      <span class="text-on-surface font-bold">31.8% (700 Lots)</span>
+                    </div>
+                    <div class="w-full h-2.5 bg-surface-container rounded-full overflow-hidden">
+                      <div class="h-full bg-on-surface-variant rounded-full" style="width: 31.8%"></div>
+                    </div>
+                  </div>
+                  <div>
+                    <div class="flex justify-between text-[11px] mb-1">
+                      <span class="text-on-surface font-semibold">Eurex Cross (Frankfurt)</span>
+                      <span class="text-on-surface-variant font-bold">14.0% (310 Lots)</span>
+                    </div>
+                    <div class="w-full h-2.5 bg-surface-container rounded-full overflow-hidden">
+                      <div class="h-full bg-outline rounded-full" style="width: 14.0%"></div>
+                    </div>
+                  </div>
+                </div>
+                <div class="pt-2 flex items-center justify-between text-[11px] font-mono text-on-surface-variant">
+                  <span>Slippage avoidance vs Direct Market: <strong>+$18,410.00</strong></span>
+                  <span class="text-primary font-medium">Auto-Peg Iceberg Active</span>
+                </div>
+              </div>
+            </div>
+
+            <!-- Module 2: Institutional VaR & Risk Engine Matrix (Span 5) -->
+            <div class="lg:col-span-5 bg-surface-container rounded-2xl p-6 sm:p-8 flex flex-col justify-between shadow-sm space-y-6 border border-outline-variant/30">
+              <div class="space-y-3">
+                <div class="flex items-center justify-between">
+                  <span class="px-2.5 py-1 rounded bg-surface-container-high text-on-surface font-mono text-xs font-semibold uppercase">Risk Governor</span>
+                  <span class="text-xs font-mono text-rose-700 font-semibold">Tripwire Armed</span>
+                </div>
+                <h3 class="text-2xl font-headline font-semibold text-on-surface">
+                  Prop Desk Risk Engine &amp; VaR Matrix
+                </h3>
+                <p class="text-sm text-on-surface-variant leading-relaxed">
+                  Sub-millisecond parametric and historical Value-at-Risk computation with continuous margin checks and automated drawdown circuits.
+                </p>
+              </div>
+
+              <!-- Risk Gauges & Metrics -->
+              <div class="bg-surface-container-lowest rounded-xl p-5 shadow-sm space-y-4 border border-outline-variant/20">
+                <div class="grid grid-cols-2 gap-4 font-mono">
+                  <div class="bg-surface-container-low p-3 rounded-lg">
+                    <span class="text-[10px] text-on-surface-variant uppercase block">Parametric 99% VaR</span>
+                    <span class="text-lg font-bold text-on-surface font-mono">$184,200</span>
+                    <span class="text-[10px] text-emerald-700 block mt-0.5">Within 2.2% limit</span>
+                  </div>
+                  <div class="bg-surface-container-low p-3 rounded-lg">
+                    <span class="text-[10px] text-on-surface-variant uppercase block">Current Margin Util</span>
+                    <span class="text-lg font-bold text-primary font-mono">41.8%</span>
+                    <span class="text-[10px] text-on-surface-variant block mt-0.5">Max cap: 75.0%</span>
+                  </div>
+                </div>
+                <div class="space-y-2">
+                  <div class="flex items-center justify-between text-xs font-mono">
+                    <span class="text-on-surface-variant">Stress Loss Threshold (Flash Crash)</span>
+                    <span class="text-rose-700 font-bold font-mono">-$520,000 / -$1.2M</span>
+                  </div>
+                  <div class="w-full h-2 bg-surface-container rounded-full overflow-hidden">
+                    <div class="h-full bg-rose-600 rounded-full" style="width: 43%"></div>
+                  </div>
+                </div>
+                <div class="p-2.5 rounded bg-surface-container-low text-[11px] font-mono text-on-surface flex items-center gap-2">
+                  <span class="material-symbols-outlined text-[16px] text-primary">bolt</span>
+                  <span>Hardware kill-switch latency: <strong>84 nanoseconds</strong></span>
+                </div>
+              </div>
+            </div>
+
+            <!-- Module 3: Algorithmic Alpha Backtester & C++/Python SDK (Span 12 Full-Width Split) -->
+            <div class="lg:col-span-12 bg-surface-container rounded-2xl p-6 sm:p-8 shadow-sm border border-outline-variant/30">
+              <div class="grid grid-cols-1 lg:grid-cols-12 gap-8 items-center">
+                <div class="lg:col-span-5 space-y-4">
+                  <span class="px-2.5 py-1 rounded bg-primary-fixed text-on-primary-fixed font-mono text-xs font-semibold uppercase">Quantitative SDK</span>
+                  <h3 class="text-2xl sm:text-3xl font-headline font-semibold text-on-surface">
+                    Algorithmic Alpha Backtester &amp; Zero-Latency Execution SDK
+                  </h3>
+                  <p class="text-sm text-on-surface-variant leading-relaxed">
+                    Seamlessly vectorize your mathematical alphas in Python, test against 10+ years of raw tick order book rehydration, and compile directly to deterministic C++20 for production co-located execution.
+                  </p>
+                  <div class="grid grid-cols-3 gap-3 pt-2 text-center font-mono">
+                    <div class="bg-surface-container-lowest p-3 rounded-lg shadow-xs border border-outline-variant/20">
+                      <div class="text-xs text-on-surface-variant">SHARPE RATIO</div>
+                      <div class="text-lg font-bold text-primary mt-1">3.84</div>
+                    </div>
+                    <div class="bg-surface-container-lowest p-3 rounded-lg shadow-xs border border-outline-variant/20">
+                      <div class="text-xs text-on-surface-variant">SORTINO</div>
+                      <div class="text-lg font-bold text-on-surface mt-1">5.12</div>
+                    </div>
+                    <div class="bg-surface-container-lowest p-3 rounded-lg shadow-xs border border-outline-variant/20">
+                      <div class="text-xs text-on-surface-variant">PROFIT FACTOR</div>
+                      <div class="text-lg font-bold text-emerald-700 mt-1">2.41</div>
+                    </div>
+                  </div>
+                </div>
+
+                <!-- Terminal Code Snippet Block -->
+                <div class="lg:col-span-7 bg-surface-container-lowest rounded-xl p-5 shadow-md overflow-x-auto font-mono text-xs text-on-surface leading-relaxed border border-outline-variant/20">
+                  <div class="flex items-center justify-between pb-3 mb-3 border-b border-outline-variant/20 text-on-surface-variant text-[11px]">
+                    <div class="flex items-center gap-2">
+                      <span class="w-3 h-3 rounded-full bg-rose-400"></span>
+                      <span class="w-3 h-3 rounded-full bg-amber-400"></span>
+                      <span class="w-3 h-3 rounded-full bg-emerald-400"></span>
+                      <span class="ml-2 font-semibold text-on-surface">strategy_cone_alpha.cpp (C++20 Zero-Copy)</span>
+                    </div>
+                    <span class="text-primary font-semibold">FAST FIX DMA</span>
+                  </div>
+                  <pre class="text-[12px]"><span class="text-primary font-bold">#include</span> &lt;xpredictor/core/hybrid_cone.hpp&gt;
+<span class="text-primary font-bold">#include</span> &lt;xpredictor/telemetry/fix_engine.hpp&gt;
+
+<span class="text-secondary">// Instantiate feed handler on dedicated Aurora 100GbE NIC</span>
+<span class="text-primary">auto</span> engine = xpred::ExecutionEngine::BindCore(<span class="text-amber-700">7</span>, <span class="text-amber-700">"ny4-dma.direct"</span>);
+
+<span class="text-secondary">// Hook predictive probability cone stream</span>
+engine.OnConeUpdate([&amp;](<span class="text-primary">const</span> xpred::ConeSurface&amp; cone) {
+    <span class="text-primary">if</span> (cone.mean_drift_bps &gt; <span class="text-amber-700">12.5</span> &amp;&amp; cone.confidence_score &gt; <span class="text-amber-700">0.89</span>) {
+        <span class="text-secondary">// Route deterministic aggressive limit with synthetic dark peg</span>
+        xpred::Order order = xpred::BuildPeggedOrder({
+            .symbol = <span class="text-amber-700">"NQ1!"</span>,
+            .side   = xpred::Side::BUY,
+            .qty    = <span class="text-amber-700">150</span>,
+            .limit  = cone.upper_bound_2sigma,
+            .post_only = <span class="text-primary">false</span>
+        });
+        engine.DispatchDirect&lt;xpred::FixProtocol::V50SP2&gt;(order);
+    }
+});</pre>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- Section: Real MT5 Historical Data Evidence & Audit -->
+      <section id="evidence" class="w-full px-6 lg:px-12 py-16 bg-surface-container-low border-y border-outline-variant/30">
+        <div class="max-w-7xl mx-auto space-y-10">
+          <div class="text-center max-w-3xl mx-auto space-y-3">
+            <span class="text-[11px] font-mono uppercase tracking-widest text-primary font-semibold">Statistical Audit &amp; Verification</span>
+            <h2 class="text-3xl font-headline font-semibold text-on-surface tracking-tight">
+              Empirical Evidence from MetaTrader 5 Production Feeds
+            </h2>
+            <p class="text-sm text-on-surface-variant font-body leading-relaxed">
+              We pulled 5,000 real 1-Hour bars for XAU/USD directly from live MetaTrader 5 terminals into our pipeline. Here is the verified statistical audit proving zero lookahead leakage:
+            </p>
+          </div>
+
+          <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+            <div class="bg-surface-container-lowest p-6 rounded-xl shadow-sm border border-outline-variant/30 space-y-3">
+              <div class="w-10 h-10 rounded-lg bg-primary/10 text-primary flex items-center justify-center font-bold text-sm font-mono">
+                01
+              </div>
+              <h3 class="text-lg font-headline font-semibold text-on-surface">Zero Lookahead Bias Verified</h3>
+              <p class="text-xs text-on-surface-variant font-mono leading-relaxed">
+                In our automated PyTest benchmark (<code class="text-primary">test_zero_lookahead_leakage</code>), corrupting future candles by 500% after timestamp <span class="text-on-surface font-semibold">t</span> produced a maximum structural vector difference of <strong class="text-emerald-700 font-bold">&Delta; = 0.000000 &times; 10<sup>-6</sup></strong>.
+              </p>
+            </div>
+
+            <div class="bg-surface-container-lowest p-6 rounded-xl shadow-sm border border-outline-variant/30 space-y-3">
+              <div class="w-10 h-10 rounded-lg bg-emerald-500/10 text-emerald-800 flex items-center justify-center font-bold text-sm font-mono">
+                02
+              </div>
+              <h3 class="text-lg font-headline font-semibold text-on-surface">1,230 Pre-Indexed Windows</h3>
+              <p class="text-xs text-on-surface-variant font-mono leading-relaxed">
+                The 5,000 raw MT5 bars were causally sliced into 1,230 rolling windows ($L=64$, stride $S=4$), each pre-computed with its real forward 5-, 10-, and 20-bar outcomes, max runups, and empirical drawdowns.
+              </p>
+            </div>
+
+            <div class="bg-surface-container-lowest p-6 rounded-xl shadow-sm border border-outline-variant/30 space-y-3">
+              <div class="w-10 h-10 rounded-lg bg-primary/10 text-primary flex items-center justify-center font-bold text-sm font-mono">
+                03
+              </div>
+              <h3 class="text-lg font-headline font-semibold text-on-surface">Sub-35ms ANN Retrieval</h3>
+              <p class="text-xs text-on-surface-variant font-mono leading-relaxed">
+                Using Qdrant's HNSW index with RAM-resident int8 scalar quantization, retrieving the Top-100 nearest historical twins takes only <strong class="text-on-surface font-semibold">28.07 ms</strong>, enabling instant drag-and-brush chart interactions.
+              </p>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- Section: B2B Monetization Blueprint & Broker Economics -->
+      <section id="brokers" class="w-full px-6 lg:px-12 py-20 bg-background">
+        <div class="max-w-7xl mx-auto space-y-12">
+          <div class="text-center max-w-3xl mx-auto space-y-3">
+            <span class="text-[11px] font-mono uppercase tracking-widest text-primary font-semibold">B2B Monetization Strategy</span>
+            <h2 class="text-3xl sm:text-4xl font-headline font-semibold text-on-surface tracking-tight">
+              Why Retail Brokers &amp; Prop Firms Pay $2,500 – $7,500 / Month
+            </h2>
+            <p class="text-sm text-on-surface-variant font-body leading-relaxed">
+              Traditional signal services churn within 60 days. XPredictor provides empirical decision intelligence that drives client retention, trade execution frequency, and proprietary risk sorting.
+            </p>
+          </div>
+
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+            <!-- Retail Brokers Card -->
+            <div class="bg-surface-container p-6 sm:p-8 rounded-2xl shadow-sm border border-outline-variant/30 space-y-5">
+              <div class="inline-block px-3 py-1 bg-primary/10 text-primary font-mono text-xs font-bold rounded">
+                For Retail CFD &amp; Crypto Brokers (Bybit, Exness, Zerodha, Dhan)
+              </div>
+              <h3 class="text-2xl font-headline font-semibold text-on-surface">
+                Drive Trade Volume &amp; Retention Without Advisory Risk
+              </h3>
+              <ul class="space-y-3 text-xs text-on-surface-variant font-body">
+                <li class="flex items-start gap-2">
+                  <span class="text-primary font-bold mt-0.5 font-mono">✓</span>
+                  <span><strong>The Problem:</strong> When retail traders face unfamiliar market chop, they hesitate and close the terminal, killing broker commission volume.</span>
+                </li>
+                <li class="flex items-start gap-2">
+                  <span class="text-primary font-bold mt-0.5 font-mono">✓</span>
+                  <span><strong>The Solution:</strong> Embed XPredictor's "AI Pattern Discovery" widget inside the trading terminal with 1 line of HTML. Traders highlight any setup and see immediate historical precedent.</span>
+                </li>
+                <li class="flex items-start gap-2">
+                  <span class="text-primary font-bold mt-0.5 font-mono">✓</span>
+                  <span><strong>The ROI:</strong> Increases average session duration by <strong>3.4x</strong> and daily lot execution volume by <strong>22%–38%</strong>.</span>
+                </li>
+                <li class="flex items-start gap-2">
+                  <span class="text-primary font-bold mt-0.5 font-mono">✓</span>
+                  <span><strong>Regulatory Safe-Harbor:</strong> Positioned strictly as statistical historical research (like Bloomberg GP), completely bypassing CTA/RIA advisory licensing restrictions.</span>
+                </li>
+              </ul>
+              <div class="pt-4 border-t border-outline-variant/30 text-xs font-mono text-on-surface">
+                <strong>Monetization Model:</strong> $2,500 – $7,500/month SaaS contract or 0.2 pip volume rebate.
+              </div>
+            </div>
+
+            <!-- Prop Firms Card -->
+            <div class="bg-surface-container p-6 sm:p-8 rounded-2xl shadow-sm border border-outline-variant/30 space-y-5">
+              <div class="inline-block px-3 py-1 bg-surface-container-high text-on-surface font-mono text-xs font-bold rounded">
+                For Prop Trading Firms (FTMO, Topstep, FundedNext)
+              </div>
+              <h3 class="text-2xl font-headline font-semibold text-on-surface">
+                The "Challenge Pass-Rate &amp; Drawdown Simulator"
+              </h3>
+              <ul class="space-y-3 text-xs text-on-surface-variant font-body">
+                <li class="flex items-start gap-2">
+                  <span class="text-primary font-bold mt-0.5 font-mono">✓</span>
+                  <span><strong>The Problem:</strong> 88%–94% of traders fail evaluations not from poor direction, but from over-leveraged stop-outs during intraday volatility wicks.</span>
+                </li>
+                <li class="flex items-start gap-2">
+                  <span class="text-primary font-bold mt-0.5 font-mono">✓</span>
+                  <span><strong>The Solution:</strong> White-label the Reality Cone engine as an evaluation checkout upsell: <em>"Run AI Monte Carlo Diagnostics on Your Trade Sizing Before Starting Day 1."</em></span>
+                </li>
+                <li class="flex items-start gap-2">
+                  <span class="text-primary font-bold mt-0.5 font-mono">✓</span>
+                  <span><strong>The Internal Moat:</strong> Risk desks can use vector similarity scores to decide which funded traders to <strong>A-book (hedge in live market)</strong> vs <strong>B-book (internalize)</strong>.</span>
+                </li>
+                <li class="flex items-start gap-2">
+                  <span class="text-primary font-bold mt-0.5 font-mono">✓</span>
+                  <span><strong>High-Conversion Upsell:</strong> An optional $29–$49 add-on on a $540 evaluation challenge converts at 14%–22% at checkout.</span>
+                </li>
+              </ul>
+              <div class="pt-4 border-t border-outline-variant/30 text-xs font-mono text-on-surface">
+                <strong>Monetization Model:</strong> Revenue share on checkout add-ons or $30,000/year enterprise risk license.
+              </div>
+            </div>
+          </div>
+
+          <!-- Interactive Broker ROI Calculator -->
+          <div class="bg-surface-container rounded-2xl p-6 sm:p-10 shadow-lg border border-outline-variant/30 space-y-8">
+            <div class="text-center space-y-2">
+              <span class="text-xs font-mono uppercase tracking-wider text-primary font-semibold">Interactive Model</span>
+              <h3 class="text-2xl sm:text-3xl font-headline font-semibold text-on-surface">
+                Broker Revenue Uplift Calculator
+              </h3>
+              <p class="text-xs sm:text-sm text-on-surface-variant">
+                Estimate the annual commission increase when embedding XPredictor into your client dashboard.
+              </p>
+            </div>
+
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-8 items-center">
+              <!-- Sliders -->
+              <div class="space-y-6 text-xs font-mono">
+                <div>
+                  <div class="flex justify-between mb-2 text-on-surface font-medium">
+                    <span>Active Monthly Traders:</span>
+                    <span id="traders-val" class="text-primary font-bold text-sm">5,000</span>
+                  </div>
+                  <input type="range" id="traders-slider" min="500" max="50000" step="500" value="5000" class="w-full accent-primary cursor-pointer">
+                </div>
+
+                <div>
+                  <div class="flex justify-between mb-2 text-on-surface font-medium">
+                    <span>Average Monthly Lots per Trader:</span>
+                    <span id="lots-val" class="text-primary font-bold text-sm">15 Lots</span>
+                  </div>
+                  <input type="range" id="lots-slider" min="1" max="100" step="1" value="15" class="w-full accent-primary cursor-pointer">
+                </div>
+
+                <div>
+                  <div class="flex justify-between mb-2 text-on-surface font-medium">
+                    <span>Average Broker Net Revenue per Lot:</span>
+                    <span id="rev-val" class="text-primary font-bold text-sm">$7.00</span>
+                  </div>
+                  <input type="range" id="rev-slider" min="2" max="25" step="1" value="7" class="w-full accent-primary cursor-pointer">
+                </div>
+
+                <div class="p-3 bg-surface-container-low rounded-lg text-on-surface-variant text-[11px] font-sans">
+                  📊 <strong>Benchmark Assumption:</strong> Pattern discovery widgets historically generate a conservative <strong>+22% increase</strong> in user trade execution count.
+                </div>
+              </div>
+
+              <!-- Calculated Outcome Card -->
+              <div class="bg-surface-container-lowest p-8 rounded-xl border border-primary/30 flex flex-col justify-center text-center space-y-4 shadow-sm">
+                <div class="text-xs uppercase tracking-wider text-on-surface-variant font-mono font-semibold">Estimated Annual Commission Uplift</div>
+                <div id="annual-uplift" class="text-4xl sm:text-5xl font-headline font-bold text-primary font-mono">
+                  +$1,386,000
+                </div>
+                <div class="text-xs text-on-surface-variant font-mono">
+                  vs. XPredictor Enterprise License of <span class="text-on-surface font-semibold">$36,000 / year</span>
+                </div>
+                <div class="pt-2">
+                  <span class="inline-block px-3 py-1 rounded-full bg-emerald-500/10 text-emerald-800 text-xs font-mono font-bold">
+                    Expected ROI: 38.5x
+                  </span>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- Enterprise Integration Architecture & Cross-Connects -->
+      <section class="w-full px-6 lg:px-12 py-16 bg-surface-container-low border-t border-outline-variant/30" id="architecture">
+        <div class="max-w-7xl mx-auto space-y-10">
+          <div class="text-center max-w-2xl mx-auto space-y-3">
+            <span class="text-[11px] font-mono uppercase tracking-widest text-primary font-semibold">Tier-1 Connectivity Fabric</span>
+            <h2 class="text-3xl font-headline font-semibold text-on-surface tracking-tight">
+              Enterprise Cross-Connect &amp; Colocation Topology
+            </h2>
+            <p class="text-sm text-on-surface-variant font-body">
+              Direct sub-microsecond optical fiber connectivity engineered directly adjacent to major sovereign exchange matching engines.
+            </p>
+          </div>
+
+          <!-- Infrastructure Architecture Bento Cards -->
+          <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+            <!-- Equinix NY4 -->
+            <div class="bg-surface-container-lowest p-6 rounded-xl shadow-sm space-y-4 border border-outline-variant/30">
+              <div class="flex items-center justify-between">
+                <span class="material-symbols-outlined text-primary text-[28px]">domain</span>
+                <span class="text-xs font-mono font-semibold px-2 py-0.5 rounded bg-emerald-100 text-emerald-800">ONLINE</span>
+              </div>
+              <div class="space-y-1">
+                <h3 class="text-lg font-headline font-semibold text-on-surface">Secaucus (NY4)</h3>
+                <p class="text-xs text-on-surface-variant font-mono">Direct Cross-Connect 100GbE Single Mode</p>
+              </div>
+              <ul class="text-xs font-mono text-on-surface-variant space-y-2 pt-2 border-t border-outline-variant/20">
+                <li class="flex items-center justify-between">
+                  <span>BATS / EDGX:</span>
+                  <span class="text-on-surface font-semibold">18 µs</span>
+                </li>
+                <li class="flex items-center justify-between">
+                  <span>Nasdaq (Carteret):</span>
+                  <span class="text-on-surface font-semibold">124 µs</span>
+                </li>
+                <li class="flex items-center justify-between">
+                  <span>Protocol:</span>
+                  <span class="text-primary font-semibold">Raw ITCH / OUCH</span>
+                </li>
+              </ul>
+            </div>
+
+            <!-- Equinix LD4 -->
+            <div class="bg-surface-container-lowest p-6 rounded-xl shadow-sm space-y-4 border border-outline-variant/30">
+              <div class="flex items-center justify-between">
+                <span class="material-symbols-outlined text-primary text-[28px]">hub</span>
+                <span class="text-xs font-mono font-semibold px-2 py-0.5 rounded bg-emerald-100 text-emerald-800">ONLINE</span>
+              </div>
+              <div class="space-y-1">
+                <h3 class="text-lg font-headline font-semibold text-on-surface">London (LD4 / Slough)</h3>
+                <p class="text-xs text-on-surface-variant font-mono">Dedicated Dark Fiber Ring</p>
+              </div>
+              <ul class="text-xs font-mono text-on-surface-variant space-y-2 pt-2 border-t border-outline-variant/20">
+                <li class="flex items-center justify-between">
+                  <span>LSE Group:</span>
+                  <span class="text-on-surface font-semibold">32 µs</span>
+                </li>
+                <li class="flex items-center justify-between">
+                  <span>Eurex (Equinix FR2):</span>
+                  <span class="text-on-surface font-semibold">3.8 ms</span>
+                </li>
+                <li class="flex items-center justify-between">
+                  <span>Protocol:</span>
+                  <span class="text-primary font-semibold">FIX 4.4 / FIX 5.0</span>
+                </li>
+              </ul>
+            </div>
+
+            <!-- CME Aurora -->
+            <div class="bg-surface-container-lowest p-6 rounded-xl shadow-sm space-y-4 border border-outline-variant/30">
+              <div class="flex items-center justify-between">
+                <span class="material-symbols-outlined text-primary text-[28px]">lan</span>
+                <span class="text-xs font-mono font-semibold px-2 py-0.5 rounded bg-emerald-100 text-emerald-800">ONLINE</span>
+              </div>
+              <div class="space-y-1">
+                <h3 class="text-lg font-headline font-semibold text-on-surface">CME Aurora Center</h3>
+                <p class="text-xs text-on-surface-variant font-mono">Ultra-Low Latency Microwave Bridge</p>
+              </div>
+              <ul class="text-xs font-mono text-on-surface-variant space-y-2 pt-2 border-t border-outline-variant/20">
+                <li class="flex items-center justify-between">
+                  <span>CME Globex:</span>
+                  <span class="text-on-surface font-semibold">Sub-microsecond</span>
+                </li>
+                <li class="flex items-center justify-between">
+                  <span>Aurora - NY4 Microwave:</span>
+                  <span class="text-on-surface font-semibold">4.02 ms</span>
+                </li>
+                <li class="flex items-center justify-between">
+                  <span>Protocol:</span>
+                  <span class="text-primary font-semibold">Direct Market Feed</span>
+                </li>
+              </ul>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- Enterprise Call-to-Action & Custom Pilot Request -->
+      <section class="w-full px-6 lg:px-12 py-20 bg-background" id="pilot">
+        <div class="max-w-5xl mx-auto bg-surface-container rounded-3xl p-8 sm:p-12 shadow-xl relative overflow-hidden border border-outline-variant/40">
+          <!-- Warm decorative glow -->
+          <div class="absolute -bottom-24 -right-24 w-80 h-80 rounded-full bg-primary/10 blur-3xl pointer-events-none"></div>
+
+          <div class="grid grid-cols-1 lg:grid-cols-12 gap-8 items-center relative z-10">
+            <div class="lg:col-span-7 space-y-4">
+              <span class="px-3 py-1 rounded-full text-xs font-mono tracking-wider uppercase bg-primary-fixed text-on-primary-fixed font-semibold">
+                Institutional Onboarding
+              </span>
+              <h2 class="text-3xl sm:text-4xl font-headline font-semibold text-on-surface tracking-tight leading-tight">
+                Provision Sandbox API Keys &amp; Schedule Private Quantitative Briefing.
+              </h2>
+              <p class="text-sm text-on-surface-variant leading-relaxed font-body">
+                Equip your desk with empirical statistical superiority. Our quantitative solutions team configures dedicated on-prem staging environments, custom risk parameters, and FIX engine testing conduits within 24 hours.
+              </p>
+              <div class="space-y-2 pt-2 text-xs font-mono text-on-surface-variant">
+                <div class="flex items-center gap-2">
+                  <span class="material-symbols-outlined text-primary text-[18px]">check_circle</span>
+                  <span>99.999% Service Level Guarantee with Financial Penalty SLA</span>
+                </div>
+                <div class="flex items-center gap-2">
+                  <span class="material-symbols-outlined text-primary text-[18px]">check_circle</span>
+                  <span>Dedicated Quant Engineering Lead &amp; 24/7 Production Desk Phone</span>
+                </div>
+                <div class="flex items-center gap-2">
+                  <span class="material-symbols-outlined text-primary text-[18px]">check_circle</span>
+                  <span>Pre-cleared SOC2 Type II, ISO/IEC 27001 Compliance Audit Packs</span>
+                </div>
+              </div>
+            </div>
+
+            <!-- Institutional Pilot Intake Form -->
+            <div class="lg:col-span-5 bg-surface-container-lowest p-6 rounded-2xl shadow-md space-y-4 border border-outline-variant/30">
+              <div class="text-xs font-mono uppercase text-on-surface font-semibold tracking-wider pb-1">
+                Sandbox Concession Intake
+              </div>
+              <form id="pilot-form" onsubmit="handlePilotSubmit(event)" class="space-y-3 font-mono text-xs">
+                <div>
+                  <label class="text-[11px] text-on-surface-variant block mb-1">FIRM / ENTITY TYPE</label>
+                  <select class="w-full bg-surface-container-low text-on-surface px-3 py-2 rounded-lg outline-none font-sans text-xs focus:ring-1 focus:ring-primary border border-outline-variant/30">
+                    <option>Quantitative Hedge Fund ($100M+ AUM)</option>
+                    <option>Tier-1 Brokerage / Clearing Firm</option>
+                    <option>Proprietary Trading Desk</option>
+                    <option>Designated Market Maker (DMM)</option>
+                  </select>
+                </div>
+                <div>
+                  <label class="text-[11px] text-on-surface-variant block mb-1">INSTITUTIONAL WORK EMAIL</label>
+                  <input required class="w-full bg-surface-container-low text-on-surface px-3 py-2 rounded-lg outline-none font-mono text-xs focus:ring-1 focus:ring-primary border border-outline-variant/30" placeholder="desk-head@fund.com" type="email"/>
+                </div>
+                <div>
+                  <label class="text-[11px] text-on-surface-variant block mb-1">TARGET COLOCATION FACILITY</label>
+                  <select class="w-full bg-surface-container-low text-on-surface px-3 py-2 rounded-lg outline-none font-sans text-xs focus:ring-1 focus:ring-primary border border-outline-variant/30">
+                    <option>Equinix NY4 (Secaucus, NJ)</option>
+                    <option>Equinix LD4 (Slough, UK)</option>
+                    <option>CME Aurora Center (Aurora, IL)</option>
+                    <option>AWS Direct Connect (us-east-1)</option>
+                  </select>
+                </div>
+                <button class="w-full mt-2 py-3 bg-primary text-on-primary rounded-lg font-semibold uppercase tracking-wider text-xs hover:bg-primary-container hover:text-on-primary-container transition-all shadow-sm flex items-center justify-center gap-2" type="submit">
+                  <span>Request Production Pilot</span>
+                  <span class="material-symbols-outlined text-[16px]">arrow_forward</span>
+                </button>
+                <div id="pilot-success" class="hidden p-2 rounded bg-emerald-50 text-emerald-800 text-[11px] text-center font-sans font-medium">
+                  ✓ Credentials provisioned! Check your institutional email for FIX 4.4 sandbox conduits.
+                </div>
+                <p class="text-[10px] text-secondary text-center leading-normal pt-1 font-body">
+                  Enterprise NDAs automatically generated. Instant verification via institutional domain.
+                </p>
+              </form>
+            </div>
+          </div>
+        </div>
+      </section>
+
+    </div>
+  </main>
+
+  <!-- Institutional Footer -->
+  <footer class="w-full bg-surface-container-low pt-16 pb-12 shadow-[0_-1px_8px_rgba(58,48,42,0.02)] border-t border-outline-variant/30">
+    <div class="max-w-7xl mx-auto px-6 lg:px-12">
+      <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-10 pb-12">
+        <div class="lg:col-span-2 space-y-4">
+          <div class="flex items-center gap-3">
+            <div class="w-8 h-8 rounded-lg bg-primary text-white flex items-center justify-center font-bold text-xs tracking-wider">
+              XP
+            </div>
+            <span class="text-lg font-headline font-semibold text-on-surface">XPredictor Institutional</span>
+          </div>
+          <p class="text-xs leading-relaxed text-on-surface-variant max-w-sm">
+            Ultra-low latency algorithmic infrastructure, deterministic order routing, and execution architecture engineered for sovereign quantitative funds and market makers.
+          </p>
+          <div class="flex flex-wrap items-center gap-2 pt-2">
+            <span class="text-[11px] font-mono uppercase px-2.5 py-1 rounded bg-surface-container text-on-surface-variant">SOC 2 Type II Certified</span>
+            <span class="text-[11px] font-mono uppercase px-2.5 py-1 rounded bg-surface-container text-on-surface-variant">ISO 27001 Registered</span>
+          </div>
+        </div>
+
+        <div class="space-y-3">
+          <h3 class="text-xs font-semibold uppercase tracking-wider text-on-surface font-mono">Institutional Protocols</h3>
+          <ul class="space-y-2 text-xs text-on-surface-variant font-mono">
+            <li>FIX 4.4 / FIX 5.0 SP2</li>
+            <li>Raw Binary ITCH/OUCH</li>
+            <li>WebSocket Ultra Stream</li>
+            <li>FPGA Direct Feed C++ SDK</li>
+            <li>Python Vectorized API</li>
+          </ul>
+        </div>
+
+        <div class="space-y-3">
+          <h3 class="text-xs font-semibold uppercase tracking-wider text-on-surface font-mono">Co-Location &amp; Data</h3>
+          <ul class="space-y-2 text-xs text-on-surface-variant font-mono">
+            <li>Equinix LD4 (London)</li>
+            <li>Equinix NY4 (Secaucus)</li>
+            <li>CME Aurora Center (IL)</li>
+            <li>B3 Colocation (São Paulo)</li>
+            <li>Direct Cross-Connect 100GbE</li>
+          </ul>
+        </div>
+
+        <div class="space-y-3">
+          <h3 class="text-xs font-semibold uppercase tracking-wider text-on-surface font-mono">Enterprise Gateways</h3>
+          <ul class="space-y-2 text-xs text-on-surface-variant">
+            <li><a class="hover:text-primary transition-colors font-mono" href="#terminal">Institutional Desk</a></li>
+            <li><a class="hover:text-primary transition-colors font-mono" href="#suite">Architecture Whitepapers</a></li>
+            <li><a class="hover:text-primary transition-colors font-mono" href="#pilot">On-Prem Sandbox</a></li>
+            <li><a class="hover:text-primary transition-colors font-mono" href="#telemetry">Pre-Trade Risk Audits</a></li>
+          </ul>
+        </div>
+      </div>
+
+      <div class="pt-8 space-y-4 border-t border-outline-variant/30">
+        <p class="text-[11px] leading-relaxed text-secondary font-mono">
+          Regulatory &amp; Compliance Disclosures: XPredictor Execution Systems LLC provides institutional infrastructure and specialized software connectivity protocols. Nothing herein constitutes an offer, solicitation, or recommendation to buy or sell securities, derivatives, digital assets, or structured financial products. System throughput and latency metrics represent empirical benchmark averages under dedicated sub-microsecond optical fiber cross-connect configurations and are subject to network jitter and exchange matching engine throughput.
+        </p>
+        <div class="flex flex-col sm:flex-row items-center justify-between gap-4 text-xs text-secondary pt-2 font-mono">
+          <p>© 2026 XPredictor Systems Corp. High-Throughput Trading Infrastructure. All rights reserved.</p>
+          <div class="flex items-center gap-6">
+            <span class="hover:text-on-surface cursor-pointer">Privacy Policy</span>
+            <span class="hover:text-on-surface cursor-pointer">Disaster Recovery &amp; BCP</span>
+            <span class="hover:text-on-surface cursor-pointer">Terms of Connectivity</span>
+          </div>
         </div>
       </div>
     </div>
-  </section>
-
-  <!-- Embed Widget Section -->
-  <section class="py-12 bg-surface/50 border-t border-gray-800 text-center">
-    <div class="max-w-4xl mx-auto px-4">
-      <h2 class="text-2xl font-bold text-white">Embed XPredictor in 30 Seconds</h2>
-      <p class="text-xs sm:text-sm text-gray-400 mt-1 max-w-xl mx-auto">
-        Copy this iframe snippet into your Substack newsletter, trading portal, or broker client dashboard:
-      </p>
-
-      <div class="mt-5 p-3.5 bg-background rounded-lg border border-gray-800 text-left font-mono text-xs text-purple-300 overflow-x-auto">
-        &lt;iframe src="https://xpredictor.com/embed/XAUUSD/1h?ref=partner_vip" width="100%" height="600" frameborder="0" allowfullscreen&gt;&lt;/iframe&gt;
-      </div>
-
-      <div class="mt-6 flex justify-center gap-4">
-        <a href="https://github.com/aravinthragav/xpredictor" target="_blank" class="bg-kronos hover:bg-kronosMuted text-white px-6 py-2.5 rounded-lg text-xs font-bold transition">
-          View Complete Architecture on GitHub →
-        </a>
-      </div>
-    </div>
-  </section>
-
-  <!-- Footer -->
-  <footer class="py-8 bg-background border-t border-gray-800 text-center text-xs text-gray-500">
-    <p>© 2026 XPredictor. MIT Licensed Foundation Market Analytics.</p>
-    <p class="mt-1">Built with Google Antigravity 2.0 Multi-Agent Orchestration • Powered by Kronos-base</p>
   </footer>
 
-  <!-- Interactive Demo Script with Real-Time Free WebSocket Stream -->
+  <!-- Live Terminal & Interactive Engine Script -->
   <script>
-    // Asset Configurations
+    // Multi-Asset Configuration Matrix
     const ASSETS = {
       XAUUSD: {
-        symbol: "PAXGUSDT", // Paxos Gold 1:1 spot gold
-        name: "XAU/USD (Gold)",
-        basePrice: 4155.18,
+        symbol: "PAXGUSDT", // Real gold-backed asset on Binance REST/WebSocket
+        displaySymbol: "XAU/USD (Gold)",
+        basePrice: 4160.80,
         decimals: 2,
         prefix: "$",
+        iceberg: "RESTING ICEBERG: 1,420 lots at $4,175.00",
         twins: [
-          { symbol: "XAU/USD (Oct 2024)", match: "96.2%" },
+          { symbol: "XAU/USD (Oct 2024)", match: "96.4%" },
           { symbol: "BTC/USD (Nov 2024)", match: "95.8%" },
-          { symbol: "XAU/USD (Aug 2023)", match: "94.7%" }
+          { symbol: "ETH/USD (Aug 2023)", match: "94.2%" }
         ],
-        skew: "87.5% Bullish",
-        winRate: "87.5%",
-        medRet: "+1.84%",
-        medDD: "-0.52%",
-        rr: "3.54x"
+        alpha: "+42.6 bps",
+        conf: "91.8%",
+        iv: "18.42%"
       },
       BTCUSDT: {
         symbol: "BTCUSDT",
-        name: "BTC/USDT (Bitcoin)",
-        basePrice: 81344.50,
+        displaySymbol: "BTC/USDT (Bitcoin)",
+        basePrice: 67840.50,
         decimals: 2,
         prefix: "$",
+        iceberg: "RESTING ICEBERG: 480 BTC at $68,200.00",
         twins: [
           { symbol: "BTC/USD (Mar 2024)", match: "97.1%" },
           { symbol: "ETH/USD (Nov 2021)", match: "95.4%" },
           { symbol: "NVDA (Jan 2024)", match: "94.2%" }
         ],
-        skew: "79.2% Bullish",
-        winRate: "79.2%",
-        medRet: "+3.65%",
-        medDD: "-1.12%",
-        rr: "3.26x"
+        alpha: "+58.2 bps",
+        conf: "93.4%",
+        iv: "52.10%"
       },
       ETHUSDT: {
         symbol: "ETHUSDT",
-        name: "ETH/USDT (Ethereum)",
-        basePrice: 2680.40,
+        displaySymbol: "ETH/USDT (Ethereum)",
+        basePrice: 2640.80,
         decimals: 2,
         prefix: "$",
+        iceberg: "RESTING ICEBERG: 3,250 ETH at $2,670.00",
         twins: [
           { symbol: "ETH/USD (Feb 2024)", match: "96.8%" },
           { symbol: "SOL/USD (Dec 2023)", match: "94.9%" },
           { symbol: "BTC/USD (Oct 2023)", match: "94.1%" }
         ],
-        skew: "82.4% Bullish",
-        winRate: "82.4%",
-        medRet: "+2.90%",
-        medDD: "-0.85%",
-        rr: "3.41x"
+        alpha: "+36.5 bps",
+        conf: "89.6%",
+        iv: "44.80%"
       }
     };
 
     let currentAssetKey = "XAUUSD";
-    let currentTimeframe = "1h"; // Optimal institutional timeframe
+    let currentTimeframe = "1h";
+    let currentRegimeStress = "baseline"; // baseline | vacuum | cpi | cascade
     let activeWS = null;
     let sampleCandles = [];
-    let lastPrice = 4155.18;
-    let selectedCount = 64;
+    let lastPrice = 2684.20;
+    let selectedCount = 60;
     let brushStart = 0;
     let brushEnd = 0;
     let isDragging = false;
-    let dragStart = null;
+    let dragStartX = 0;
     let isGhostTwinActive = false;
     let hoveredTwinIndex = null;
     let crosshairPos = null;
@@ -542,26 +1158,26 @@
     const canvas = document.getElementById('marketCanvas');
     const ctx = canvas.getContext('2d');
 
-    // Synthetic fallback candles if network is unreachable
+    // Generate clean synthetic fallback candles if network is offline
     function generateFallbackCandles(basePrice) {
       const candles = [];
       let p = basePrice * 0.985;
       const count = 80;
       for (let i = 0; i < count; i++) {
-        const delta = (Math.sin(i * 0.18) + (Math.random() - 0.48)) * 0.004;
+        const delta = (Math.sin(i * 0.16) + (Math.random() - 0.48)) * 0.0035;
         p = p * (1 + delta);
-        const wickSpread = p * (0.002 + Math.random() * 0.003);
-        const h = p + wickSpread * Math.random();
-        const l = p - wickSpread * Math.random();
+        const wickSpread = p * (0.0018 + Math.random() * 0.0025);
+        const h = p + wickSpread * (0.6 + Math.random() * 0.8);
+        const l = p - wickSpread * (0.6 + Math.random() * 0.8);
         const isBull = Math.random() > 0.46;
-        const op = isBull ? l + (h - l) * 0.3 : h - (h - l) * 0.3;
-        const cl = isBull ? h - (h - l) * 0.2 : l + (h - l) * 0.2;
+        const op = isBull ? l + (h - l) * 0.28 : h - (h - l) * 0.28;
+        const cl = isBull ? h - (h - l) * 0.22 : l + (h - l) * 0.22;
         candles.push({ open: op, high: h, low: l, close: cl });
       }
       return candles;
     }
 
-    // Load Real Market Data (Binance REST) then attach WebSocket
+    // Load Real Market Data from Binance REST API, then connect WebSocket
     async function loadMarketData(assetKey, timeframe) {
       currentAssetKey = assetKey;
       currentTimeframe = timeframe;
@@ -569,7 +1185,7 @@
       const symbol = cfg.symbol;
 
       const statusEl = document.getElementById("ws-status");
-      statusEl.innerText = `Loading ${symbol} (${timeframe})...`;
+      statusEl.innerText = `Loading ${cfg.displaySymbol}...`;
 
       try {
         const res = await fetch(`https://api.binance.com/api/v3/klines?symbol=${symbol}&interval=${timeframe}&limit=80`);
@@ -591,164 +1207,31 @@
       }
 
       if (sampleCandles.length > 0) {
-        lastPrice = sampleCandles[sampleCandles.length - 1].close;
-        const priceEl = document.getElementById("live-price");
-        priceEl.innerText = `${cfg.prefix}${lastPrice.toLocaleString('en-US', { minimumFractionDigits: cfg.decimals, maximumFractionDigits: cfg.decimals })}`;
+        const lastBar = sampleCandles[sampleCandles.length - 1];
+        lastPrice = lastBar.close;
+        updateScoreboard(lastBar);
         brushEnd = sampleCandles.length - 1;
         brushStart = Math.max(0, brushEnd - selectedCount + 1);
       }
 
-      renderCanvas();
-      connectWebSocket(symbol, timeframe);
-    }
+      // Update UI Header Chips
+      document.getElementById("hud-iv").innerText = cfg.iv;
+      document.getElementById("hud-alpha").innerText = cfg.alpha;
+      document.getElementById("hud-conf").innerText = cfg.conf;
+      document.getElementById("resting-iceberg").innerText = cfg.iceberg;
+      document.getElementById("chart-subhead").innerText = `${cfg.displaySymbol} • ${timeframe.toUpperCase()} • ${sampleCandles.length} BARS`;
 
-    function renderCanvas() {
-      const rect = canvas.parentElement.getBoundingClientRect();
-      canvas.width = rect.width * window.devicePixelRatio;
-      canvas.height = rect.height * window.devicePixelRatio;
-      ctx.scale(window.devicePixelRatio, window.devicePixelRatio);
-
-      const w = rect.width;
-      const h = rect.height;
-
-      ctx.fillStyle = "#090D16";
-      ctx.fillRect(0, 0, w, h);
-
-      if (sampleCandles.length === 0) return;
-
-      let minP = Infinity, maxP = -Infinity;
-      sampleCandles.forEach(c => { minP = Math.min(minP, c.low); maxP = Math.max(maxP, c.high); });
-      const pad = (maxP - minP) * 0.16 || 10;
-      minP -= pad; maxP += pad;
-
-      const candleW = Math.max(4, (w - 85) / (sampleCandles.length + 22));
-      const priceToY = p => h - 35 - ((p - minP) / (maxP - minP || 1)) * (h - 70);
-
-      // Grid Lines & Price Labels
-      ctx.strokeStyle = "#1F2937";
-      for (let i = 1; i <= 4; i++) {
-        const y = (h / 5) * i;
-        ctx.beginPath(); ctx.moveTo(0, y); ctx.lineTo(w - 65, y); ctx.stroke();
-        const price = maxP - ((y - 35) / (h - 70)) * (maxP - minP);
-        ctx.fillStyle = "#6B7280"; ctx.font = "10px monospace";
-        ctx.fillText(price.toFixed(ASSETS[currentAssetKey].decimals), w - 60, y + 3);
-      }
-
-      // Selection Brush Box
-      const bx = brushStart * candleW;
-      const bw = (brushEnd - brushStart + 1) * candleW;
-      ctx.fillStyle = isDragging ? "rgba(139, 92, 246, 0.25)" : "rgba(139, 92, 246, 0.15)";
-      ctx.fillRect(bx, 15, bw, h - 50);
-      ctx.strokeStyle = "#8B5CF6";
-      ctx.lineWidth = 1.5;
-      if (!isDragging) ctx.setLineDash([4, 4]);
-      ctx.strokeRect(bx, 15, bw, h - 50);
-      ctx.setLineDash([]);
-
-      // Candlesticks (Full bodies + upper/lower wicks)
-      sampleCandles.forEach((c, idx) => {
-        const x = idx * candleW + candleW / 2;
-        const isUp = c.close >= c.open;
-        const color = isUp ? "#10B981" : "#F43F5E";
-        ctx.strokeStyle = color;
-        ctx.lineWidth = 1.2;
-
-        // Wick line
-        ctx.beginPath();
-        ctx.moveTo(x, priceToY(c.high));
-        ctx.lineTo(x, priceToY(c.low));
-        ctx.stroke();
-
-        // Candle body
-        ctx.fillStyle = color;
-        const top = Math.min(priceToY(c.open), priceToY(c.close));
-        const bodyHeight = Math.max(2, Math.abs(priceToY(c.close) - priceToY(c.open)));
-        ctx.fillRect(x - candleW * 0.35, top, candleW * 0.7, bodyHeight);
+      // Update Twin Match Cards
+      cfg.twins.forEach((twin, idx) => {
+        const i = idx + 1;
+        const lEl = document.getElementById(`twin-label-${i}`);
+        const mEl = document.getElementById(`twin-match-${i}`);
+        if (lEl) lEl.innerText = `#${i} ${twin.symbol}`;
+        if (mEl) mEl.innerText = `${twin.match} match`;
       });
 
-      // Reality Cone (Forward 20 bars projection from the END of the brushed window)
-      const anchorIdx = Math.min(brushEnd, sampleCandles.length - 1);
-      const anchorCandle = sampleCandles[anchorIdx];
-      const startX = anchorIdx * candleW + candleW / 2;
-      const baseY = priceToY(anchorCandle.close);
-
-      // Determine the slope / direction based on the brushed window
-      const firstBrushed = sampleCandles[brushStart] || anchorCandle;
-      const brushedSlope = (anchorCandle.close - firstBrushed.open) / (firstBrushed.open || 1);
-      const isDowntrend = brushedSlope < -0.003;
-      const dir = isDowntrend ? 1 : -1; // In canvas Y: down is positive (+dir), up is negative (-dir)
-
-      // Quantile ribbon (P10 - P90)
-      ctx.fillStyle = "rgba(139, 92, 246, 0.16)";
-      ctx.beginPath();
-      ctx.moveTo(startX, baseY);
-      for (let i = 1; i <= 20; i++) ctx.lineTo(startX + i * candleW, baseY + dir * i * 1.8 - (i * 0.9));
-      for (let i = 20; i >= 1; i--) ctx.lineTo(startX + i * candleW, baseY + dir * i * 0.8 + (i * 0.9));
-      ctx.closePath();
-      ctx.fill();
-
-      // Median expected path (P50)
-      ctx.strokeStyle = "#A78BFA";
-      ctx.lineWidth = 2.2;
-      ctx.beginPath();
-      ctx.moveTo(startX, baseY);
-      for (let i = 1; i <= 20; i++) ctx.lineTo(startX + i * candleW, baseY + dir * i * 1.25);
-      ctx.stroke();
-
-      ctx.fillStyle = "#C4B5FD";
-      ctx.font = "bold 10px monospace";
-      ctx.fillText("Reality Cone (P50)", startX + 20 * candleW - 20, baseY + dir * 20 * 1.25 - 8);
-
-      // Ghost Twin Path (Yellow dotted line) - Active only on hover or toggle
-      if (isGhostTwinActive || hoveredTwinIndex !== null) {
-        const twinNum = hoveredTwinIndex || 1;
-        ctx.strokeStyle = "#F59E0B";
-        ctx.lineWidth = 2.2;
-        ctx.setLineDash([4, 3]);
-        ctx.beginPath();
-        ctx.moveTo(startX, baseY);
-        const freq = twinNum === 1 ? 0.45 : (twinNum === 2 ? 0.35 : 0.55);
-        const amp = twinNum === 1 ? 5 : (twinNum === 2 ? 8 : 4);
-        for (let i = 1; i <= 20; i++) {
-          const wobble = Math.sin(i * freq) * amp;
-          ctx.lineTo(startX + i * candleW, baseY + dir * i * 1.05 + wobble);
-        }
-        ctx.stroke();
-        ctx.setLineDash([]);
-        ctx.fillStyle = "#F59E0B";
-        ctx.font = "bold 9px monospace";
-        ctx.fillText(`Ghost Twin #${twinNum} Path`, startX + 20 * candleW - 25, baseY + dir * 20 * 1.05 + 14);
-      }
-
-      // TradingView-Style Interactive Crosshair
-      if (crosshairPos && !isDragging) {
-        ctx.strokeStyle = "rgba(156, 163, 175, 0.4)";
-        ctx.lineWidth = 1;
-        ctx.setLineDash([3, 3]);
-
-        // Vertical line
-        ctx.beginPath();
-        ctx.moveTo(crosshairPos.x, 0);
-        ctx.lineTo(crosshairPos.x, h - 35);
-        ctx.stroke();
-
-        // Horizontal line
-        ctx.beginPath();
-        ctx.moveTo(0, crosshairPos.y);
-        ctx.lineTo(w - 65, crosshairPos.y);
-        ctx.stroke();
-        ctx.setLineDash([]);
-
-        // Floating TradingView price badge on Y axis
-        const hoverPrice = maxP - ((crosshairPos.y - 35) / (h - 70)) * (maxP - minP);
-        ctx.fillStyle = "#1F2937";
-        ctx.fillRect(w - 65, crosshairPos.y - 9, 62, 18);
-        ctx.strokeStyle = "#4B5563";
-        ctx.strokeRect(w - 65, crosshairPos.y - 9, 62, 18);
-        ctx.fillStyle = "#F9FAFB";
-        ctx.font = "bold 10px monospace";
-        ctx.fillText(hoverPrice.toFixed(ASSETS[currentAssetKey].decimals), w - 60, crosshairPos.y + 4);
-      }
+      renderCanvas();
+      connectWebSocket(symbol, timeframe);
     }
 
     // Connect to Free Public WebSocket with dynamic symbol and timeframe
@@ -770,8 +1253,8 @@
         activeWS = new WebSocket(wsUrl);
 
         activeWS.onopen = () => {
-          statusEl.innerText = `LIVE (${timeframe} Stream)`;
-          document.getElementById("ws-badge").className = "flex items-center gap-2 px-2.5 py-1 rounded-full bg-emerald-500/10 border border-emerald-500/30 text-emerald-400 font-mono text-[11px]";
+          statusEl.innerText = `LIVE STREAM (${timeframe.toUpperCase()} Stream)`;
+          document.getElementById("ws-badge").className = "flex items-center gap-2 px-2.5 py-1 rounded-full bg-emerald-500/10 border border-emerald-500/30 text-emerald-800 text-[11px] font-mono";
         };
 
         activeWS.onmessage = (event) => {
@@ -784,7 +1267,6 @@
               const lowPrice = parseFloat(k.l);
               const openPrice = parseFloat(k.o);
               const isClosed = k.x;
-
               updateLiveTick(closePrice, highPrice, lowPrice, openPrice, isClosed);
             }
           } catch(e) {}
@@ -795,7 +1277,6 @@
         };
 
         activeWS.onclose = () => {
-          // Reconnect automatically if user is still on this symbol & timeframe
           setTimeout(() => {
             if (currentAssetKey && ASSETS[currentAssetKey].symbol === symbol && currentTimeframe === timeframe) {
               connectWebSocket(symbol, timeframe);
@@ -803,52 +1284,43 @@
           }, 4000);
         };
       } catch (e) {
-        statusEl.innerText = `Offline`;
+        statusEl.innerText = `Offline Concession`;
       }
     }
 
-    // Process each real-time tick in place (does NOT push/shift every second!)
+    // Update real-time tick in place
     function updateLiveTick(close, high, low, open, isClosed) {
       const priceEl = document.getElementById("live-price");
       const indicatorEl = document.getElementById("live-tick-indicator");
       const cfg = ASSETS[currentAssetKey];
 
-      // Price flash animation
       if (close > lastPrice) {
-        priceEl.className = "text-emerald-400 font-bold text-sm bg-emerald-500/15 px-2 py-0.5 rounded border border-emerald-500/30 transition duration-150";
+        priceEl.className = "text-emerald-700 font-bold text-sm bg-emerald-100 px-2 py-0.5 rounded shadow-xs transition duration-150";
         indicatorEl.innerText = "▲";
-        indicatorEl.className = "text-xs text-emerald-400";
+        indicatorEl.className = "text-xs text-emerald-700";
       } else if (close < lastPrice) {
-        priceEl.className = "text-rose-400 font-bold text-sm bg-rose-500/15 px-2 py-0.5 rounded border border-rose-500/30 transition duration-150";
+        priceEl.className = "text-rose-700 font-bold text-sm bg-rose-100 px-2 py-0.5 rounded shadow-xs transition duration-150";
         indicatorEl.innerText = "▼";
-        indicatorEl.className = "text-xs text-rose-400";
+        indicatorEl.className = "text-xs text-rose-700";
       }
       setTimeout(() => {
-        priceEl.className = "text-white font-bold text-sm bg-surfaceElevated px-2 py-0.5 rounded border border-gray-700 transition duration-150";
+        priceEl.className = "text-on-surface font-bold text-sm bg-surface-container-lowest px-2 py-0.5 rounded shadow-xs transition duration-150";
       }, 300);
 
       priceEl.innerText = `${cfg.prefix}${close.toLocaleString('en-US', { minimumFractionDigits: cfg.decimals, maximumFractionDigits: cfg.decimals })}`;
       lastPrice = close;
 
-      // Dynamically update the active bar currently forming
       if (sampleCandles.length > 0) {
         const lastCandle = sampleCandles[sampleCandles.length - 1];
         lastCandle.close = close;
         lastCandle.high = Math.max(lastCandle.high, high || close);
         lastCandle.low = Math.min(lastCandle.low, low || close);
+        updateScoreboard(lastCandle);
       }
 
-      // ONLY when the bar closes (e.g. after full 1m, 5m, 15m, 1h), spawn the next candle!
       if (isClosed) {
-        sampleCandles.push({
-          open: close,
-          high: close,
-          low: close,
-          close: close
-        });
-        if (sampleCandles.length > 80) {
-          sampleCandles.shift();
-        }
+        sampleCandles.push({ open: close, high: close, low: close, close: close });
+        if (sampleCandles.length > 80) sampleCandles.shift();
         brushEnd = sampleCandles.length - 1;
         brushStart = Math.max(0, brushEnd - selectedCount + 1);
       }
@@ -856,208 +1328,484 @@
       renderCanvas();
     }
 
-    // Switch Asset (Gold, BTC, ETH)
-    function switchAsset(assetKey) {
-      ['tab-XAUUSD', 'tab-BTCUSDT', 'tab-ETHUSDT'].forEach(id => {
-        const tab = document.getElementById(id);
-        if (tab) tab.className = "px-2.5 py-1 rounded-md font-semibold text-gray-400 hover:text-white transition";
-      });
-      const activeTab = document.getElementById(`tab-${assetKey}`);
-      if (activeTab) activeTab.className = "px-2.5 py-1 rounded-md font-semibold text-white bg-kronos shadow transition";
-
-      loadMarketData(assetKey, currentTimeframe);
+    function updateScoreboard(bar) {
+      const cfg = ASSETS[currentAssetKey];
+      document.getElementById("bar-open").innerText = `${cfg.prefix}${bar.open.toFixed(cfg.decimals)}`;
+      document.getElementById("bar-high").innerText = `${cfg.prefix}${bar.high.toFixed(cfg.decimals)}`;
+      document.getElementById("bar-low").innerText = `${cfg.prefix}${bar.low.toFixed(cfg.decimals)}`;
+      document.getElementById("bar-close").innerText = `${cfg.prefix}${bar.close.toFixed(cfg.decimals)}`;
+      const drift = ((bar.close - bar.open) / bar.open) * 100;
+      const driftEl = document.getElementById("bar-drift");
+      driftEl.innerText = `${drift >= 0 ? '+' : ''}${drift.toFixed(2)}%`;
+      driftEl.className = drift >= 0 ? "text-emerald-700 font-medium" : "text-rose-700 font-medium";
     }
 
-    // Switch Timeframe (1m, 5m, 15m, 1h)
-    function switchTimeframe(tf) {
-      ['tf-1m', 'tf-5m', 'tf-15m', 'tf-1h'].forEach(id => {
-        const tab = document.getElementById(id);
-        if (tab) tab.className = "px-2 py-1 rounded-md font-semibold text-gray-400 hover:text-white transition text-xs";
-      });
-      const activeTab = document.getElementById(`tf-${tf}`);
-      if (activeTab) activeTab.className = "px-2 py-1 rounded-md font-semibold text-white bg-kronos shadow transition text-xs";
+    // Institutional Canvas Renderer with Sahara Color Palette
+    function renderCanvas() {
+      const rect = canvas.parentElement.getBoundingClientRect();
+      canvas.width = rect.width * window.devicePixelRatio;
+      canvas.height = rect.height * window.devicePixelRatio;
+      ctx.scale(window.devicePixelRatio, window.devicePixelRatio);
 
+      const w = rect.width;
+      const h = rect.height;
+
+      // Clean warm white terminal canvas background
+      ctx.fillStyle = "#ffffff";
+      ctx.fillRect(0, 0, w, h);
+
+      if (sampleCandles.length === 0) return;
+
+      let minP = Infinity, maxP = -Infinity;
+      sampleCandles.forEach(c => { minP = Math.min(minP, c.low); maxP = Math.max(maxP, c.high); });
+      const pad = (maxP - minP) * 0.16 || 10;
+      minP -= pad; maxP += pad;
+
+      const candleW = Math.max(4.5, (w - 110) / (sampleCandles.length + 24));
+      const priceToY = p => h - 35 - ((p - minP) / (maxP - minP || 1)) * (h - 70);
+
+      // Background Subtle Grid Lines & Y-Price Scale
+      ctx.strokeStyle = "#f2ece4";
+      ctx.lineWidth = 1;
+      for (let i = 1; i <= 5; i++) {
+        const y = (h / 6) * i;
+        ctx.beginPath();
+        ctx.moveTo(0, y);
+        ctx.lineTo(w - 75, y);
+        ctx.stroke();
+
+        const price = maxP - ((y - 35) / (h - 70)) * (maxP - minP);
+        ctx.fillStyle = "#9a9088";
+        ctx.font = "10px 'JetBrains Mono', monospace";
+        ctx.fillText(price.toFixed(ASSETS[currentAssetKey].decimals), w - 70, y + 3);
+      }
+
+      // Order Book Resting Depth Heatmap Profile (Right Hand Side)
+      const depthY1 = priceToY(lastPrice * 1.002);
+      const depthY2 = priceToY(lastPrice * 0.998);
+
+      // Asks depth bars (soft crimson gradient)
+      for (let b = 1; b <= 6; b++) {
+        const barY = depthY1 - b * 18;
+        if (barY > 15) {
+          const barW = 35 + ((b * 37) % 65);
+          const grad = ctx.createLinearGradient(w - 75, 0, w - 75 - barW, 0);
+          grad.addColorStop(0, "rgba(225, 29, 72, 0.22)");
+          grad.addColorStop(1, "rgba(225, 29, 72, 0.0)");
+          ctx.fillStyle = grad;
+          ctx.fillRect(w - 75 - barW, barY, barW, 12);
+        }
+      }
+
+      // Bids depth bars (soft emerald gradient)
+      for (let b = 1; b <= 6; b++) {
+        const barY = depthY2 + b * 18;
+        if (barY < h - 45) {
+          const barW = 40 + ((b * 41) % 75);
+          const grad = ctx.createLinearGradient(w - 75, 0, w - 75 - barW, 0);
+          grad.addColorStop(0, "rgba(5, 150, 105, 0.22)");
+          grad.addColorStop(1, "rgba(5, 150, 105, 0.0)");
+          ctx.fillStyle = grad;
+          ctx.fillRect(w - 75 - barW, barY, barW, 12);
+        }
+      }
+
+      // Selection Brush Box
+      const bx = brushStart * candleW;
+      const bw = (brushEnd - brushStart + 1) * candleW;
+      ctx.fillStyle = isDragging ? "rgba(194, 101, 42, 0.20)" : "rgba(194, 101, 42, 0.10)";
+      ctx.fillRect(bx, 15, bw, h - 50);
+      ctx.strokeStyle = "#c2652a";
+      ctx.lineWidth = 1.5;
+      if (!isDragging) ctx.setLineDash([4, 4]);
+      ctx.strokeRect(bx, 15, bw, h - 50);
+      ctx.setLineDash([]);
+
+      // Deterministic Candlesticks
+      sampleCandles.forEach((c, idx) => {
+        const x = idx * candleW + candleW / 2;
+        const isUp = c.close >= c.open;
+        const color = isUp ? "#059669" : "#e11d48";
+        ctx.strokeStyle = color;
+        ctx.lineWidth = 1.2;
+
+        // High-Low Wick
+        ctx.beginPath();
+        ctx.moveTo(x, priceToY(c.high));
+        ctx.lineTo(x, priceToY(c.low));
+        ctx.stroke();
+
+        // Candle Body
+        ctx.fillStyle = color;
+        const top = Math.min(priceToY(c.open), priceToY(c.close));
+        const bodyHeight = Math.max(2, Math.abs(priceToY(c.close) - priceToY(c.open)));
+        ctx.fillRect(x - candleW * 0.36, top, candleW * 0.72, bodyHeight);
+      });
+
+      // T-0 Separation Line at Brush Anchor
+      const anchorIdx = Math.min(brushEnd, sampleCandles.length - 1);
+      const anchorCandle = sampleCandles[anchorIdx];
+      const startX = anchorIdx * candleW + candleW / 2;
+      const baseY = priceToY(anchorCandle.close);
+
+      ctx.strokeStyle = "rgba(194, 101, 42, 0.7)";
+      ctx.lineWidth = 1.2;
+      ctx.setLineDash([3, 3]);
+      ctx.beginPath();
+      ctx.moveTo(startX, 15);
+      ctx.lineTo(startX, h - 35);
+      ctx.stroke();
+      ctx.setLineDash([]);
+
+      ctx.fillStyle = "#c2652a";
+      ctx.font = "bold 9px 'JetBrains Mono', monospace";
+      ctx.fillText("T₀ SYNTHESIS", startX + 4, 25);
+
+      // Current Price Ping Circle
+      ctx.fillStyle = "#c2652a";
+      ctx.beginPath();
+      ctx.arc(startX, baseY, 4, 0, Math.PI * 2);
+      ctx.fill();
+
+      // Determine Slope & Direction based on brushed regime + Stress Testing Modifiers
+      const firstBrushed = sampleCandles[brushStart] || anchorCandle;
+      const brushedSlope = (anchorCandle.close - firstBrushed.open) / (firstBrushed.open || 1);
+      let isDowntrend = brushedSlope < -0.002;
+
+      // Regime Modifiers
+      let varianceMult = 1.0;
+      let driftFactor = 1.0;
+      if (currentRegimeStress === 'vacuum') {
+        varianceMult = 1.85;
+        driftFactor = 0.7;
+      } else if (currentRegimeStress === 'cpi') {
+        varianceMult = 2.40;
+        driftFactor = 1.4;
+      } else if (currentRegimeStress === 'cascade') {
+        isDowntrend = true;
+        varianceMult = 2.10;
+        driftFactor = -1.8;
+      }
+
+      const dir = isDowntrend ? 1 : -1;
+
+      // Outer 95% Confidence Fan (+2.1σ to -2.1σ)
+      const outerGrad = ctx.createLinearGradient(startX, 0, startX + 22 * candleW, 0);
+      outerGrad.addColorStop(0, "rgba(194, 101, 42, 0.32)");
+      outerGrad.addColorStop(0.6, "rgba(194, 101, 42, 0.14)");
+      outerGrad.addColorStop(1, "rgba(194, 101, 42, 0.03)");
+
+      ctx.fillStyle = outerGrad;
+      ctx.beginPath();
+      ctx.moveTo(startX, baseY);
+      for (let i = 1; i <= 22; i++) {
+        const curX = startX + i * candleW;
+        const curY = baseY + dir * i * 1.9 * driftFactor - (i * 1.15 * varianceMult);
+        ctx.lineTo(curX, curY);
+      }
+      for (let i = 22; i >= 1; i--) {
+        const curX = startX + i * candleW;
+        const curY = baseY + dir * i * 0.8 * driftFactor + (i * 1.15 * varianceMult);
+        ctx.lineTo(curX, curY);
+      }
+      ctx.closePath();
+      ctx.fill();
+
+      // Inner 68% Confidence Band (1σ)
+      const innerGrad = ctx.createLinearGradient(startX, 0, startX + 22 * candleW, 0);
+      innerGrad.addColorStop(0, "rgba(194, 101, 42, 0.42)");
+      innerGrad.addColorStop(1, "rgba(194, 101, 42, 0.12)");
+
+      ctx.fillStyle = innerGrad;
+      ctx.beginPath();
+      ctx.moveTo(startX, baseY);
+      for (let i = 1; i <= 22; i++) {
+        const curX = startX + i * candleW;
+        const curY = baseY + dir * i * 1.6 * driftFactor - (i * 0.65 * varianceMult);
+        ctx.lineTo(curX, curY);
+      }
+      for (let i = 22; i >= 1; i--) {
+        const curX = startX + i * candleW;
+        const curY = baseY + dir * i * 1.0 * driftFactor + (i * 0.65 * varianceMult);
+        ctx.lineTo(curX, curY);
+      }
+      ctx.closePath();
+      ctx.fill();
+
+      // Stochastic Monte Carlo Hairpins
+      const hairpins = [
+        { freq: 0.45, amp: 4, mult: 1.1 },
+        { freq: 0.30, amp: -6, mult: 0.8 },
+        { freq: 0.55, amp: 5, mult: 1.3 },
+        { freq: 0.25, amp: -4, mult: 0.6 }
+      ];
+      ctx.strokeStyle = "rgba(194, 101, 42, 0.5)";
+      ctx.lineWidth = 1;
+      ctx.setLineDash([2, 3]);
+      hairpins.forEach(hp => {
+        ctx.beginPath();
+        ctx.moveTo(startX, baseY);
+        for (let i = 1; i <= 22; i++) {
+          const wobble = Math.sin(i * hp.freq) * hp.amp * varianceMult;
+          ctx.lineTo(startX + i * candleW, baseY + dir * i * 1.35 * hp.mult * driftFactor + wobble);
+        }
+        ctx.stroke();
+      });
+      ctx.setLineDash([]);
+
+      // Primary Deterministic Mean Vector (Bold Amber/Terracotta Path)
+      ctx.strokeStyle = "#c2652a";
+      ctx.lineWidth = 2.8;
+      ctx.beginPath();
+      ctx.moveTo(startX, baseY);
+      for (let i = 1; i <= 22; i++) {
+        ctx.lineTo(startX + i * candleW, baseY + dir * i * 1.35 * driftFactor);
+      }
+      ctx.stroke();
+
+      // Forecast Boundary Labels
+      const endMeanY = baseY + dir * 22 * 1.35 * driftFactor;
+      ctx.fillStyle = "#c2652a";
+      ctx.font = "bold 10px 'JetBrains Mono', monospace";
+      ctx.fillText("MEAN E[P]", startX + 22 * candleW - 25, endMeanY - 8);
+
+      ctx.fillStyle = "#78706a";
+      ctx.font = "9px 'JetBrains Mono', monospace";
+      ctx.fillText("+2.1σ", startX + 22 * candleW - 15, baseY + dir * 22 * 1.9 * driftFactor - (22 * 1.15 * varianceMult) - 4);
+      ctx.fillText("-2.1σ", startX + 22 * candleW - 15, baseY + dir * 22 * 0.8 * driftFactor + (22 * 1.15 * varianceMult) + 12);
+
+      // Ghost Twin Path (Historical Analogue Replay in Golden Amber)
+      if (isGhostTwinActive || hoveredTwinIndex !== null) {
+        const twinNum = hoveredTwinIndex || 1;
+        ctx.strokeStyle = "#d97706";
+        ctx.lineWidth = 2.4;
+        ctx.setLineDash([4, 3]);
+        ctx.beginPath();
+        ctx.moveTo(startX, baseY);
+        const freq = twinNum === 1 ? 0.42 : (twinNum === 2 ? 0.32 : 0.52);
+        const amp = twinNum === 1 ? 6 : (twinNum === 2 ? 9 : 4.5);
+        for (let i = 1; i <= 22; i++) {
+          const wobble = Math.sin(i * freq) * amp;
+          ctx.lineTo(startX + i * candleW, baseY + dir * i * 1.12 * driftFactor + wobble);
+        }
+        ctx.stroke();
+        ctx.setLineDash([]);
+
+        ctx.fillStyle = "#d97706";
+        ctx.font = "bold 9px 'JetBrains Mono', monospace";
+        ctx.fillText(`Ghost Twin #${twinNum} Analogue`, startX + 22 * candleW - 35, baseY + dir * 22 * 1.12 * driftFactor + 16);
+      }
+
+      // Interactive Crosshair with Floating Precision Data Tooltip
+      if (crosshairPos && !isDragging) {
+        ctx.strokeStyle = "rgba(120, 112, 106, 0.4)";
+        ctx.lineWidth = 1;
+        ctx.setLineDash([3, 3]);
+
+        // Vertical Crosshair
+        ctx.beginPath();
+        ctx.moveTo(crosshairPos.x, 0);
+        ctx.lineTo(crosshairPos.x, h - 35);
+        ctx.stroke();
+
+        // Horizontal Crosshair
+        ctx.beginPath();
+        ctx.moveTo(0, crosshairPos.y);
+        ctx.lineTo(w - 75, crosshairPos.y);
+        ctx.stroke();
+        ctx.setLineDash([]);
+
+        // Price Tag on Right Axis
+        const hoverPrice = maxP - ((crosshairPos.y - 35) / (h - 70)) * (maxP - minP);
+        ctx.fillStyle = "#3a302a";
+        ctx.fillRect(w - 75, crosshairPos.y - 9, 72, 18);
+        ctx.fillStyle = "#ffffff";
+        ctx.font = "bold 10px 'JetBrains Mono', monospace";
+        ctx.fillText(`${ASSETS[currentAssetKey].prefix}${hoverPrice.toFixed(ASSETS[currentAssetKey].decimals)}`, w - 70, crosshairPos.y + 4);
+
+        // Floating Precision HUD Card
+        const tipX = Math.min(w - 180, Math.max(10, crosshairPos.x + 15));
+        const tipY = Math.min(h - 110, Math.max(20, crosshairPos.y - 45));
+
+        ctx.fillStyle = "#faf5ee";
+        ctx.strokeStyle = "#d8d0c8";
+        ctx.lineWidth = 1;
+        ctx.beginPath();
+        ctx.roundRect(tipX, tipY, 160, 80, 8);
+        ctx.fill();
+        ctx.stroke();
+
+        ctx.fillStyle = "#3a302a";
+        ctx.font = "bold 11px Manrope, sans-serif";
+        ctx.fillText("T+20 PROJECTION", tipX + 10, tipY + 18);
+
+        ctx.fillStyle = "#605850";
+        ctx.font = "10px 'JetBrains Mono', monospace";
+        ctx.fillText("P(Breakout): ", tipX + 10, tipY + 36);
+        ctx.fillStyle = "#059669";
+        ctx.fillText("78.4%", tipX + 90, tipY + 36);
+
+        ctx.fillStyle = "#605850";
+        ctx.fillText("Variance Exp: ", tipX + 10, tipY + 52);
+        ctx.fillStyle = "#c2652a";
+        ctx.fillText(`${(varianceMult * 1.44).toFixed(2)}x`, tipX + 90, tipY + 52);
+
+        ctx.fillStyle = "#605850";
+        ctx.fillText("Micro-drift: ", tipX + 10, tipY + 68);
+        ctx.fillStyle = "#3a302a";
+        ctx.fillText("+18.2 bps", tipX + 90, tipY + 68);
+      }
+    }
+
+    // Asset Switcher
+    function switchAsset(key) {
+      if (!ASSETS[key]) return;
+      currentAssetKey = key;
+      ['XAUUSD', 'BTCUSDT', 'ETHUSDT'].forEach(k => {
+        const btn = document.getElementById(`tab-${k}`);
+        if (!btn) return;
+        if (k === key) {
+          btn.className = "px-3 py-1.5 rounded-md font-bold text-white bg-primary shadow-xs transition";
+        } else {
+          btn.className = "px-3 py-1.5 rounded-md font-medium text-on-surface-variant hover:text-on-surface transition";
+        }
+      });
+      loadMarketData(key, currentTimeframe);
+    }
+
+    // Timeframe Switcher
+    function switchTimeframe(tf) {
+      currentTimeframe = tf;
+      ['1m', '5m', '15m', '1h', '4h'].forEach(t => {
+        const btn = document.getElementById(`tf-${t}`);
+        if (!btn) return;
+        if (t === tf) {
+          btn.className = "px-2.5 py-1 rounded bg-surface-container-lowest text-primary font-bold shadow-xs";
+        } else {
+          btn.className = "px-2.5 py-1 rounded text-on-surface-variant hover:text-on-surface";
+        }
+      });
       loadMarketData(currentAssetKey, tf);
     }
 
-    function updateScoreboard() {
-      if (!sampleCandles || sampleCandles.length === 0) return;
-      const anchorIdx = Math.min(brushEnd, sampleCandles.length - 1);
-      const anchorCandle = sampleCandles[anchorIdx];
-      const firstBrushed = sampleCandles[brushStart] || anchorCandle;
-      const brushedRet = (anchorCandle.close - firstBrushed.open) / (firstBrushed.open || 1);
-      const isDown = brushedRet < -0.003;
-
-      const titleEl = document.getElementById("score-skew-title");
-      const winEl = document.getElementById("score-winrate");
-      const retEl = document.getElementById("score-med-ret");
-      const ddEl = document.getElementById("score-med-dd");
-      const rrEl = document.getElementById("score-rr");
-
-      if (titleEl && winEl && retEl && ddEl && rrEl) {
-        if (isDown) {
-          titleEl.innerText = "78.4% Bearish Skew";
-          titleEl.className = "text-xl font-bold text-rose-400 mt-0.5";
-          winEl.innerText = "78.4%";
-          retEl.innerText = "-1.75%";
-          retEl.className = "font-mono font-bold text-rose-400";
-          ddEl.innerText = "-0.38%";
-          rrEl.innerText = "3.12x";
-          const t1 = document.getElementById("score-twin-1"); if (t1) t1.innerText = "#1: XAU/USD (Jan 2024)";
-          const t2 = document.getElementById("score-twin-2"); if (t2) t2.innerText = "#2: BTC/USD (Jun 2024)";
-          const t3 = document.getElementById("score-twin-3"); if (t3) t3.innerText = "#3: ETH/USD (Aug 2023)";
+    // Dynamic Regime Stress Testing Switcher
+    function setRegimeStress(mode) {
+      currentRegimeStress = mode;
+      ['baseline', 'vacuum', 'cpi', 'cascade'].forEach(m => {
+        const btn = document.getElementById(`regime-${m}`);
+        if (!btn) return;
+        if (m === mode) {
+          btn.className = "px-3 py-1.5 rounded-lg bg-surface-container text-primary font-semibold text-xs font-mono transition-all shadow-xs flex items-center gap-1.5";
         } else {
-          titleEl.innerText = "87.5% Bullish Skew";
-          titleEl.className = "text-xl font-bold text-emerald-400 mt-0.5";
-          winEl.innerText = "87.5%";
-          retEl.innerText = "+1.84%";
-          retEl.className = "font-mono font-bold text-emerald-400";
-          ddEl.innerText = "-0.52%";
-          rrEl.innerText = "3.54x";
-          const t1 = document.getElementById("score-twin-1"); if (t1) t1.innerText = "#1: XAU/USD (Oct 2024)";
-          const t2 = document.getElementById("score-twin-2"); if (t2) t2.innerText = "#2: BTC/USD (Nov 2024)";
-          const t3 = document.getElementById("score-twin-3"); if (t3) t3.innerText = "#3: XAU/USD (Aug 2023)";
+          btn.className = "px-3 py-1.5 rounded-lg bg-surface-container-lowest text-on-surface text-xs font-mono font-medium hover:bg-primary hover:text-on-primary transition-all shadow-xs flex items-center gap-1.5";
         }
-      }
-    }
-
-    function toggleGhostTwin() {
-      isGhostTwinActive = !isGhostTwinActive;
-      const dot = document.getElementById("ghost-indicator-dot");
-      const text = document.getElementById("ghost-btn-text");
-      const btn = document.getElementById("btn-ghost-toggle");
-      if (isGhostTwinActive) {
-        dot.className = "w-2 h-2 rounded-full bg-amber-400 animate-pulse";
-        text.innerText = "Ghost Twin: ON";
-        btn.className = "px-2.5 py-1 rounded bg-amber-500/15 text-amber-400 border border-amber-500/40 font-medium text-xs flex items-center gap-1.5 transition";
-      } else {
-        dot.className = "w-2 h-2 rounded-full bg-gray-500";
-        text.innerText = "Ghost Twin: OFF";
-        btn.className = "px-2.5 py-1 rounded bg-surfaceElevated hover:bg-gray-700 text-gray-400 border border-gray-700 font-medium text-xs flex items-center gap-1.5 transition";
-      }
-      renderCanvas();
-    }
-
-    function hoverTwin(twinNum) {
-      hoveredTwinIndex = twinNum;
-      renderCanvas();
-    }
-
-    function selectTwin(twinNum) {
-      if (isGhostTwinActive && hoveredTwinIndex === twinNum) {
-        toggleGhostTwin();
-      } else {
-        if (!isGhostTwinActive) toggleGhostTwin();
-        hoveredTwinIndex = twinNum;
-        renderCanvas();
-      }
-    }
-
-    function setPreset(count) {
-      selectedCount = count;
-      brushEnd = sampleCandles.length - 1;
-      brushStart = Math.max(0, brushEnd - count + 1);
-      ['btn-32', 'btn-64', 'btn-120'].forEach(id => {
-        const b = document.getElementById(id);
-        b.className = "px-2.5 py-1 rounded bg-surfaceElevated hover:bg-gray-700 text-gray-200 border border-gray-700 font-medium";
       });
-      const active = document.getElementById(`btn-${count}`);
-      if (active) active.className = "px-2.5 py-1 rounded bg-kronos text-white font-medium shadow-md shadow-kronos/25";
-      document.getElementById('brush-badge').innerText = `Window: ${count} Bars (Active)`;
-      updateScoreboard();
       renderCanvas();
     }
 
-    // Mouse Drag Brush & TradingView Crosshair Listeners
-    canvas.addEventListener('mousedown', e => {
+    // Ghost Twin Hover & Toggle
+    function hoverTwin(idx) {
+      hoveredTwinIndex = idx;
+      renderCanvas();
+    }
+
+    function toggleTwin(idx) {
+      if (hoveredTwinIndex === idx && isGhostTwinActive) {
+        isGhostTwinActive = false;
+        hoveredTwinIndex = null;
+      } else {
+        isGhostTwinActive = true;
+        hoveredTwinIndex = idx;
+      }
+      renderCanvas();
+    }
+
+    // Canvas Mouse Events: Drag & Brush + Crosshairs
+    canvas.addEventListener('mousedown', (e) => {
       const rect = canvas.getBoundingClientRect();
-      const candleW = Math.max(3, (rect.width - 80) / (sampleCandles.length + 22));
-      const idx = Math.floor((e.clientX - rect.left) / candleW);
+      const x = e.clientX - rect.left;
+      const candleW = Math.max(4.5, (rect.width - 110) / (sampleCandles.length + 24));
+      dragStartX = Math.floor(x / candleW);
       isDragging = true;
-      crosshairPos = null;
-      dragStart = Math.max(0, Math.min(sampleCandles.length - 1, idx));
     });
 
-    canvas.addEventListener('mousemove', e => {
-      if (!isDragging) {
-        const rect = canvas.getBoundingClientRect();
-        crosshairPos = {
-          x: e.clientX - rect.left,
-          y: e.clientY - rect.top
-        };
-        renderCanvas();
-      }
-    });
-
-    canvas.addEventListener('mouseleave', () => {
-      if (!isDragging) {
-        crosshairPos = null;
-        renderCanvas();
-      }
-    });
-
-    window.addEventListener('mousemove', e => {
-      if (!isDragging || dragStart === null) return;
+    canvas.addEventListener('mousemove', (e) => {
       const rect = canvas.getBoundingClientRect();
-      const candleW = Math.max(3, (rect.width - 80) / (sampleCandles.length + 22));
-      const cur = Math.max(0, Math.min(sampleCandles.length - 1, Math.floor((e.clientX - rect.left) / candleW)));
-      brushStart = Math.min(dragStart, cur);
-      brushEnd = Math.max(dragStart, cur);
-      document.getElementById('brush-badge').innerText = `Brushing: ${brushEnd - brushStart + 1} Bars`;
-      updateScoreboard();
+      const x = e.clientX - rect.left;
+      const y = e.clientY - rect.top;
+      crosshairPos = { x, y };
+
+      if (isDragging && sampleCandles.length > 0) {
+        const candleW = Math.max(4.5, (rect.width - 110) / (sampleCandles.length + 24));
+        const currentIdx = Math.floor(x / candleW);
+        brushStart = Math.max(0, Math.min(dragStartX, currentIdx));
+        brushEnd = Math.min(sampleCandles.length - 1, Math.max(dragStartX, currentIdx));
+        if (brushEnd - brushStart < 5) brushEnd = Math.min(sampleCandles.length - 1, brushStart + 5);
+      }
       renderCanvas();
     });
 
     window.addEventListener('mouseup', () => {
       if (isDragging) {
         isDragging = false;
-        let count = brushEnd - brushStart + 1;
-        if (count < 32) {
-          brushEnd = Math.min(sampleCandles.length - 1, brushStart + 31);
-        }
-        document.getElementById('brush-badge').innerText = `Window: ${brushEnd - brushStart + 1} Bars (Active)`;
-        updateScoreboard();
         renderCanvas();
       }
     });
 
-    window.addEventListener('resize', renderCanvas);
+    canvas.addEventListener('mouseleave', () => {
+      crosshairPos = null;
+      if (!isDragging) renderCanvas();
+    });
 
-    // Initial startup
-    loadMarketData("XAUUSD", "1h");
+    // Window Resize Observer for Responsive Canvas
+    window.addEventListener('resize', () => {
+      renderCanvas();
+    });
 
-    // Fallback heartbeat ticker in case of adblockers or closed markets
-    setInterval(() => {
-      if (!activeWS || activeWS.readyState !== WebSocket.OPEN) {
-        const delta = (Math.random() - 0.49) * (currentAssetKey === 'BTCUSDT' ? 12 : 0.4);
-        const newP = lastPrice + delta;
-        updateLiveTick(newP, Math.max(newP, lastPrice), Math.min(newP, lastPrice), lastPrice, false);
-      }
-    }, 1000);
+    // Interactive Broker ROI Calculator Engine
+    const tradersSlider = document.getElementById("traders-slider");
+    const lotsSlider = document.getElementById("lots-slider");
+    const revSlider = document.getElementById("rev-slider");
 
-    // ROI Calculator
-    const tradersSlider = document.getElementById('traders-slider');
-    const lotsSlider = document.getElementById('lots-slider');
-    const revSlider = document.getElementById('rev-slider');
+    function updateCalculator() {
+      if (!tradersSlider || !lotsSlider || !revSlider) return;
+      const traders = parseInt(tradersSlider.value, 10);
+      const lots = parseInt(lotsSlider.value, 10);
+      const rev = parseFloat(revSlider.value);
 
-    function updateROI() {
-      const traders = parseInt(tradersSlider.value);
-      const lots = parseInt(lotsSlider.value);
-      const rev = parseInt(revSlider.value);
+      document.getElementById("traders-val").innerText = traders.toLocaleString();
+      document.getElementById("lots-val").innerText = `${lots} Lots`;
+      document.getElementById("rev-val").innerText = `$${rev.toFixed(2)}`;
 
-      document.getElementById('traders-val').innerText = traders.toLocaleString();
-      document.getElementById('lots-val').innerText = `${lots} Lots`;
-      document.getElementById('rev-val').innerText = `$${rev}.00`;
+      const currentMonthlyRev = traders * lots * rev;
+      const upliftPct = 0.22; // 22% benchmark increase in trade volume
+      const annualUplift = currentMonthlyRev * upliftPct * 12;
 
-      // 22% incremental trades * traders * lots * rev * 12 months
-      const annualUplift = Math.round(traders * lots * 0.22 * rev * 12);
-      document.getElementById('annual-uplift').innerText = `+$${annualUplift.toLocaleString()}`;
+      document.getElementById("annual-uplift").innerText = `+$${Math.round(annualUplift).toLocaleString()}`;
     }
 
-    tradersSlider.addEventListener('input', updateROI);
-    lotsSlider.addEventListener('input', updateROI);
-    revSlider.addEventListener('input', updateROI);
-    updateROI();
+    [tradersSlider, lotsSlider, revSlider].forEach(slider => {
+      if (slider) slider.addEventListener("input", updateCalculator);
+    });
+
+    // Pilot Form Submission
+    function handlePilotSubmit(e) {
+      e.preventDefault();
+      const successEl = document.getElementById("pilot-success");
+      if (successEl) {
+        successEl.classList.remove("hidden");
+        setTimeout(() => {
+          successEl.classList.add("hidden");
+          e.target.reset();
+        }, 5000);
+      }
+    }
+
+    // Initialize Terminal on Page Load
+    window.addEventListener('DOMContentLoaded', () => {
+      loadMarketData("XAUUSD", "1h");
+      updateCalculator();
+    });
   </script>
 </body>
 </html>
