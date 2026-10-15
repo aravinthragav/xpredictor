@@ -4,7 +4,7 @@ import React from "react";
 import { Sparkles, Eye } from "lucide-react";
 
 export interface HistoricalTwinItem {
-  symbol: str;
+  symbol: string;
   asset_class: string;
   timeframe: string;
   date_formatted: string;
