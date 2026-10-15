@@ -32,6 +32,15 @@ QDRANT_PORT = int(os.getenv("QDRANT_PORT", 6333))
 QDRANT_URL = f"http://{QDRANT_HOST}:{QDRANT_PORT}"
 KRONOS_URL = os.getenv("KRONOS_EMBEDDER_URL", "http://localhost:8001")
 
+# Pre-load local engine for sub-20ms fallback execution
+try:
+    import sys
+    sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), "..", "kronos-embedder")))
+    from extractor import KronosPatternEngine
+    LOCAL_ENGINE = KronosPatternEngine()
+except Exception:
+    LOCAL_ENGINE = None
+
 
 class PatternSearchRequest(BaseModel):
     symbol: str = Field(..., example="XAUUSD")
@@ -154,28 +163,23 @@ def search_pattern(req: PatternSearchRequest):
     last_close = float(window[-1][3])
     col_name = select_collection_name(L)
 
-    # 1. Obtain 768-D structural embedding from kronos-embedder or direct local engine
+    # 1. Obtain 768-D structural embedding
     embedding = None
-    try:
-        embed_resp = requests.post(f"{KRONOS_URL}/embed", json={"windows": [window]}, timeout=0.15)
-        if embed_resp.status_code == 200:
-            embedding = embed_resp.json()["embeddings"][0]
-    except Exception:
-        pass
-
-    if embedding is None:
+    if LOCAL_ENGINE is not None and not os.getenv("KRONOS_EMBEDDER_URL"):
+        embedding = LOCAL_ENGINE.encode_window(np.array(window, dtype=np.float32)).tolist()
+    else:
         try:
-            import sys
-            sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), "..", "kronos-embedder")))
-            from extractor import KronosPatternEngine
-            local_engine = KronosPatternEngine()
-            embedding = local_engine.encode_window(np.array(window, dtype=np.float32)).tolist()
+            embed_resp = requests.post(f"{KRONOS_URL}/embed", json={"windows": [window]}, timeout=0.2)
+            if embed_resp.status_code == 200:
+                embedding = embed_resp.json()["embeddings"][0]
         except Exception:
             pass
+        if embedding is None and LOCAL_ENGINE is not None:
+            embedding = LOCAL_ENGINE.encode_window(np.array(window, dtype=np.float32)).tolist()
 
     # 2. Query Qdrant with temporal anti-leakage filter
     twins_raw = []
-    if embedding:
+    if embedding and os.getenv("QDRANT_HOST"):
         try:
             # Rule 2: Exclude historical window overlapping [timestamp_now - L, timestamp_now]
             must_not = []
@@ -200,7 +204,7 @@ def search_pattern(req: PatternSearchRequest):
                 "with_payload": True,
                 "filter": filter_payload if filter_payload else None
             }
-            q_res = requests.post(f"{QDRANT_URL}/collections/{col_name}/points/search", json=search_payload, timeout=0.15)
+            q_res = requests.post(f"{QDRANT_URL}/collections/{col_name}/points/search", json=search_payload, timeout=0.2)
             if q_res.status_code == 200:
                 hits = q_res.json().get("result", [])
                 for h in hits:
@@ -232,27 +236,23 @@ def search_pattern(req: PatternSearchRequest):
 
     # 3. Request Generative Monte Carlo forward trajectories from Kronos
     generative_quantiles = None
-    try:
-        cone_resp = requests.post(
-            f"{KRONOS_URL}/predict-cone",
-            json={"window": window, "pred_len": 20, "sample_count": 100, "temperature": 1.0, "top_p": 0.90},
-            timeout=0.15
-        )
-        if cone_resp.status_code == 200:
-            generative_quantiles = cone_resp.json()["quantiles"]
-    except Exception:
-        pass
-
-    if generative_quantiles is None:
+    if LOCAL_ENGINE is not None and not os.getenv("KRONOS_EMBEDDER_URL"):
+        cone_res = LOCAL_ENGINE.predict_cone(np.array(window, dtype=np.float32), pred_len=20, sample_count=100)
+        generative_quantiles = cone_res["quantiles"]
+    else:
         try:
-            import sys
-            sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), "..", "kronos-embedder")))
-            from extractor import KronosPatternEngine
-            local_engine = KronosPatternEngine()
-            cone_res = local_engine.predict_cone(np.array(window, dtype=np.float32), pred_len=20, sample_count=100)
-            generative_quantiles = cone_res["quantiles"]
+            cone_resp = requests.post(
+                f"{KRONOS_URL}/predict-cone",
+                json={"window": window, "pred_len": 20, "sample_count": 100, "temperature": 1.0, "top_p": 0.90},
+                timeout=0.2
+            )
+            if cone_resp.status_code == 200:
+                generative_quantiles = cone_resp.json()["quantiles"]
         except Exception:
             pass
+        if generative_quantiles is None and LOCAL_ENGINE is not None:
+            cone_res = LOCAL_ENGINE.predict_cone(np.array(window, dtype=np.float32), pred_len=20, sample_count=100)
+            generative_quantiles = cone_res["quantiles"]
 
     # 4. Bayesian Ensemble Fusion: Combine historical paths and generative paths
     fwd_paths = []
