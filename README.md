@@ -3,6 +3,7 @@
 <div align="center">
 
 ![XPredictor Banner](https://img.shields.io/badge/XPredictor-2.0-8B5CF6?style=for-the-badge)
+[![Live Showcase](https://img.shields.io/badge/Live%20Showcase-GitHub%20Pages-10B981?style=for-the-badge&logo=github)](https://aravinthragav.github.io/xpredictor/)
 [![License: MIT](https://img.shields.io/badge/License-MIT-emerald.svg?style=for-the-badge)](https://opensource.org/licenses/MIT)
 [![FastAPI](https://img.shields.io/badge/FastAPI-0.110+-009688?style=for-the-badge&logo=fastapi)](https://fastapi.tiangolo.com)
 [![Next.js](https://img.shields.io/badge/Next.js-15-black?style=for-the-badge&logo=next.js)](https://nextjs.org)
@@ -11,6 +12,8 @@
 **Vectorized Price-Action Search Engine ("Shazam for Candlesticks") & Hybrid Reality Cone Terminal**
 
 *Built on Foundation Market Model `shiyu-coder/Kronos` with Google Antigravity 2.0 Multi-Agent Orchestration*
+
+🌐 **Live Institutional Showcase & Broker Pitch**: [**https://aravinthragav.github.io/xpredictor/**](https://aravinthragav.github.io/xpredictor/)
 
 </div>
 
