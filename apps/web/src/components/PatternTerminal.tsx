@@ -28,12 +28,15 @@ export const PatternTerminal: React.FC = () => {
   const [livePrice, setLivePrice] = useState<number | null>(null);
   const [tickDirection, setTickDirection] = useState<"up" | "down" | null>(null);
 
-  // Free Binance WebSocket real-time streaming
+  // Free Binance WebSocket real-time streaming synced with selected timeframe
   useEffect(() => {
     let ws: WebSocket | null = null;
-    let stream = "paxgusdt@kline_1s"; // Paxos Gold 1:1 physical gold
-    if (selectedTicker === "BTCUSD") stream = "btcusdt@kline_1s";
-    else if (selectedTicker === "ETHUSD") stream = "ethusdt@kline_1s";
+    let symbol = "paxgusdt";
+    if (selectedTicker === "BTCUSD") symbol = "btcusdt";
+    else if (selectedTicker === "ETHUSD") symbol = "ethusdt";
+
+    const tf = ["1m", "5m", "15m", "1h", "4h", "1d"].includes(selectedTimeframe) ? selectedTimeframe : "1h";
+    const stream = `${symbol}@kline_${tf}`;
 
     try {
       ws = new WebSocket(`wss://stream.binance.com:9443/ws/${stream}`);
@@ -42,6 +45,10 @@ export const PatternTerminal: React.FC = () => {
           const msg = JSON.parse(event.data);
           if (msg.k) {
             const price = parseFloat(msg.k.c);
+            const high = parseFloat(msg.k.h);
+            const low = parseFloat(msg.k.l);
+            const isClosed = msg.k.x;
+
             setLivePrice((prev) => {
               if (prev !== null) {
                 setTickDirection(price >= prev ? "up" : "down");
@@ -54,9 +61,22 @@ export const PatternTerminal: React.FC = () => {
               const copy = [...prev];
               const last = { ...copy[copy.length - 1] };
               last.close = price;
-              last.high = Math.max(last.high, parseFloat(msg.k.h));
-              last.low = Math.min(last.low, parseFloat(msg.k.l));
+              last.high = Math.max(last.high, high);
+              last.low = Math.min(last.low, low);
               copy[copy.length - 1] = last;
+
+              // Only append when bar officially closes
+              if (isClosed) {
+                copy.push({
+                  time: Math.floor(Date.now() / 1000),
+                  open: price,
+                  high: price,
+                  low: price,
+                  close: price,
+                  volume: parseFloat(msg.k.v || "100"),
+                });
+                if (copy.length > 120) copy.shift();
+              }
               return copy;
             });
           }
@@ -69,7 +89,7 @@ export const PatternTerminal: React.FC = () => {
         try { ws.close(); } catch {}
       }
     };
-  }, [selectedTicker]);
+  }, [selectedTicker, selectedTimeframe]);
 
   // Score & reality cone state
   const [realityCone, setRealityCone] = useState<any>(null);
@@ -148,6 +168,35 @@ export const PatternTerminal: React.FC = () => {
             const defaultEnd = json.candles.length - 1;
             setBrushRange([defaultStart, defaultEnd]);
             triggerPatternSearch(json.candles.slice(defaultStart, defaultEnd + 1));
+            return;
+          }
+        }
+      } catch {}
+
+      // Try direct Binance REST klines if local backend is offline
+      try {
+        let bSymbol = "PAXGUSDT";
+        if (selectedTicker === "BTCUSD") bSymbol = "BTCUSDT";
+        else if (selectedTicker === "ETHUSD") bSymbol = "ETHUSDT";
+
+        const tf = ["1m", "5m", "15m", "1h", "4h", "1d"].includes(selectedTimeframe) ? selectedTimeframe : "1h";
+        const bRes = await fetch(`https://api.binance.com/api/v3/klines?symbol=${bSymbol}&interval=${tf}&limit=120`);
+        if (bRes.ok) {
+          const raw = await bRes.json();
+          if (Array.isArray(raw) && raw.length >= 32 && isMounted) {
+            const parsed = raw.map((b: any) => ({
+              time: Math.floor(b[0] / 1000),
+              open: parseFloat(b[1]),
+              high: parseFloat(b[2]),
+              low: parseFloat(b[3]),
+              close: parseFloat(b[4]),
+              volume: parseFloat(b[5]),
+            }));
+            setCandles(parsed);
+            const defaultStart = Math.max(0, parsed.length - 64);
+            const defaultEnd = parsed.length - 1;
+            setBrushRange([defaultStart, defaultEnd]);
+            triggerPatternSearch(parsed.slice(defaultStart, defaultEnd + 1));
             return;
           }
         }
@@ -278,7 +327,7 @@ export const PatternTerminal: React.FC = () => {
               <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
               <span className="relative inline-flex rounded-full h-2 w-2 bg-emerald-500"></span>
             </span>
-            <span>LIVE (1s WS)</span>
+            <span>LIVE ({selectedTimeframe.toUpperCase()} WS)</span>
           </div>
           {livePrice !== null && (
             <div className={`font-mono font-bold text-xs px-2 py-0.5 rounded border transition duration-150 ${
@@ -311,7 +360,7 @@ export const PatternTerminal: React.FC = () => {
 
           {/* Timeframe Select */}
           <div className="flex bg-surfaceElevated rounded border border-gray-700 p-0.5">
-            {["15m", "1h", "4h", "1d"].map((tf) => (
+            {["1m", "5m", "15m", "1h", "4h", "1d"].map((tf) => (
               <button
                 key={tf}
                 onClick={() => setSelectedTimeframe(tf)}

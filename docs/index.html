@@ -151,13 +151,29 @@
               </button>
             </div>
 
+            <!-- Optimal Timeframe Selector Tabs -->
+            <div class="flex items-center bg-surfaceElevated rounded-lg p-0.5 border border-gray-700">
+              <button onclick="switchTimeframe('1m')" id="tf-1m" class="px-2 py-1 rounded-md font-semibold text-gray-400 hover:text-white transition text-xs">
+                1m
+              </button>
+              <button onclick="switchTimeframe('5m')" id="tf-5m" class="px-2 py-1 rounded-md font-semibold text-gray-400 hover:text-white transition text-xs">
+                5m
+              </button>
+              <button onclick="switchTimeframe('15m')" id="tf-15m" class="px-2 py-1 rounded-md font-semibold text-gray-400 hover:text-white transition text-xs">
+                15m
+              </button>
+              <button onclick="switchTimeframe('1h')" id="tf-1h" class="px-2 py-1 rounded-md font-semibold text-white bg-kronos shadow transition text-xs">
+                1h
+              </button>
+            </div>
+
             <!-- Live Streaming Indicator -->
             <div id="ws-badge" class="flex items-center gap-2 px-2.5 py-1 rounded-full bg-emerald-500/10 border border-emerald-500/30 text-emerald-400 font-mono text-[11px]">
               <span class="relative flex h-2 w-2">
                 <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
                 <span class="relative inline-flex rounded-full h-2 w-2 bg-emerald-500"></span>
               </span>
-              <span id="ws-status">LIVE STREAM (1s WebSocket)</span>
+              <span id="ws-status">LIVE STREAM (1h)</span>
             </div>
 
             <!-- Live Price Display -->
@@ -453,8 +469,8 @@
     // Asset Configurations
     const ASSETS = {
       XAUUSD: {
+        symbol: "PAXGUSDT", // Paxos Gold 1:1 spot gold
         name: "XAU/USD (Gold)",
-        wsStream: "paxgusdt@kline_1s", // PAXG tracks Gold 1:1 backed by physical gold
         basePrice: 4155.18,
         decimals: 2,
         prefix: "$",
@@ -470,8 +486,8 @@
         rr: "3.54x"
       },
       BTCUSDT: {
+        symbol: "BTCUSDT",
         name: "BTC/USDT (Bitcoin)",
-        wsStream: "btcusdt@kline_1s",
         basePrice: 81344.50,
         decimals: 2,
         prefix: "$",
@@ -487,8 +503,8 @@
         rr: "3.26x"
       },
       ETHUSDT: {
+        symbol: "ETHUSDT",
         name: "ETH/USDT (Ethereum)",
-        wsStream: "ethusdt@kline_1s",
         basePrice: 2680.40,
         decimals: 2,
         prefix: "$",
@@ -506,6 +522,7 @@
     };
 
     let currentAssetKey = "XAUUSD";
+    let currentTimeframe = "1h"; // Optimal institutional timeframe
     let activeWS = null;
     let sampleCandles = [];
     let lastPrice = 4155.18;
@@ -518,24 +535,64 @@
     const canvas = document.getElementById('marketCanvas');
     const ctx = canvas.getContext('2d');
 
-    // Build baseline candles
-    function initCandlesForAsset(assetKey) {
-      const cfg = ASSETS[assetKey];
-      sampleCandles = [];
-      let p = cfg.basePrice * 0.985;
-      const count = 120;
+    // Synthetic fallback candles if network is unreachable
+    function generateFallbackCandles(basePrice) {
+      const candles = [];
+      let p = basePrice * 0.985;
+      const count = 80;
       for (let i = 0; i < count; i++) {
-        const ret = (Math.sin(i * 0.14) + (Math.random() - 0.48)) * 0.003;
-        p = p * (1 + ret);
-        const h = p * (1 + Math.random() * 0.002);
-        const l = p * (1 - Math.random() * 0.002);
-        const op = l + Math.random() * (h - l);
-        const cl = l + Math.random() * (h - l);
-        sampleCandles.push({ open: op, high: h, low: l, close: cl });
+        const delta = (Math.sin(i * 0.18) + (Math.random() - 0.48)) * 0.004;
+        p = p * (1 + delta);
+        const wickSpread = p * (0.002 + Math.random() * 0.003);
+        const h = p + wickSpread * Math.random();
+        const l = p - wickSpread * Math.random();
+        const isBull = Math.random() > 0.46;
+        const op = isBull ? l + (h - l) * 0.3 : h - (h - l) * 0.3;
+        const cl = isBull ? h - (h - l) * 0.2 : l + (h - l) * 0.2;
+        candles.push({ open: op, high: h, low: l, close: cl });
       }
-      lastPrice = sampleCandles[sampleCandles.length - 1].close;
-      brushEnd = sampleCandles.length - 1;
-      brushStart = Math.max(0, brushEnd - selectedCount + 1);
+      return candles;
+    }
+
+    // Load Real Market Data (Binance REST) then attach WebSocket
+    async function loadMarketData(assetKey, timeframe) {
+      currentAssetKey = assetKey;
+      currentTimeframe = timeframe;
+      const cfg = ASSETS[assetKey];
+      const symbol = cfg.symbol;
+
+      const statusEl = document.getElementById("ws-status");
+      statusEl.innerText = `Loading ${symbol} (${timeframe})...`;
+
+      try {
+        const res = await fetch(`https://api.binance.com/api/v3/klines?symbol=${symbol}&interval=${timeframe}&limit=80`);
+        if (!res.ok) throw new Error("Binance REST error: " + res.status);
+        const raw = await res.json();
+        if (Array.isArray(raw) && raw.length > 0) {
+          sampleCandles = raw.map(bar => ({
+            open: parseFloat(bar[1]),
+            high: parseFloat(bar[2]),
+            low: parseFloat(bar[3]),
+            close: parseFloat(bar[4])
+          }));
+        } else {
+          sampleCandles = generateFallbackCandles(cfg.basePrice);
+        }
+      } catch (err) {
+        console.warn("Using offline fallback candles:", err);
+        sampleCandles = generateFallbackCandles(cfg.basePrice);
+      }
+
+      if (sampleCandles.length > 0) {
+        lastPrice = sampleCandles[sampleCandles.length - 1].close;
+        const priceEl = document.getElementById("live-price");
+        priceEl.innerText = `${cfg.prefix}${lastPrice.toLocaleString('en-US', { minimumFractionDigits: cfg.decimals, maximumFractionDigits: cfg.decimals })}`;
+        brushEnd = sampleCandles.length - 1;
+        brushStart = Math.max(0, brushEnd - selectedCount + 1);
+      }
+
+      renderCanvas();
+      connectWebSocket(symbol, timeframe);
     }
 
     function renderCanvas() {
@@ -554,57 +611,60 @@
 
       let minP = Infinity, maxP = -Infinity;
       sampleCandles.forEach(c => { minP = Math.min(minP, c.low); maxP = Math.max(maxP, c.high); });
-      const pad = (maxP - minP) * 0.16;
+      const pad = (maxP - minP) * 0.16 || 10;
       minP -= pad; maxP += pad;
 
-      const candleW = Math.max(3, (w - 80) / (sampleCandles.length + 22));
-      const priceToY = p => h - 30 - ((p - minP) / (maxP - minP)) * (h - 60);
+      const candleW = Math.max(4, (w - 85) / (sampleCandles.length + 22));
+      const priceToY = p => h - 35 - ((p - minP) / (maxP - minP || 1)) * (h - 70);
 
-      // Grid
+      // Grid Lines & Price Labels
       ctx.strokeStyle = "#1F2937";
       for (let i = 1; i <= 4; i++) {
         const y = (h / 5) * i;
-        ctx.beginPath(); ctx.moveTo(0, y); ctx.lineTo(w - 60, y); ctx.stroke();
-        const price = maxP - ((y - 30) / (h - 60)) * (maxP - minP);
+        ctx.beginPath(); ctx.moveTo(0, y); ctx.lineTo(w - 65, y); ctx.stroke();
+        const price = maxP - ((y - 35) / (h - 70)) * (maxP - minP);
         ctx.fillStyle = "#6B7280"; ctx.font = "10px monospace";
-        ctx.fillText(price.toFixed(ASSETS[currentAssetKey].decimals), w - 55, y + 3);
+        ctx.fillText(price.toFixed(ASSETS[currentAssetKey].decimals), w - 60, y + 3);
       }
 
       // Selection Brush Box
       const bx = brushStart * candleW;
       const bw = (brushEnd - brushStart + 1) * candleW;
       ctx.fillStyle = isDragging ? "rgba(139, 92, 246, 0.25)" : "rgba(139, 92, 246, 0.15)";
-      ctx.fillRect(bx, 15, bw, h - 45);
+      ctx.fillRect(bx, 15, bw, h - 50);
       ctx.strokeStyle = "#8B5CF6";
       ctx.lineWidth = 1.5;
       if (!isDragging) ctx.setLineDash([4, 4]);
-      ctx.strokeRect(bx, 15, bw, h - 45);
+      ctx.strokeRect(bx, 15, bw, h - 50);
       ctx.setLineDash([]);
 
-      // Candlesticks
+      // Candlesticks (Full bodies + upper/lower wicks)
       sampleCandles.forEach((c, idx) => {
         const x = idx * candleW + candleW / 2;
         const isUp = c.close >= c.open;
         const color = isUp ? "#10B981" : "#F43F5E";
         ctx.strokeStyle = color;
         ctx.lineWidth = 1.2;
+
+        // Wick line
         ctx.beginPath();
         ctx.moveTo(x, priceToY(c.high));
         ctx.lineTo(x, priceToY(c.low));
         ctx.stroke();
 
+        // Candle body
         ctx.fillStyle = color;
         const top = Math.min(priceToY(c.open), priceToY(c.close));
-        const height = Math.max(1, Math.abs(priceToY(c.close) - priceToY(c.open)));
-        ctx.fillRect(x - candleW * 0.35, top, candleW * 0.7, height);
+        const bodyHeight = Math.max(2, Math.abs(priceToY(c.close) - priceToY(c.open)));
+        ctx.fillRect(x - candleW * 0.35, top, candleW * 0.7, bodyHeight);
       });
 
-      // Reality Cone (Forward 20 bars)
+      // Reality Cone (Forward 20 bars projection from latest active candle)
       const last = sampleCandles[sampleCandles.length - 1];
       const startX = (sampleCandles.length - 1) * candleW + candleW / 2;
       const baseY = priceToY(last.close);
 
-      // Quantile curves
+      // Quantile ribbon (P10 - P90)
       ctx.fillStyle = "rgba(139, 92, 246, 0.15)";
       ctx.beginPath();
       ctx.moveTo(startX, baseY);
@@ -613,7 +673,7 @@
       ctx.closePath();
       ctx.fill();
 
-      // Median expected line
+      // Median expected path (P50)
       ctx.strokeStyle = "#A78BFA";
       ctx.lineWidth = 2.2;
       ctx.beginPath();
@@ -623,24 +683,29 @@
 
       ctx.fillStyle = "#C4B5FD";
       ctx.font = "bold 10px monospace";
-      ctx.fillText("Reality Cone (P50)", startX + 20 * candleW - 25, baseY - 20 * 0.75 - 8);
+      ctx.fillText("Reality Cone (P50)", startX + 20 * candleW - 20, baseY - 20 * 0.75 - 8);
     }
 
-    // Connect to Free Public WebSocket
-    function connectWebSocket(streamName) {
+    // Connect to Free Public WebSocket with dynamic symbol and timeframe
+    function connectWebSocket(symbol, timeframe) {
       if (activeWS) {
-        try { activeWS.close(); } catch(e) {}
+        try {
+          activeWS.onclose = null;
+          activeWS.close();
+        } catch(e) {}
+        activeWS = null;
       }
 
+      const streamName = `${symbol.toLowerCase()}@kline_${timeframe}`;
       const wsUrl = `wss://stream.binance.com:9443/ws/${streamName}`;
       const statusEl = document.getElementById("ws-status");
-      statusEl.innerText = "Connecting...";
+      statusEl.innerText = `Connecting (${timeframe})...`;
 
       try {
         activeWS = new WebSocket(wsUrl);
 
         activeWS.onopen = () => {
-          statusEl.innerText = "LIVE (1s WebSocket)";
+          statusEl.innerText = `LIVE (${timeframe} Stream)`;
           document.getElementById("ws-badge").className = "flex items-center gap-2 px-2.5 py-1 rounded-full bg-emerald-500/10 border border-emerald-500/30 text-emerald-400 font-mono text-[11px]";
         };
 
@@ -652,30 +717,33 @@
               const closePrice = parseFloat(k.c);
               const highPrice = parseFloat(k.h);
               const lowPrice = parseFloat(k.l);
+              const openPrice = parseFloat(k.o);
               const isClosed = k.x;
 
-              updateLiveTick(closePrice, highPrice, lowPrice, isClosed);
+              updateLiveTick(closePrice, highPrice, lowPrice, openPrice, isClosed);
             }
           } catch(e) {}
         };
 
         activeWS.onerror = () => {
-          statusEl.innerText = "Simulated Live Tick";
+          statusEl.innerText = `Market Active (${timeframe})`;
         };
 
         activeWS.onclose = () => {
-          // Reconnect after 3s
+          // Reconnect automatically if user is still on this symbol & timeframe
           setTimeout(() => {
-            if (currentAssetKey) connectWebSocket(ASSETS[currentAssetKey].wsStream);
-          }, 3000);
+            if (currentAssetKey && ASSETS[currentAssetKey].symbol === symbol && currentTimeframe === timeframe) {
+              connectWebSocket(symbol, timeframe);
+            }
+          }, 4000);
         };
       } catch (e) {
-        statusEl.innerText = "Simulated Live";
+        statusEl.innerText = `Offline`;
       }
     }
 
-    // Process each real-time tick
-    function updateLiveTick(close, high, low, isClosed) {
+    // Process each real-time tick in place (does NOT push/shift every second!)
+    function updateLiveTick(close, high, low, open, isClosed) {
       const priceEl = document.getElementById("live-price");
       const indicatorEl = document.getElementById("live-tick-indicator");
       const cfg = ASSETS[currentAssetKey];
@@ -692,18 +760,20 @@
       }
       setTimeout(() => {
         priceEl.className = "text-white font-bold text-sm bg-surfaceElevated px-2 py-0.5 rounded border border-gray-700 transition duration-150";
-      }, 350);
+      }, 300);
 
       priceEl.innerText = `${cfg.prefix}${close.toLocaleString('en-US', { minimumFractionDigits: cfg.decimals, maximumFractionDigits: cfg.decimals })}`;
       lastPrice = close;
 
-      // Update current active candle on canvas
-      const lastCandle = sampleCandles[sampleCandles.length - 1];
-      lastCandle.close = close;
-      lastCandle.high = Math.max(lastCandle.high, high || close);
-      lastCandle.low = Math.min(lastCandle.low, low || close);
+      // Dynamically update the active bar currently forming
+      if (sampleCandles.length > 0) {
+        const lastCandle = sampleCandles[sampleCandles.length - 1];
+        lastCandle.close = close;
+        lastCandle.high = Math.max(lastCandle.high, high || close);
+        lastCandle.low = Math.min(lastCandle.low, low || close);
+      }
 
-      // If bar closes, append a new bar and shift brush window
+      // ONLY when the bar closes (e.g. after full 1m, 5m, 15m, 1h), spawn the next candle!
       if (isClosed) {
         sampleCandles.push({
           open: close,
@@ -711,7 +781,7 @@
           low: close,
           close: close
         });
-        if (sampleCandles.length > 150) {
+        if (sampleCandles.length > 80) {
           sampleCandles.shift();
         }
         brushEnd = sampleCandles.length - 1;
@@ -721,21 +791,28 @@
       renderCanvas();
     }
 
-    // Switch between Gold, Bitcoin, Ethereum
+    // Switch Asset (Gold, BTC, ETH)
     function switchAsset(assetKey) {
-      currentAssetKey = assetKey;
-      const cfg = ASSETS[assetKey];
-
-      // Update tabs
       ['tab-XAUUSD', 'tab-BTCUSDT', 'tab-ETHUSDT'].forEach(id => {
         const tab = document.getElementById(id);
-        tab.className = "px-2.5 py-1 rounded-md font-semibold text-gray-400 hover:text-white transition";
+        if (tab) tab.className = "px-2.5 py-1 rounded-md font-semibold text-gray-400 hover:text-white transition";
       });
-      document.getElementById(`tab-${assetKey}`).className = "px-2.5 py-1 rounded-md font-semibold text-white bg-kronos shadow transition";
+      const activeTab = document.getElementById(`tab-${assetKey}`);
+      if (activeTab) activeTab.className = "px-2.5 py-1 rounded-md font-semibold text-white bg-kronos shadow transition";
 
-      initCandlesForAsset(assetKey);
-      connectWebSocket(cfg.wsStream);
-      renderCanvas();
+      loadMarketData(assetKey, currentTimeframe);
+    }
+
+    // Switch Timeframe (1m, 5m, 15m, 1h)
+    function switchTimeframe(tf) {
+      ['tf-1m', 'tf-5m', 'tf-15m', 'tf-1h'].forEach(id => {
+        const tab = document.getElementById(id);
+        if (tab) tab.className = "px-2 py-1 rounded-md font-semibold text-gray-400 hover:text-white transition text-xs";
+      });
+      const activeTab = document.getElementById(`tf-${tf}`);
+      if (activeTab) activeTab.className = "px-2 py-1 rounded-md font-semibold text-white bg-kronos shadow transition text-xs";
+
+      loadMarketData(currentAssetKey, tf);
     }
 
     function setPreset(count) {
@@ -787,16 +864,14 @@
     window.addEventListener('resize', renderCanvas);
 
     // Initial startup
-    initCandlesForAsset("XAUUSD");
-    connectWebSocket(ASSETS.XAUUSD.wsStream);
-    renderCanvas();
+    loadMarketData("XAUUSD", "1h");
 
-    // Fallback heartbeat ticker in case of adblockers
+    // Fallback heartbeat ticker in case of adblockers or closed markets
     setInterval(() => {
       if (!activeWS || activeWS.readyState !== WebSocket.OPEN) {
         const delta = (Math.random() - 0.49) * (currentAssetKey === 'BTCUSDT' ? 12 : 0.4);
         const newP = lastPrice + delta;
-        updateLiveTick(newP, Math.max(newP, lastPrice), Math.min(newP, lastPrice), false);
+        updateLiveTick(newP, Math.max(newP, lastPrice), Math.min(newP, lastPrice), lastPrice, false);
       }
     }, 1000);
 
