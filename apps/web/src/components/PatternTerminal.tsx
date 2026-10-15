@@ -25,6 +25,51 @@ export const PatternTerminal: React.FC = () => {
   const [activeGhostTwin, setActiveGhostTwin] = useState<HistoricalTwinItem | null>(null);
   const [embedModalOpen, setEmbedModalOpen] = useState(false);
   const [isScanning, setIsScanning] = useState(false);
+  const [livePrice, setLivePrice] = useState<number | null>(null);
+  const [tickDirection, setTickDirection] = useState<"up" | "down" | null>(null);
+
+  // Free Binance WebSocket real-time streaming
+  useEffect(() => {
+    let ws: WebSocket | null = null;
+    let stream = "paxgusdt@kline_1s"; // Paxos Gold 1:1 physical gold
+    if (selectedTicker === "BTCUSD") stream = "btcusdt@kline_1s";
+    else if (selectedTicker === "ETHUSD") stream = "ethusdt@kline_1s";
+
+    try {
+      ws = new WebSocket(`wss://stream.binance.com:9443/ws/${stream}`);
+      ws.onmessage = (event) => {
+        try {
+          const msg = JSON.parse(event.data);
+          if (msg.k) {
+            const price = parseFloat(msg.k.c);
+            setLivePrice((prev) => {
+              if (prev !== null) {
+                setTickDirection(price >= prev ? "up" : "down");
+              }
+              return price;
+            });
+
+            setCandles((prev) => {
+              if (!prev || prev.length === 0) return prev;
+              const copy = [...prev];
+              const last = { ...copy[copy.length - 1] };
+              last.close = price;
+              last.high = Math.max(last.high, parseFloat(msg.k.h));
+              last.low = Math.min(last.low, parseFloat(msg.k.l));
+              copy[copy.length - 1] = last;
+              return copy;
+            });
+          }
+        } catch {}
+      };
+    } catch {}
+
+    return () => {
+      if (ws) {
+        try { ws.close(); } catch {}
+      }
+    };
+  }, [selectedTicker]);
 
   // Score & reality cone state
   const [realityCone, setRealityCone] = useState<any>(null);
@@ -225,9 +270,25 @@ export const PatternTerminal: React.FC = () => {
               XPredictor
             </span>
           </div>
-          <span className="text-xs bg-kronos/15 text-kronos font-medium px-2 py-0.5 rounded border border-kronos/30">
+          <span className="text-xs bg-kronos/15 text-kronos font-medium px-2 py-0.5 rounded border border-kronos/30 hidden sm:inline-block">
             Shazam for Candlesticks
           </span>
+          <div className="flex items-center gap-1.5 px-2.5 py-0.5 rounded-full bg-emerald-500/10 border border-emerald-500/30 text-emerald-400 font-mono text-[11px]">
+            <span className="relative flex h-2 w-2">
+              <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
+              <span className="relative inline-flex rounded-full h-2 w-2 bg-emerald-500"></span>
+            </span>
+            <span>LIVE (1s WS)</span>
+          </div>
+          {livePrice !== null && (
+            <div className={`font-mono font-bold text-xs px-2 py-0.5 rounded border transition duration-150 ${
+              tickDirection === 'up'
+                ? 'bg-emerald-500/15 border-emerald-500/40 text-emerald-400'
+                : 'bg-rose-500/15 border-rose-500/40 text-rose-400'
+            }`}>
+              {tickDirection === 'up' ? '▲' : '▼'} ${livePrice.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
+            </div>
+          )}
         </div>
 
         {/* Controls */}
