@@ -1,0 +1,12 @@
+{
+  "project_name": "xpredictor",
+  "version": "2.0",
+  "description": "Vectorized Price-Action Search Engine (Shazam for Candlesticks) & Hybrid Kronos Reality Cone Terminal",
+  "workspaces": [
+    "apps/web",
+    "services/api",
+    "services/kronos-embedder",
+    "services/ingestion-worker",
+    "infra"
+  ]
+}
