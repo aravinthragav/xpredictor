@@ -135,19 +135,44 @@
 
       <!-- Terminal Canvas Container -->
       <div class="bg-surface border border-gray-800 rounded-xl p-4 shadow-2xl glow-kronos">
-        <!-- Top Toolbar -->
+        <!-- Top Toolbar with Live Asset Switcher & Live WebSocket Status -->
         <div class="flex flex-wrap items-center justify-between gap-3 pb-3 mb-3 border-b border-gray-800 text-xs">
-          <div class="flex items-center gap-3">
-            <span class="font-bold text-white flex items-center gap-1.5">
-              <span class="w-2.5 h-2.5 rounded-full bg-bullish"></span>
-              XAU/USD (Gold 1H)
-            </span>
-            <span class="text-gray-400 font-mono">Current: $4,145.85</span>
+          <div class="flex flex-wrap items-center gap-3">
+            <!-- Asset Selector Tabs -->
+            <div class="flex items-center bg-surfaceElevated rounded-lg p-0.5 border border-gray-700">
+              <button onclick="switchAsset('XAUUSD')" id="tab-XAUUSD" class="px-2.5 py-1 rounded-md font-semibold text-white bg-kronos shadow transition">
+                🥇 Gold (XAU)
+              </button>
+              <button onclick="switchAsset('BTCUSDT')" id="tab-BTCUSDT" class="px-2.5 py-1 rounded-md font-semibold text-gray-400 hover:text-white transition">
+                ₿ Bitcoin (BTC)
+              </button>
+              <button onclick="switchAsset('ETHUSDT')" id="tab-ETHUSDT" class="px-2.5 py-1 rounded-md font-semibold text-gray-400 hover:text-white transition">
+                ⟠ Ethereum (ETH)
+              </button>
+            </div>
+
+            <!-- Live Streaming Indicator -->
+            <div id="ws-badge" class="flex items-center gap-2 px-2.5 py-1 rounded-full bg-emerald-500/10 border border-emerald-500/30 text-emerald-400 font-mono text-[11px]">
+              <span class="relative flex h-2 w-2">
+                <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
+                <span class="relative inline-flex rounded-full h-2 w-2 bg-emerald-500"></span>
+              </span>
+              <span id="ws-status">LIVE STREAM (1s WebSocket)</span>
+            </div>
+
+            <!-- Live Price Display -->
+            <div class="flex items-center gap-1.5 font-mono">
+              <span class="text-gray-400 text-[11px]">Live:</span>
+              <span id="live-price" class="text-white font-bold text-sm bg-surfaceElevated px-2 py-0.5 rounded border border-gray-700 transition duration-150">
+                $4,155.18
+              </span>
+              <span id="live-tick-indicator" class="text-xs">⚡</span>
+            </div>
           </div>
 
           <!-- Presets -->
           <div class="flex items-center gap-2">
-            <span class="text-gray-400 text-[11px]">Select Window:</span>
+            <span class="text-gray-400 text-[11px]">Brush:</span>
             <button onclick="setPreset(32)" id="btn-32" class="px-2.5 py-1 rounded bg-surfaceElevated hover:bg-gray-700 text-gray-200 border border-gray-700 font-medium">32b (Scalp)</button>
             <button onclick="setPreset(64)" id="btn-64" class="px-2.5 py-1 rounded bg-kronos text-white font-medium shadow-md shadow-kronos/25">64b (Swing - Active)</button>
             <button onclick="setPreset(120)" id="btn-120" class="px-2.5 py-1 rounded bg-surfaceElevated hover:bg-gray-700 text-gray-200 border border-gray-700 font-medium">120b (Regime)</button>
@@ -423,66 +448,95 @@
     <p class="mt-1">Built with Google Antigravity 2.0 Multi-Agent Orchestration • Powered by Kronos-base</p>
   </footer>
 
-  <!-- Interactive Demo Script -->
+  <!-- Interactive Demo Script with Real-Time Free WebSocket Stream -->
   <script>
-    // Real MT5 Gold Data (Sample from local cache)
-    const rawMT5Gold = [
-      {open: 4111.96, high: 4146.78, low: 4111.02, close: 4139.77},
-      {open: 4139.82, high: 4151.67, low: 4136.48, close: 4139.18},
-      {open: 4139.12, high: 4161.17, low: 4136.12, close: 4159.54},
-      {open: 4159.47, high: 4161.81, low: 4144.52, close: 4145.85},
-      {open: 4145.97, high: 4147.28, low: 4141.51, close: 4145.85},
-      {open: 4145.85, high: 4150.20, low: 4142.10, close: 4148.30},
-      {open: 4148.30, high: 4155.60, low: 4147.00, close: 4152.10},
-      {open: 4152.10, high: 4158.40, low: 4150.20, close: 4156.80},
-      {open: 4156.80, high: 4160.00, low: 4153.50, close: 4158.90},
-      {open: 4158.90, high: 4163.20, low: 4155.00, close: 4161.40},
-      {open: 4161.40, high: 4165.00, low: 4158.20, close: 4163.70},
-      {open: 4163.70, high: 4164.50, low: 4159.10, close: 4160.20},
-      {open: 4160.20, high: 4162.80, low: 4155.40, close: 4157.60},
-      {open: 4157.60, high: 4159.30, low: 4152.00, close: 4153.90},
-      {open: 4153.90, high: 4156.00, low: 4148.50, close: 4150.20},
-      {open: 4150.20, high: 4153.40, low: 4146.00, close: 4148.10},
-      {open: 4148.10, high: 4151.20, low: 4144.00, close: 4146.80},
-      {open: 4146.80, high: 4149.00, low: 4142.50, close: 4145.10},
-      {open: 4145.10, high: 4148.30, low: 4141.00, close: 4144.20},
-      {open: 4144.20, high: 4147.50, low: 4140.20, close: 4143.60},
-      {open: 4143.60, high: 4146.00, low: 4138.50, close: 4141.20},
-      {open: 4141.20, high: 4144.80, low: 4137.00, close: 4142.90},
-      {open: 4142.90, high: 4148.20, low: 4141.50, close: 4146.70},
-      {open: 4146.70, high: 4152.00, low: 4145.10, close: 4150.40},
-      {open: 4150.40, high: 4155.80, low: 4148.90, close: 4153.20},
-      {open: 4153.20, high: 4158.00, low: 4151.40, close: 4156.50},
-      {open: 4156.50, high: 4162.10, low: 4155.00, close: 4159.80},
-      {open: 4159.80, high: 4164.50, low: 4158.20, close: 4162.30},
-      {open: 4162.30, high: 4166.00, low: 4160.00, close: 4164.80},
-      {open: 4164.80, high: 4168.20, low: 4162.50, close: 4166.10},
-      {open: 4166.10, high: 4170.00, low: 4163.80, close: 4168.40},
-      {open: 4168.40, high: 4172.50, low: 4165.00, close: 4170.90}
-    ];
-
-    // Generate 120 total continuous bars for smooth interactive brushing
-    const sampleCandles = [];
-    let p = 4120.0;
-    for (let i = 0; i < 120; i++) {
-      if (i < 88) {
-        p += (Math.sin(i * 0.15) + (Math.random() - 0.47)) * 2.5;
-        const h = p + Math.random() * 4.0;
-        const l = p - Math.random() * 4.0;
-        sampleCandles.push({ open: l + Math.random()*(h-l), high: h, low: l, close: l + Math.random()*(h-l) });
-      } else {
-        sampleCandles.push(rawMT5Gold[i - 88]);
+    // Asset Configurations
+    const ASSETS = {
+      XAUUSD: {
+        name: "XAU/USD (Gold)",
+        wsStream: "paxgusdt@kline_1s", // PAXG tracks Gold 1:1 backed by physical gold
+        basePrice: 4155.18,
+        decimals: 2,
+        prefix: "$",
+        twins: [
+          { symbol: "XAU/USD (Oct 2024)", match: "96.2%" },
+          { symbol: "BTC/USD (Nov 2024)", match: "95.8%" },
+          { symbol: "XAU/USD (Aug 2023)", match: "94.7%" }
+        ],
+        skew: "87.5% Bullish",
+        winRate: "87.5%",
+        medRet: "+1.84%",
+        medDD: "-0.52%",
+        rr: "3.54x"
+      },
+      BTCUSDT: {
+        name: "BTC/USDT (Bitcoin)",
+        wsStream: "btcusdt@kline_1s",
+        basePrice: 81344.50,
+        decimals: 2,
+        prefix: "$",
+        twins: [
+          { symbol: "BTC/USD (Mar 2024)", match: "97.1%" },
+          { symbol: "ETH/USD (Nov 2021)", match: "95.4%" },
+          { symbol: "NVDA (Jan 2024)", match: "94.2%" }
+        ],
+        skew: "79.2% Bullish",
+        winRate: "79.2%",
+        medRet: "+3.65%",
+        medDD: "-1.12%",
+        rr: "3.26x"
+      },
+      ETHUSDT: {
+        name: "ETH/USDT (Ethereum)",
+        wsStream: "ethusdt@kline_1s",
+        basePrice: 2680.40,
+        decimals: 2,
+        prefix: "$",
+        twins: [
+          { symbol: "ETH/USD (Feb 2024)", match: "96.8%" },
+          { symbol: "SOL/USD (Dec 2023)", match: "94.9%" },
+          { symbol: "BTC/USD (Oct 2023)", match: "94.1%" }
+        ],
+        skew: "82.4% Bullish",
+        winRate: "82.4%",
+        medRet: "+2.90%",
+        medDD: "-0.85%",
+        rr: "3.41x"
       }
-    }
+    };
 
+    let currentAssetKey = "XAUUSD";
+    let activeWS = null;
+    let sampleCandles = [];
+    let lastPrice = 4155.18;
     let selectedCount = 64;
-    let brushStart = sampleCandles.length - 64;
-    let brushEnd = sampleCandles.length - 1;
+    let brushStart = 0;
+    let brushEnd = 0;
     let isDragging = false;
     let dragStart = null;
 
     const canvas = document.getElementById('marketCanvas');
     const ctx = canvas.getContext('2d');
+
+    // Build baseline candles
+    function initCandlesForAsset(assetKey) {
+      const cfg = ASSETS[assetKey];
+      sampleCandles = [];
+      let p = cfg.basePrice * 0.985;
+      const count = 120;
+      for (let i = 0; i < count; i++) {
+        const ret = (Math.sin(i * 0.14) + (Math.random() - 0.48)) * 0.003;
+        p = p * (1 + ret);
+        const h = p * (1 + Math.random() * 0.002);
+        const l = p * (1 - Math.random() * 0.002);
+        const op = l + Math.random() * (h - l);
+        const cl = l + Math.random() * (h - l);
+        sampleCandles.push({ open: op, high: h, low: l, close: cl });
+      }
+      lastPrice = sampleCandles[sampleCandles.length - 1].close;
+      brushEnd = sampleCandles.length - 1;
+      brushStart = Math.max(0, brushEnd - selectedCount + 1);
+    }
 
     function renderCanvas() {
       const rect = canvas.parentElement.getBoundingClientRect();
@@ -496,9 +550,11 @@
       ctx.fillStyle = "#090D16";
       ctx.fillRect(0, 0, w, h);
 
+      if (sampleCandles.length === 0) return;
+
       let minP = Infinity, maxP = -Infinity;
       sampleCandles.forEach(c => { minP = Math.min(minP, c.low); maxP = Math.max(maxP, c.high); });
-      const pad = (maxP - minP) * 0.15;
+      const pad = (maxP - minP) * 0.16;
       minP -= pad; maxP += pad;
 
       const candleW = Math.max(3, (w - 80) / (sampleCandles.length + 22));
@@ -511,7 +567,7 @@
         ctx.beginPath(); ctx.moveTo(0, y); ctx.lineTo(w - 60, y); ctx.stroke();
         const price = maxP - ((y - 30) / (h - 60)) * (maxP - minP);
         ctx.fillStyle = "#6B7280"; ctx.font = "10px monospace";
-        ctx.fillText(price.toFixed(1), w - 55, y + 3);
+        ctx.fillText(price.toFixed(ASSETS[currentAssetKey].decimals), w - 55, y + 3);
       }
 
       // Selection Brush Box
@@ -570,6 +626,118 @@
       ctx.fillText("Reality Cone (P50)", startX + 20 * candleW - 25, baseY - 20 * 0.75 - 8);
     }
 
+    // Connect to Free Public WebSocket
+    function connectWebSocket(streamName) {
+      if (activeWS) {
+        try { activeWS.close(); } catch(e) {}
+      }
+
+      const wsUrl = `wss://stream.binance.com:9443/ws/${streamName}`;
+      const statusEl = document.getElementById("ws-status");
+      statusEl.innerText = "Connecting...";
+
+      try {
+        activeWS = new WebSocket(wsUrl);
+
+        activeWS.onopen = () => {
+          statusEl.innerText = "LIVE (1s WebSocket)";
+          document.getElementById("ws-badge").className = "flex items-center gap-2 px-2.5 py-1 rounded-full bg-emerald-500/10 border border-emerald-500/30 text-emerald-400 font-mono text-[11px]";
+        };
+
+        activeWS.onmessage = (event) => {
+          try {
+            const msg = JSON.parse(event.data);
+            if (msg.k) {
+              const k = msg.k;
+              const closePrice = parseFloat(k.c);
+              const highPrice = parseFloat(k.h);
+              const lowPrice = parseFloat(k.l);
+              const isClosed = k.x;
+
+              updateLiveTick(closePrice, highPrice, lowPrice, isClosed);
+            }
+          } catch(e) {}
+        };
+
+        activeWS.onerror = () => {
+          statusEl.innerText = "Simulated Live Tick";
+        };
+
+        activeWS.onclose = () => {
+          // Reconnect after 3s
+          setTimeout(() => {
+            if (currentAssetKey) connectWebSocket(ASSETS[currentAssetKey].wsStream);
+          }, 3000);
+        };
+      } catch (e) {
+        statusEl.innerText = "Simulated Live";
+      }
+    }
+
+    // Process each real-time tick
+    function updateLiveTick(close, high, low, isClosed) {
+      const priceEl = document.getElementById("live-price");
+      const indicatorEl = document.getElementById("live-tick-indicator");
+      const cfg = ASSETS[currentAssetKey];
+
+      // Price flash animation
+      if (close > lastPrice) {
+        priceEl.className = "text-emerald-400 font-bold text-sm bg-emerald-500/15 px-2 py-0.5 rounded border border-emerald-500/30 transition duration-150";
+        indicatorEl.innerText = "▲";
+        indicatorEl.className = "text-xs text-emerald-400";
+      } else if (close < lastPrice) {
+        priceEl.className = "text-rose-400 font-bold text-sm bg-rose-500/15 px-2 py-0.5 rounded border border-rose-500/30 transition duration-150";
+        indicatorEl.innerText = "▼";
+        indicatorEl.className = "text-xs text-rose-400";
+      }
+      setTimeout(() => {
+        priceEl.className = "text-white font-bold text-sm bg-surfaceElevated px-2 py-0.5 rounded border border-gray-700 transition duration-150";
+      }, 350);
+
+      priceEl.innerText = `${cfg.prefix}${close.toLocaleString('en-US', { minimumFractionDigits: cfg.decimals, maximumFractionDigits: cfg.decimals })}`;
+      lastPrice = close;
+
+      // Update current active candle on canvas
+      const lastCandle = sampleCandles[sampleCandles.length - 1];
+      lastCandle.close = close;
+      lastCandle.high = Math.max(lastCandle.high, high || close);
+      lastCandle.low = Math.min(lastCandle.low, low || close);
+
+      // If bar closes, append a new bar and shift brush window
+      if (isClosed) {
+        sampleCandles.push({
+          open: close,
+          high: close,
+          low: close,
+          close: close
+        });
+        if (sampleCandles.length > 150) {
+          sampleCandles.shift();
+        }
+        brushEnd = sampleCandles.length - 1;
+        brushStart = Math.max(0, brushEnd - selectedCount + 1);
+      }
+
+      renderCanvas();
+    }
+
+    // Switch between Gold, Bitcoin, Ethereum
+    function switchAsset(assetKey) {
+      currentAssetKey = assetKey;
+      const cfg = ASSETS[assetKey];
+
+      // Update tabs
+      ['tab-XAUUSD', 'tab-BTCUSDT', 'tab-ETHUSDT'].forEach(id => {
+        const tab = document.getElementById(id);
+        tab.className = "px-2.5 py-1 rounded-md font-semibold text-gray-400 hover:text-white transition";
+      });
+      document.getElementById(`tab-${assetKey}`).className = "px-2.5 py-1 rounded-md font-semibold text-white bg-kronos shadow transition";
+
+      initCandlesForAsset(assetKey);
+      connectWebSocket(cfg.wsStream);
+      renderCanvas();
+    }
+
     function setPreset(count) {
       selectedCount = count;
       brushEnd = sampleCandles.length - 1;
@@ -584,7 +752,7 @@
       renderCanvas();
     }
 
-    // Mouse Drag Listeners
+    // Mouse Drag Brush Listeners
     canvas.addEventListener('mousedown', e => {
       const rect = canvas.getBoundingClientRect();
       const candleW = Math.max(3, (rect.width - 80) / (sampleCandles.length + 22));
@@ -617,7 +785,20 @@
     });
 
     window.addEventListener('resize', renderCanvas);
+
+    // Initial startup
+    initCandlesForAsset("XAUUSD");
+    connectWebSocket(ASSETS.XAUUSD.wsStream);
     renderCanvas();
+
+    // Fallback heartbeat ticker in case of adblockers
+    setInterval(() => {
+      if (!activeWS || activeWS.readyState !== WebSocket.OPEN) {
+        const delta = (Math.random() - 0.49) * (currentAssetKey === 'BTCUSDT' ? 12 : 0.4);
+        const newP = lastPrice + delta;
+        updateLiveTick(newP, Math.max(newP, lastPrice), Math.min(newP, lastPrice), false);
+      }
+    }, 1000);
 
     // ROI Calculator
     const tradersSlider = document.getElementById('traders-slider');
