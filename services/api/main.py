@@ -152,6 +152,62 @@ def get_supported_tickers():
     }
 
 
+@app.get("/api/v1/candles")
+def get_candles(symbol: str = "XAUUSD", timeframe: str = "1h", limit: int = 150):
+    """Returns historical candles. Loads real MT5 cached data if available."""
+    cache_path = os.path.abspath(os.path.join(
+        os.path.dirname(__file__), "..", "ingestion-worker", "data", f"{symbol.lower()}_{timeframe.lower()}_cache.npz"
+    ))
+
+    raw_candles = None
+    if os.path.exists(cache_path):
+        try:
+            data = np.load(cache_path)
+            raw_candles = data["candles"][-limit:]
+        except Exception:
+            pass
+
+    if raw_candles is None:
+        # Fallback realistic generator
+        np.random.seed(42 if symbol == "XAUUSD" else 101)
+        base = 2650.0 if symbol == "XAUUSD" else (68000.0 if symbol == "BTCUSD" else 135.0)
+        p = base
+        candles_list = []
+        now = int(time.time())
+        for i in range(limit):
+            ret = np.random.normal(0.0002, 0.005)
+            p = max(1.0, p * (1.0 + ret))
+            high = p * (1.0 + abs(np.random.normal(0, 0.002)))
+            low = p * (1.0 - abs(np.random.normal(0, 0.002)))
+            op = low + np.random.uniform(0.2, 0.8) * (high - low)
+            cl = low + np.random.uniform(0.2, 0.8) * (high - low)
+            vol = float(np.random.lognormal(8.0, 0.5))
+            candles_list.append({
+                "time": now - (limit - i) * 3600,
+                "open": round(float(op), 2),
+                "high": round(float(high), 2),
+                "low": round(float(low), 2),
+                "close": round(float(cl), 2),
+                "volume": int(vol)
+            })
+        return {"symbol": symbol, "timeframe": timeframe, "source": "generated", "candles": candles_list}
+
+    # Format MT5 numpy candles
+    now = int(time.time())
+    candles_list = []
+    for i, c in enumerate(raw_candles):
+        candles_list.append({
+            "time": now - (len(raw_candles) - i) * 3600,
+            "open": round(float(c[0]), 2),
+            "high": round(float(c[1]), 2),
+            "low": round(float(c[2]), 2),
+            "close": round(float(c[3]), 2),
+            "volume": int(c[4])
+        })
+
+    return {"symbol": symbol, "timeframe": timeframe, "source": "mt5_cache", "candles": candles_list}
+
+
 @app.post("/api/v1/search-pattern", response_model=RealityConeResponse)
 def search_pattern(req: PatternSearchRequest):
     t_start = time.perf_counter()

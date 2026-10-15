@@ -89,37 +89,63 @@ export const PatternTerminal: React.FC = () => {
     },
   ]);
 
-  // Generate synthetic live candles for the selected symbol
+  // Fetch candles (loads real MT5 gold data when available)
   useEffect(() => {
-    let basePrice = 2650.0;
-    if (selectedTicker === "BTCUSD") basePrice = 68000.0;
-    else if (selectedTicker === "ETHUSD") basePrice = 3500.0;
-    else if (selectedTicker === "EURUSD") basePrice = 1.085;
-    else if (selectedTicker === "NAS100") basePrice = 19500.0;
-    else if (selectedTicker === "NVDA") basePrice = 135.0;
+    let isMounted = true;
+    async function loadCandles() {
+      try {
+        const res = await fetch(`http://localhost:8000/api/v1/candles?symbol=${selectedTicker}&timeframe=${selectedTimeframe}&limit=120`);
+        if (res.ok) {
+          const json = await res.json();
+          if (json.candles && json.candles.length >= 32 && isMounted) {
+            setCandles(json.candles);
+            const defaultStart = Math.max(0, json.candles.length - 64);
+            const defaultEnd = json.candles.length - 1;
+            setBrushRange([defaultStart, defaultEnd]);
+            triggerPatternSearch(json.candles.slice(defaultStart, defaultEnd + 1));
+            return;
+          }
+        }
+      } catch {}
 
-    const generated = [];
-    let p = basePrice;
-    for (let i = 0; i < 90; i++) {
-      const ret = (Math.sin(i * 0.15) + (Math.random() - 0.48)) * 0.005;
-      p = p * (1 + ret);
-      const high = p * (1 + Math.abs(Math.random() * 0.002));
-      const low = p * (1 - Math.abs(Math.random() * 0.002));
-      const open = low + Math.random() * (high - low);
-      const close = low + Math.random() * (high - low);
-      generated.push({
-        time: Math.floor(Date.now() / 1000) - (90 - i) * 3600,
-        open,
-        high,
-        low,
-        close,
-        volume: Math.floor(1000 + Math.random() * 5000),
-      });
+      // Fallback generator with 120 bars for smooth brushing
+      if (!isMounted) return;
+      let basePrice = 2650.0;
+      if (selectedTicker === "BTCUSD") basePrice = 68000.0;
+      else if (selectedTicker === "ETHUSD") basePrice = 3500.0;
+      else if (selectedTicker === "EURUSD") basePrice = 1.085;
+      else if (selectedTicker === "NAS100") basePrice = 19500.0;
+      else if (selectedTicker === "NVDA") basePrice = 135.0;
+
+      const generated = [];
+      let p = basePrice;
+      const totalBars = 120;
+      for (let i = 0; i < totalBars; i++) {
+        const ret = (Math.sin(i * 0.12) + (Math.random() - 0.48)) * 0.005;
+        p = p * (1 + ret);
+        const high = p * (1 + Math.abs(Math.random() * 0.002));
+        const low = p * (1 - Math.abs(Math.random() * 0.002));
+        const open = low + Math.random() * (high - low);
+        const close = low + Math.random() * (high - low);
+        generated.push({
+          time: Math.floor(Date.now() / 1000) - (totalBars - i) * 3600,
+          open: Math.round(open * 100) / 100,
+          high: Math.round(high * 100) / 100,
+          low: Math.round(low * 100) / 100,
+          close: Math.round(close * 100) / 100,
+          volume: Math.floor(1000 + Math.random() * 5000),
+        });
+      }
+
+      setCandles(generated);
+      const defaultStart = Math.max(0, generated.length - 64);
+      const defaultEnd = generated.length - 1;
+      setBrushRange([defaultStart, defaultEnd]);
+      triggerPatternSearch(generated.slice(defaultStart, defaultEnd + 1));
     }
 
-    setCandles(generated);
-    setBrushRange([generated.length - 64, generated.length - 1]);
-    triggerPatternSearch(generated.slice(generated.length - 64));
+    loadCandles();
+    return () => { isMounted = false; };
   }, [selectedTicker, selectedTimeframe]);
 
   const triggerPatternSearch = async (brushCandles: any[]) => {
@@ -270,6 +296,7 @@ export const PatternTerminal: React.FC = () => {
             activeGhostTwin={activeGhostTwin}
             selectedRange={brushRange}
             onRangeChange={handleRangeChange}
+            isScanning={isScanning}
           />
           <AnalogCarousel
             twins={twins}
