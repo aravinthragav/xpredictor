@@ -154,14 +154,24 @@ def search_pattern(req: PatternSearchRequest):
     last_close = float(window[-1][3])
     col_name = select_collection_name(L)
 
-    # 1. Obtain 768-D structural embedding from kronos-embedder
+    # 1. Obtain 768-D structural embedding from kronos-embedder or direct local engine
     embedding = None
     try:
-        embed_resp = requests.post(f"{KRONOS_URL}/embed", json={"windows": [window]}, timeout=2.5)
+        embed_resp = requests.post(f"{KRONOS_URL}/embed", json={"windows": [window]}, timeout=0.15)
         if embed_resp.status_code == 200:
             embedding = embed_resp.json()["embeddings"][0]
     except Exception:
         pass
+
+    if embedding is None:
+        try:
+            import sys
+            sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), "..", "kronos-embedder")))
+            from extractor import KronosPatternEngine
+            local_engine = KronosPatternEngine()
+            embedding = local_engine.encode_window(np.array(window, dtype=np.float32)).tolist()
+        except Exception:
+            pass
 
     # 2. Query Qdrant with temporal anti-leakage filter
     twins_raw = []
@@ -190,7 +200,7 @@ def search_pattern(req: PatternSearchRequest):
                 "with_payload": True,
                 "filter": filter_payload if filter_payload else None
             }
-            q_res = requests.post(f"{QDRANT_URL}/collections/{col_name}/points/search", json=search_payload, timeout=1.5)
+            q_res = requests.post(f"{QDRANT_URL}/collections/{col_name}/points/search", json=search_payload, timeout=0.15)
             if q_res.status_code == 200:
                 hits = q_res.json().get("result", [])
                 for h in hits:
@@ -226,12 +236,23 @@ def search_pattern(req: PatternSearchRequest):
         cone_resp = requests.post(
             f"{KRONOS_URL}/predict-cone",
             json={"window": window, "pred_len": 20, "sample_count": 100, "temperature": 1.0, "top_p": 0.90},
-            timeout=2.5
+            timeout=0.15
         )
         if cone_resp.status_code == 200:
             generative_quantiles = cone_resp.json()["quantiles"]
     except Exception:
         pass
+
+    if generative_quantiles is None:
+        try:
+            import sys
+            sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), "..", "kronos-embedder")))
+            from extractor import KronosPatternEngine
+            local_engine = KronosPatternEngine()
+            cone_res = local_engine.predict_cone(np.array(window, dtype=np.float32), pred_len=20, sample_count=100)
+            generative_quantiles = cone_res["quantiles"]
+        except Exception:
+            pass
 
     # 4. Bayesian Ensemble Fusion: Combine historical paths and generative paths
     fwd_paths = []

@@ -5,9 +5,16 @@ Detects high-volatility breakout candles, queries XPredictor, and formats high-c
 """
 
 import os
+import sys
 import time
 import logging
 import requests
+
+if sys.platform == "win32":
+    try:
+        sys.stdout.reconfigure(encoding="utf-8")
+    except Exception:
+        pass
 
 logging.basicConfig(level=logging.INFO, format="%(asctime)s [%(levelname)s] %(message)s")
 
