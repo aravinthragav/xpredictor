@@ -186,9 +186,13 @@
             </div>
           </div>
 
-          <!-- Presets -->
+          <!-- Presets & Ghost Twin Toggle -->
           <div class="flex items-center gap-2">
-            <span class="text-gray-400 text-[11px]">Brush:</span>
+            <button onclick="toggleGhostTwin()" id="btn-ghost-toggle" class="px-2.5 py-1 rounded bg-surfaceElevated hover:bg-gray-700 text-gray-400 border border-gray-700 font-medium text-xs flex items-center gap-1.5 transition">
+              <span class="w-2 h-2 rounded-full bg-gray-500" id="ghost-indicator-dot"></span>
+              <span id="ghost-btn-text">Ghost Twin: OFF</span>
+            </button>
+            <span class="text-gray-400 text-[11px] ml-1">Brush:</span>
             <button onclick="setPreset(32)" id="btn-32" class="px-2.5 py-1 rounded bg-surfaceElevated hover:bg-gray-700 text-gray-200 border border-gray-700 font-medium">32b (Scalp)</button>
             <button onclick="setPreset(64)" id="btn-64" class="px-2.5 py-1 rounded bg-kronos text-white font-medium shadow-md shadow-kronos/25">64b (Swing - Active)</button>
             <button onclick="setPreset(120)" id="btn-120" class="px-2.5 py-1 rounded bg-surfaceElevated hover:bg-gray-700 text-gray-200 border border-gray-700 font-medium">120b (Regime)</button>
@@ -202,7 +206,7 @@
               <canvas id="marketCanvas" class="w-full h-full cursor-crosshair"></canvas>
             </div>
             <div class="mt-2 flex items-center justify-between text-[11px] text-gray-400 px-1">
-              <span>💡 Click & Drag horizontally across candles to custom-brush any window.</span>
+              <span>💡 Click & Drag horizontally across candles to custom-brush any window. Hover twin cards to preview ghost paths.</span>
               <span id="brush-badge" class="font-mono text-kronos font-bold">Window: 64 Bars (Active)</span>
             </div>
           </div>
@@ -240,18 +244,18 @@
 
             <!-- Top Twins -->
             <div class="border-t border-gray-800 pt-2.5">
-              <div class="text-[10px] uppercase tracking-wider text-gray-400 font-bold mb-2">Closest Historical Twins</div>
+              <div class="text-[10px] uppercase tracking-wider text-gray-400 font-bold mb-2">Closest Historical Twins (Hover to Replay)</div>
               <div class="space-y-1.5 text-[11px]">
-                <div class="p-1.5 bg-surfaceElevated rounded border border-gray-800 flex justify-between">
-                  <span id="score-twin-1">#1: XAU/USD (Oct 2024)</span>
+                <div onmouseenter="hoverTwin(1)" onmouseleave="hoverTwin(null)" onclick="selectTwin(1)" id="card-twin-1" class="p-1.5 bg-surfaceElevated hover:bg-gray-700/60 cursor-pointer rounded border border-gray-800 transition flex justify-between items-center group">
+                  <span id="score-twin-1" class="group-hover:text-amber-400 transition">#1: XAU/USD (Oct 2024)</span>
                   <span id="score-twin-1-match" class="text-kronos font-mono font-bold">96.2% match</span>
                 </div>
-                <div class="p-1.5 bg-surfaceElevated rounded border border-gray-800 flex justify-between">
-                  <span id="score-twin-2">#2: BTC/USD (Nov 2024)</span>
+                <div onmouseenter="hoverTwin(2)" onmouseleave="hoverTwin(null)" onclick="selectTwin(2)" id="card-twin-2" class="p-1.5 bg-surfaceElevated hover:bg-gray-700/60 cursor-pointer rounded border border-gray-800 transition flex justify-between items-center group">
+                  <span id="score-twin-2" class="group-hover:text-amber-400 transition">#2: BTC/USD (Nov 2024)</span>
                   <span id="score-twin-2-match" class="text-kronos font-mono font-bold">95.8% match</span>
                 </div>
-                <div class="p-1.5 bg-surfaceElevated rounded border border-gray-800 flex justify-between">
-                  <span id="score-twin-3">#3: XAU/USD (Aug 2023)</span>
+                <div onmouseenter="hoverTwin(3)" onmouseleave="hoverTwin(null)" onclick="selectTwin(3)" id="card-twin-3" class="p-1.5 bg-surfaceElevated hover:bg-gray-700/60 cursor-pointer rounded border border-gray-800 transition flex justify-between items-center group">
+                  <span id="score-twin-3" class="group-hover:text-amber-400 transition">#3: XAU/USD (Aug 2023)</span>
                   <span id="score-twin-3-match" class="text-kronos font-mono font-bold">94.7% match</span>
                 </div>
               </div>
@@ -531,6 +535,9 @@
     let brushEnd = 0;
     let isDragging = false;
     let dragStart = null;
+    let isGhostTwinActive = false;
+    let hoveredTwinIndex = null;
+    let crosshairPos = null;
 
     const canvas = document.getElementById('marketCanvas');
     const ctx = canvas.getContext('2d');
@@ -692,21 +699,56 @@
       ctx.font = "bold 10px monospace";
       ctx.fillText("Reality Cone (P50)", startX + 20 * candleW - 20, baseY + dir * 20 * 1.25 - 8);
 
-      // Ghost Twin Path (Yellow dotted line)
-      ctx.strokeStyle = "#F59E0B";
-      ctx.lineWidth = 2.0;
-      ctx.setLineDash([4, 3]);
-      ctx.beginPath();
-      ctx.moveTo(startX, baseY);
-      for (let i = 1; i <= 20; i++) {
-        const wobble = Math.sin(i * 0.5) * 5;
-        ctx.lineTo(startX + i * candleW, baseY + dir * i * 1.05 + wobble);
+      // Ghost Twin Path (Yellow dotted line) - Active only on hover or toggle
+      if (isGhostTwinActive || hoveredTwinIndex !== null) {
+        const twinNum = hoveredTwinIndex || 1;
+        ctx.strokeStyle = "#F59E0B";
+        ctx.lineWidth = 2.2;
+        ctx.setLineDash([4, 3]);
+        ctx.beginPath();
+        ctx.moveTo(startX, baseY);
+        const freq = twinNum === 1 ? 0.45 : (twinNum === 2 ? 0.35 : 0.55);
+        const amp = twinNum === 1 ? 5 : (twinNum === 2 ? 8 : 4);
+        for (let i = 1; i <= 20; i++) {
+          const wobble = Math.sin(i * freq) * amp;
+          ctx.lineTo(startX + i * candleW, baseY + dir * i * 1.05 + wobble);
+        }
+        ctx.stroke();
+        ctx.setLineDash([]);
+        ctx.fillStyle = "#F59E0B";
+        ctx.font = "bold 9px monospace";
+        ctx.fillText(`Ghost Twin #${twinNum} Path`, startX + 20 * candleW - 25, baseY + dir * 20 * 1.05 + 14);
       }
-      ctx.stroke();
-      ctx.setLineDash([]);
-      ctx.fillStyle = "#F59E0B";
-      ctx.font = "bold 9px monospace";
-      ctx.fillText("Ghost Twin Path", startX + 20 * candleW - 20, baseY + dir * 20 * 1.05 + 14);
+
+      // TradingView-Style Interactive Crosshair
+      if (crosshairPos && !isDragging) {
+        ctx.strokeStyle = "rgba(156, 163, 175, 0.4)";
+        ctx.lineWidth = 1;
+        ctx.setLineDash([3, 3]);
+
+        // Vertical line
+        ctx.beginPath();
+        ctx.moveTo(crosshairPos.x, 0);
+        ctx.lineTo(crosshairPos.x, h - 35);
+        ctx.stroke();
+
+        // Horizontal line
+        ctx.beginPath();
+        ctx.moveTo(0, crosshairPos.y);
+        ctx.lineTo(w - 65, crosshairPos.y);
+        ctx.stroke();
+        ctx.setLineDash([]);
+
+        // Floating TradingView price badge on Y axis
+        const hoverPrice = maxP - ((crosshairPos.y - 35) / (h - 70)) * (maxP - minP);
+        ctx.fillStyle = "#1F2937";
+        ctx.fillRect(w - 65, crosshairPos.y - 9, 62, 18);
+        ctx.strokeStyle = "#4B5563";
+        ctx.strokeRect(w - 65, crosshairPos.y - 9, 62, 18);
+        ctx.fillStyle = "#F9FAFB";
+        ctx.font = "bold 10px monospace";
+        ctx.fillText(hoverPrice.toFixed(ASSETS[currentAssetKey].decimals), w - 60, crosshairPos.y + 4);
+      }
     }
 
     // Connect to Free Public WebSocket with dynamic symbol and timeframe
@@ -879,6 +921,38 @@
       }
     }
 
+    function toggleGhostTwin() {
+      isGhostTwinActive = !isGhostTwinActive;
+      const dot = document.getElementById("ghost-indicator-dot");
+      const text = document.getElementById("ghost-btn-text");
+      const btn = document.getElementById("btn-ghost-toggle");
+      if (isGhostTwinActive) {
+        dot.className = "w-2 h-2 rounded-full bg-amber-400 animate-pulse";
+        text.innerText = "Ghost Twin: ON";
+        btn.className = "px-2.5 py-1 rounded bg-amber-500/15 text-amber-400 border border-amber-500/40 font-medium text-xs flex items-center gap-1.5 transition";
+      } else {
+        dot.className = "w-2 h-2 rounded-full bg-gray-500";
+        text.innerText = "Ghost Twin: OFF";
+        btn.className = "px-2.5 py-1 rounded bg-surfaceElevated hover:bg-gray-700 text-gray-400 border border-gray-700 font-medium text-xs flex items-center gap-1.5 transition";
+      }
+      renderCanvas();
+    }
+
+    function hoverTwin(twinNum) {
+      hoveredTwinIndex = twinNum;
+      renderCanvas();
+    }
+
+    function selectTwin(twinNum) {
+      if (isGhostTwinActive && hoveredTwinIndex === twinNum) {
+        toggleGhostTwin();
+      } else {
+        if (!isGhostTwinActive) toggleGhostTwin();
+        hoveredTwinIndex = twinNum;
+        renderCanvas();
+      }
+    }
+
     function setPreset(count) {
       selectedCount = count;
       brushEnd = sampleCandles.length - 1;
@@ -894,13 +968,32 @@
       renderCanvas();
     }
 
-    // Mouse Drag Brush Listeners
+    // Mouse Drag Brush & TradingView Crosshair Listeners
     canvas.addEventListener('mousedown', e => {
       const rect = canvas.getBoundingClientRect();
       const candleW = Math.max(3, (rect.width - 80) / (sampleCandles.length + 22));
       const idx = Math.floor((e.clientX - rect.left) / candleW);
       isDragging = true;
+      crosshairPos = null;
       dragStart = Math.max(0, Math.min(sampleCandles.length - 1, idx));
+    });
+
+    canvas.addEventListener('mousemove', e => {
+      if (!isDragging) {
+        const rect = canvas.getBoundingClientRect();
+        crosshairPos = {
+          x: e.clientX - rect.left,
+          y: e.clientY - rect.top
+        };
+        renderCanvas();
+      }
+    });
+
+    canvas.addEventListener('mouseleave', () => {
+      if (!isDragging) {
+        crosshairPos = null;
+        renderCanvas();
+      }
     });
 
     window.addEventListener('mousemove', e => {
