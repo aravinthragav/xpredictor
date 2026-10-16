@@ -2080,12 +2080,54 @@ engine.OnConeUpdate([&amp;](<span class="text-primary">const</span> xpred::ConeS
       if (isDragging) {
         isDragging = false;
         renderCanvas();
+        queryRealVectorTwins(sampleCandles.slice(brushStart, brushEnd + 1));
       }
       if (isPanDragging) {
         isPanDragging = false;
         renderCanvas();
       }
     });
+
+    const BACKEND_API_URL = "https://aravinthragav--xpredictor-api-fastapi-app.us-east.modal.run";
+
+    async function queryRealVectorTwins(brushCandles) {
+      if (!brushCandles || brushCandles.length < 10) return;
+      try {
+        const formatted = brushCandles.map(c => [c.open, c.high, c.low, c.close, 1000, 1000 * c.close]);
+        const res = await fetch(`${BACKEND_API_URL}/api/v1/search-pattern`, {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            symbol: ASSETS[currentAssetKey].symbol,
+            timeframe: currentTimeframe,
+            candles: formatted,
+            asset_filter: "all"
+          })
+        });
+        if (res.ok) {
+          const data = await res.json();
+          if (data.top_historical_twins && data.top_historical_twins.length > 0) {
+            data.top_historical_twins.slice(0, 3).forEach((twin, idx) => {
+              const i = idx + 1;
+              const lEl = document.getElementById(`twin-label-${i}`);
+              const mEl = document.getElementById(`twin-match-${i}`);
+              if (lEl) lEl.innerText = `#${i} ${twin.symbol} (${twin.date_formatted})`;
+              if (mEl) mEl.innerText = `${twin.match_pct}% match`;
+            });
+          }
+          if (data.posterior) {
+            const confEl = document.getElementById("hud-conf");
+            if (confEl) confEl.innerText = `${data.posterior.bayesian_confidence}%`;
+          }
+          if (data.prior) {
+            const alphaEl = document.getElementById("hud-alpha");
+            if (alphaEl) alphaEl.innerText = `${data.prior.median_return >= 0 ? '+' : ''}${(data.prior.median_return * 100).toFixed(0)} bps`;
+          }
+        }
+      } catch (err) {
+        // Fallback to client-side math
+      }
+    }
 
     canvas.addEventListener('mouseleave', () => {
       crosshairPos = null;
