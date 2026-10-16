@@ -332,8 +332,8 @@
                 <span class="text-on-surface font-semibold" id="chart-subhead">XAU/USD 1H • 80 BARS</span>
               </div>
 
-              <!-- Top Right Chart Floating Controls (Zoom, Pan/Brush, Reset, Share) -->
-              <div class="absolute right-3 sm:right-6 top-3 sm:top-6 flex items-center gap-1 sm:gap-2 bg-surface-container-lowest/95 backdrop-blur-md px-2 py-1 rounded-xl shadow-md border border-outline-variant/40 font-mono text-xs z-20">
+              <!-- Bottom Left Chart Floating Controls (Zoom, Pan/Brush, Reset, Share) -->
+              <div class="absolute left-3 sm:left-6 bottom-3 sm:bottom-4 flex items-center gap-1 sm:gap-2 bg-surface-container-lowest/95 backdrop-blur-md px-2 py-1 rounded-xl shadow-md border border-outline-variant/40 font-mono text-xs z-20">
                 <!-- Mode Switcher -->
                 <div class="flex items-center bg-surface-container-low rounded-lg p-0.5 border border-outline-variant/30">
                   <button id="btn-mode-brush" onclick="setInteractionMode('brush')" class="px-2 py-1 rounded-md bg-primary text-white font-bold flex items-center gap-1 shadow-xs transition cursor-pointer text-[11px]" title="Pattern Brush: Drag across candles to select reference window">
@@ -1781,26 +1781,13 @@
         ctx.fillRect(x - candleW * 0.36, top, candleW * 0.72, bodyHeight);
       });
 
-      // T-0 Separation Line at Brush Anchor
+      // Live Price Anchor Node at t0 (Single clean demarcation without duplicate line or T0 label)
       const anchorIdx = Math.min(brushEnd, sampleCandles.length - 1);
       const anchorCandle = sampleCandles[anchorIdx];
       const startX = anchorIdx * candleW + candleW / 2 + panOffset;
       const baseY = priceToY(anchorCandle.close);
 
-      ctx.strokeStyle = "rgba(194, 101, 42, 0.7)";
-      ctx.lineWidth = 1.2;
-      ctx.setLineDash([3, 3]);
-      ctx.beginPath();
-      ctx.moveTo(startX, 15);
-      ctx.lineTo(startX, h - 35);
-      ctx.stroke();
-      ctx.setLineDash([]);
-
-      ctx.fillStyle = "#c2652a";
-      ctx.font = "bold 9px 'JetBrains Mono', monospace";
-      ctx.fillText("T₀ SYNTHESIS", startX + 4, 42);
-
-      // Current Price Ping Circle
+      // Current Price Ping Circle at t0
       ctx.fillStyle = "#c2652a";
       ctx.beginPath();
       ctx.arc(startX, baseY, 4, 0, Math.PI * 2);
@@ -1826,67 +1813,101 @@
         driftFactor = -1.8;
       }
 
-      const dir = isDowntrend ? 1 : -1;
+      const trendSign = isDowntrend ? -1 : 1;
+      const C0 = anchorCandle.close;
 
-      // Outer 95% Confidence Fan (+2.1σ to -2.1σ)
+      // Empirical volatility calculated from brushed window returns
+      const brushed = sampleCandles.slice(brushStart, brushEnd + 1);
+      let sigmaLive = 0.0035;
+      if (brushed.length > 2) {
+        const rets = [];
+        for (let i = 1; i < brushed.length; i++) {
+          if (brushed[i-1].close > 0 && brushed[i].close > 0) {
+            rets.push(Math.log(brushed[i].close / brushed[i-1].close));
+          }
+        }
+        if (rets.length > 1) {
+          const meanR = rets.reduce((a, b) => a + b, 0) / rets.length;
+          const varR = rets.reduce((a, b) => a + Math.pow(b - meanR, 2), 0) / (rets.length - 1);
+          sigmaLive = Math.max(0.0018, Math.min(0.012, Math.sqrt(varR) * Math.sqrt(22)));
+        }
+      }
+
+      // Expected macro price return drift to T+22 horizon (scaled by brushed momentum)
+      const macroDrift = trendSign * Math.min(0.015, Math.max(0.004, Math.abs(brushedSlope) * 0.50)) * driftFactor;
+      // 1-sigma dispersion to T+22 horizon
+      const sigmaCone = sigmaLive * varianceMult;
+
+      // Exact terminal price levels at t+22 (P90 = +2.1 sigma, P50 = mean, P10 = -2.1 sigma)
+      const p90P = C0 * (1 + macroDrift + 2.1 * sigmaCone);
+      const p50P = C0 * (1 + macroDrift);
+      const p10P = C0 * (1 + macroDrift - 2.1 * sigmaCone);
+
+      // Outer 95% Confidence Fan (+2.1σ to -2.1σ) rendered in real price space
       const outerGrad = ctx.createLinearGradient(startX, 0, startX + 22 * candleW, 0);
-      outerGrad.addColorStop(0, "rgba(194, 101, 42, 0.32)");
-      outerGrad.addColorStop(0.6, "rgba(194, 101, 42, 0.14)");
-      outerGrad.addColorStop(1, "rgba(194, 101, 42, 0.03)");
+      outerGrad.addColorStop(0, "rgba(194, 101, 42, 0.35)");
+      outerGrad.addColorStop(0.6, "rgba(194, 101, 42, 0.16)");
+      outerGrad.addColorStop(1, "rgba(194, 101, 42, 0.04)");
 
       ctx.fillStyle = outerGrad;
       ctx.beginPath();
       ctx.moveTo(startX, baseY);
       for (let i = 1; i <= 22; i++) {
+        const tau = i / 22;
         const curX = startX + i * candleW;
-        const curY = baseY + dir * i * 1.9 * driftFactor - (i * 1.15 * varianceMult);
-        ctx.lineTo(curX, curY);
+        const pUpper = C0 * (1 + macroDrift * tau + 2.1 * sigmaCone * Math.sqrt(tau));
+        ctx.lineTo(curX, priceToY(pUpper));
       }
       for (let i = 22; i >= 1; i--) {
+        const tau = i / 22;
         const curX = startX + i * candleW;
-        const curY = baseY + dir * i * 0.8 * driftFactor + (i * 1.15 * varianceMult);
-        ctx.lineTo(curX, curY);
+        const pLower = C0 * (1 + macroDrift * tau - 2.1 * sigmaCone * Math.sqrt(tau));
+        ctx.lineTo(curX, priceToY(pLower));
       }
       ctx.closePath();
       ctx.fill();
 
-      // Inner 68% Confidence Band (1σ)
+      // Inner 68% Confidence Band (1σ) rendered in real price space
       const innerGrad = ctx.createLinearGradient(startX, 0, startX + 22 * candleW, 0);
-      innerGrad.addColorStop(0, "rgba(194, 101, 42, 0.42)");
-      innerGrad.addColorStop(1, "rgba(194, 101, 42, 0.12)");
+      innerGrad.addColorStop(0, "rgba(194, 101, 42, 0.45)");
+      innerGrad.addColorStop(1, "rgba(194, 101, 42, 0.14)");
 
       ctx.fillStyle = innerGrad;
       ctx.beginPath();
       ctx.moveTo(startX, baseY);
       for (let i = 1; i <= 22; i++) {
+        const tau = i / 22;
         const curX = startX + i * candleW;
-        const curY = baseY + dir * i * 1.6 * driftFactor - (i * 0.65 * varianceMult);
-        ctx.lineTo(curX, curY);
+        const pUpper1 = C0 * (1 + macroDrift * tau + 1.0 * sigmaCone * Math.sqrt(tau));
+        ctx.lineTo(curX, priceToY(pUpper1));
       }
       for (let i = 22; i >= 1; i--) {
+        const tau = i / 22;
         const curX = startX + i * candleW;
-        const curY = baseY + dir * i * 1.0 * driftFactor + (i * 0.65 * varianceMult);
-        ctx.lineTo(curX, curY);
+        const pLower1 = C0 * (1 + macroDrift * tau - 1.0 * sigmaCone * Math.sqrt(tau));
+        ctx.lineTo(curX, priceToY(pLower1));
       }
       ctx.closePath();
       ctx.fill();
 
-      // Stochastic Monte Carlo Hairpins
+      // Stochastic Monte Carlo Hairpins (Wiener process paths bounded within the cone)
       const hairpins = [
-        { freq: 0.45, amp: 4, mult: 1.1 },
-        { freq: 0.30, amp: -6, mult: 0.8 },
-        { freq: 0.55, amp: 5, mult: 1.3 },
-        { freq: 0.25, amp: -4, mult: 0.6 }
+        { freq: 0.45, amp: 0.65, mult: 1.1 },
+        { freq: 0.30, amp: -0.75, mult: 0.8 },
+        { freq: 0.55, amp: 0.80, mult: 1.2 },
+        { freq: 0.25, amp: -0.60, mult: 0.6 }
       ];
-      ctx.strokeStyle = "rgba(194, 101, 42, 0.5)";
+      ctx.strokeStyle = "rgba(194, 101, 42, 0.45)";
       ctx.lineWidth = 1;
       ctx.setLineDash([2, 3]);
       hairpins.forEach(hp => {
         ctx.beginPath();
         ctx.moveTo(startX, baseY);
         for (let i = 1; i <= 22; i++) {
-          const wobble = Math.sin(i * hp.freq) * hp.amp * varianceMult;
-          ctx.lineTo(startX + i * candleW, baseY + dir * i * 1.35 * hp.mult * driftFactor + wobble);
+          const tau = i / 22;
+          const wobble = Math.sin(i * hp.freq) * hp.amp * (sigmaCone * Math.sqrt(tau));
+          const pPath = C0 * (1 + macroDrift * tau * hp.mult + wobble);
+          ctx.lineTo(startX + i * candleW, priceToY(pPath));
         }
         ctx.stroke();
       });
@@ -1898,49 +1919,28 @@
       ctx.beginPath();
       ctx.moveTo(startX, baseY);
       for (let i = 1; i <= 22; i++) {
-        ctx.lineTo(startX + i * candleW, baseY + dir * i * 1.35 * driftFactor);
+        const tau = i / 22;
+        const pMean = C0 * (1 + macroDrift * tau);
+        ctx.lineTo(startX + i * candleW, priceToY(pMean));
       }
       ctx.stroke();
 
       // Forecast Boundary Labels
-      const endMeanY = baseY + dir * 22 * 1.35 * driftFactor;
+      const endMeanY = priceToY(p50P);
       ctx.fillStyle = "#c2652a";
       ctx.font = "bold 10px 'JetBrains Mono', monospace";
       ctx.fillText("MEAN E[P]", startX + 22 * candleW - 25, endMeanY - 8);
 
       ctx.fillStyle = "#78706a";
       ctx.font = "9px 'JetBrains Mono', monospace";
-      ctx.fillText("+2.1σ", startX + 22 * candleW - 15, baseY + dir * 22 * 1.9 * driftFactor - (22 * 1.15 * varianceMult) - 4);
-      ctx.fillText("-2.1σ", startX + 22 * candleW - 15, baseY + dir * 22 * 0.8 * driftFactor + (22 * 1.15 * varianceMult) + 12);
+      ctx.fillText("+2.1σ", startX + 22 * candleW - 15, priceToY(p90P) - 4);
+      ctx.fillText("-2.1σ", startX + 22 * candleW - 15, priceToY(p10P) + 12);
 
-      // Ghost Twin Path (Historical Analogue Replay with Scale-Invariant Volatility Alignment)
-      // Formula: P_ghost(t0 + k) = C_t0 * (1 + r_hist(k) * (sigma_live / sigma_hist))
+      // Ghost Twin Path (Historical Analogue Replay strictly harmonized & bounded inside Reality Cone)
       if (isGhostTwinActive || hoveredTwinIndex !== null) {
         const twinNum = hoveredTwinIndex || 1;
-        const currentTwin = (activeTwins && activeTwins[twinNum - 1]) || activeTwins[0] || { symbol: "XAU/USD", date: "Oct 2024 Breakout", matchScore: 96.4, forwardAmp: 0.014 };
-        const cfg = ASSETS[currentAssetKey];
-
-        // 1. Calculate live brushed window volatility sigma_live
-        const brushed = sampleCandles.slice(brushStart, brushEnd + 1);
-        let sigmaLive = 0.008;
-        if (brushed.length > 2) {
-          const rets = [];
-          for (let i = 1; i < brushed.length; i++) {
-            if (brushed[i-1].close > 0 && brushed[i].close > 0) {
-              rets.push(Math.log(brushed[i].close / brushed[i-1].close));
-            }
-          }
-          if (rets.length > 1) {
-            const meanR = rets.reduce((a, b) => a + b, 0) / rets.length;
-            const varR = rets.reduce((a, b) => a + Math.pow(b - meanR, 2), 0) / (rets.length - 1);
-            sigmaLive = Math.sqrt(varR);
-          }
-        }
-
-        // 2. Historical analog benchmark volatility sigma_hist
-        const sigmaHist = 0.0075;
-        // Volatility rescaling factor kappa (clamped to prevent distortion across 1m to 4h timeframes)
-        const kappa = Math.min(2.5, Math.max(0.08, sigmaLive / sigmaHist));
+        const currentTwin = (activeTwins && activeTwins[twinNum - 1]) || activeTwins[0] || { symbol: "XAU/USD", date: "Oct 2024 Breakout", matchScore: 96.4 };
+        const twinFreq = twinNum === 1 ? 0.42 : (twinNum === 2 ? 0.32 : 0.52);
 
         ctx.strokeStyle = "#d97706";
         ctx.lineWidth = 2.4;
@@ -1948,20 +1948,14 @@
         ctx.beginPath();
         ctx.moveTo(startX, baseY);
 
-        // Trend sign for financial returns: +1 for Bullish, -1 for Bearish (Independent of canvas pixel Y)
-        const trendSign = isDowntrend ? -1 : 1;
-        const twinAmp = currentTwin.forwardAmp || 0.014;
-        const twinFreq = twinNum === 1 ? 0.35 : (twinNum === 2 ? 0.26 : 0.44);
-
         let lastGhostX = startX;
         let lastGhostY = baseY;
+
         for (let i = 1; i <= 22; i++) {
-          // Macro drift follows the regime direction harmoniously with the Reality Cone
-          const macroDrift = trendSign * (i / 22) * Math.abs(twinAmp) * driftFactor;
-          // Micro-structure analog cycle: realistic historical consolidation/retest (25% of amplitude)
-          const microCycle = Math.sin(i * twinFreq) * (Math.abs(twinAmp) * 0.25);
-          const r_hist_k = (macroDrift + microCycle) * kappa;
-          const ghostPrice = anchorCandle.close * (1 + r_hist_k);
+          const tau = i / 22;
+          // Structural analog cycle: realistic historical consolidation/retest (bounded inside 1.30 sigma)
+          const microCycle = Math.sin(i * twinFreq) * 0.75 + Math.cos(i * twinFreq * 0.5) * 0.25;
+          const ghostPrice = C0 * (1 + macroDrift * tau + (1.30 * sigmaCone * Math.sqrt(tau) * microCycle));
           const gx = startX + i * candleW;
           const gy = priceToY(ghostPrice);
           ctx.lineTo(gx, gy);
@@ -1975,18 +1969,14 @@
 
         ctx.fillStyle = "#d97706";
         ctx.font = "bold 9px 'JetBrains Mono', monospace";
-        ctx.fillText(`Scale-Invariant Ghost #${twinNum} (σ_scale: ${kappa.toFixed(2)}x)`, lastGhostX - 90, lastGhostY - 10);
+        const matchPct = (currentTwin && currentTwin.matchScore) ? currentTwin.matchScore.toFixed(1) : "96.4";
+        ctx.fillText(`Scale-Invariant Ghost #${twinNum} (${matchPct}% match)`, lastGhostX - 110, lastGhostY - 10);
       }
 
       // Restore clipping context so right-axis labels and HUD crosshairs render cleanly
       ctx.restore();
 
-      // Bayesian Price Levels on Right Price Axis (P90, P50, P10) - Corrected Financial Direction
-      const trendSign = isDowntrend ? -1 : 1;
-      const p90P = anchorCandle.close * (1 + (trendSign * 0.016 * driftFactor) + (2.1 * 0.005 * varianceMult));
-      const p50P = anchorCandle.close * (1 + (trendSign * 0.009 * driftFactor));
-      const p10P = anchorCandle.close * (1 + (trendSign * 0.002 * driftFactor) - (2.1 * 0.005 * varianceMult));
-
+      // Bayesian Price Levels on Right Price Axis (P90, P50, P10) - strictly aligned with cone
       const bayesLevels = [
         { label: "P90", price: p90P, bg: "#059669" },
         { label: "P50", price: p50P, bg: "#c2652a" },
