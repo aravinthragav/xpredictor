@@ -1,8 +1,8 @@
 "use client";
 
-import React, { useEffect, useRef, useState, useCallback } from "react";
+import React, { useEffect, useRef, useState, useCallback, useImperativeHandle, forwardRef } from "react";
 import { HistoricalTwinItem } from "./AnalogCarousel";
-import { MousePointer, Sparkles, CheckCircle2 } from "lucide-react";
+import { MousePointer, Sparkles, Hand, Search, ShieldCheck } from "lucide-react";
 
 interface CandlestickData {
   time: number;
@@ -11,6 +11,10 @@ interface CandlestickData {
   low: number;
   close: number;
   volume: number;
+}
+
+export interface ChartCanvasRef {
+  exportSnapshotBlob: () => Promise<Blob | null>;
 }
 
 interface ChartCanvasProps {
@@ -28,21 +32,38 @@ interface ChartCanvasProps {
   isScanning?: boolean;
 }
 
-export const ChartCanvas: React.FC<ChartCanvasProps> = ({
+export const ChartCanvas = forwardRef<ChartCanvasRef, ChartCanvasProps>(({
   candles,
   realityCone,
   activeGhostTwin,
   selectedRange,
   onRangeChange,
   isScanning = false,
-}) => {
+}, ref) => {
   const canvasRef = useRef<HTMLCanvasElement | null>(null);
   const containerRef = useRef<HTMLDivElement | null>(null);
 
+  // Interaction Mode: 'brush' (pattern selection) vs 'pan' (pan chart viewport)
+  const [interactionMode, setInteractionMode] = useState<"brush" | "pan">("brush");
+
   // Drag interaction state
   const [isDragging, setIsDragging] = useState(false);
+  const [isPanDragging, setIsPanDragging] = useState(false);
   const [dragStartIdx, setDragStartIdx] = useState<number | null>(null);
   const [dragCurrentIdx, setDragCurrentIdx] = useState<number | null>(null);
+  const [panStartX, setPanStartX] = useState<number>(0);
+  const [panOffset, setPanOffset] = useState<number>(0);
+
+  // Expose instant snapshot method for clipboard export
+  useImperativeHandle(ref, () => ({
+    exportSnapshotBlob: async (): Promise<Blob | null> => {
+      const canvas = canvasRef.current;
+      if (!canvas) return null;
+      return new Promise<Blob | null>((resolve) => {
+        canvas.toBlob((blob) => resolve(blob), "image/png");
+      });
+    },
+  }));
 
   // Quick preset helper
   const applyPreset = (barCount: number) => {
@@ -57,29 +78,49 @@ export const ChartCanvas: React.FC<ChartCanvasProps> = ({
     const canvas = canvasRef.current;
     if (!canvas || candles.length === 0) return 0;
     const rect = canvas.getBoundingClientRect();
-    const x = clientX - rect.left;
+    const x = clientX - rect.left - panOffset;
     const candleWidth = Math.max(4, (rect.width - 120) / (candles.length + 22));
     const idx = Math.floor(x / candleWidth);
     return Math.max(0, Math.min(candles.length - 1, idx));
-  }, [candles.length]);
+  }, [candles.length, panOffset]);
 
   // Handle Mouse Down
   const handleMouseDown = (e: React.MouseEvent<HTMLCanvasElement>) => {
-    const idx = getIndexFromX(e.clientX);
-    setIsDragging(true);
-    setDragStartIdx(idx);
-    setDragCurrentIdx(idx);
+    // If Shift is pressed, always treat as Brush mode
+    const isBrush = interactionMode === "brush" || e.shiftKey;
+
+    if (isBrush) {
+      const idx = getIndexFromX(e.clientX);
+      setIsDragging(true);
+      setDragStartIdx(idx);
+      setDragCurrentIdx(idx);
+    } else {
+      setIsPanDragging(true);
+      setPanStartX(e.clientX - panOffset);
+    }
   };
 
   // Handle Mouse Move
   const handleMouseMove = (e: React.MouseEvent<HTMLCanvasElement>) => {
-    if (!isDragging || dragStartIdx === null) return;
-    const idx = getIndexFromX(e.clientX);
-    setDragCurrentIdx(idx);
+    if (isDragging && dragStartIdx !== null) {
+      const idx = getIndexFromX(e.clientX);
+      setDragCurrentIdx(idx);
+    } else if (isPanDragging) {
+      const newOffset = e.clientX - panStartX;
+      // Clamp pan offset so chart doesn't fly off screen
+      const maxOffset = 180;
+      const minOffset = -Math.max(0, (candles.length * 8) - 400);
+      setPanOffset(Math.max(minOffset, Math.min(maxOffset, newOffset)));
+    }
   };
 
   // Handle Mouse Up
   const handleMouseUp = useCallback(() => {
+    if (isPanDragging) {
+      setIsPanDragging(false);
+      return;
+    }
+
     if (!isDragging || dragStartIdx === null || dragCurrentIdx === null) {
       setIsDragging(false);
       setDragStartIdx(null);
@@ -93,7 +134,6 @@ export const ChartCanvas: React.FC<ChartCanvasProps> = ({
 
     // Enforce valid window constraints [32, 128]
     if (count < 32) {
-      // Auto-expand to minimum 32 bars anchored to selection
       if (end + (32 - count) < candles.length) {
         end += (32 - count);
       } else if (start - (32 - count) >= 0) {
@@ -110,20 +150,20 @@ export const ChartCanvas: React.FC<ChartCanvasProps> = ({
     setDragStartIdx(null);
     setDragCurrentIdx(null);
     onRangeChange(start, end);
-  }, [isDragging, dragStartIdx, dragCurrentIdx, candles.length, onRangeChange]);
+  }, [isDragging, isPanDragging, dragStartIdx, dragCurrentIdx, candles.length, onRangeChange]);
 
   // Window-level mouseup listener for smooth release outside canvas
   useEffect(() => {
     const onWindowMouseUp = () => {
-      if (isDragging) {
+      if (isDragging || isPanDragging) {
         handleMouseUp();
       }
     };
     window.addEventListener("mouseup", onWindowMouseUp);
     return () => window.removeEventListener("mouseup", onWindowMouseUp);
-  }, [isDragging, handleMouseUp]);
+  }, [isDragging, isPanDragging, handleMouseUp]);
 
-  // Canvas Rendering
+  // Canvas Rendering Loop
   useEffect(() => {
     const canvas = canvasRef.current;
     if (!canvas) return;
@@ -136,7 +176,7 @@ export const ChartCanvas: React.FC<ChartCanvasProps> = ({
     canvas.height = height * window.devicePixelRatio;
     ctx.scale(window.devicePixelRatio, window.devicePixelRatio);
 
-    // Background
+    // Dark terminal canvas background
     ctx.fillStyle = "#090D16";
     ctx.fillRect(0, 0, width, height);
 
@@ -150,15 +190,15 @@ export const ChartCanvas: React.FC<ChartCanvasProps> = ({
       maxPrice = Math.max(maxPrice, c.high);
     });
 
-    const pricePadding = (maxPrice - minPrice) * 0.16;
+    const pricePadding = (maxPrice - minPrice) * 0.16 || 5.0;
     minPrice -= pricePadding;
     maxPrice += pricePadding;
 
     const candleWidth = Math.max(4, (width - 120) / (candles.length + 22));
-    const priceToY = (p: number) => height - 40 - ((p - minPrice) / (maxPrice - minPrice)) * (height - 80);
+    const priceToY = (p: number) => height - 40 - ((p - minPrice) / (maxPrice - minPrice || 1)) * (height - 80);
 
     // 1. Grid & Price Labels
-    ctx.strokeStyle = "#1F2937";
+    ctx.strokeStyle = "#1A2234";
     ctx.lineWidth = 1;
     for (let i = 1; i <= 5; i++) {
       const y = (height / 6) * i;
@@ -172,6 +212,10 @@ export const ChartCanvas: React.FC<ChartCanvasProps> = ({
       ctx.font = "10px monospace";
       ctx.fillText(priceLevel.toFixed(2), width - 65, y + 3);
     }
+
+    // Apply pan offset to horizontal rendering
+    ctx.save();
+    ctx.translate(panOffset, 0);
 
     // 2. Active Selection or In-Progress Drag Box
     let activeStart = selectedRange[0];
@@ -188,7 +232,7 @@ export const ChartCanvas: React.FC<ChartCanvasProps> = ({
       const barCount = activeEnd - activeStart + 1;
 
       // Fill
-      ctx.fillStyle = isDragging ? "rgba(139, 92, 246, 0.25)" : "rgba(139, 92, 246, 0.15)";
+      ctx.fillStyle = isDragging ? "rgba(139, 92, 246, 0.25)" : "rgba(139, 92, 246, 0.14)";
       ctx.fillRect(brushX, 20, brushW, height - 60);
 
       // Border
@@ -201,11 +245,11 @@ export const ChartCanvas: React.FC<ChartCanvasProps> = ({
       // Top Header Badge on selection box
       ctx.fillStyle = "#8B5CF6";
       ctx.beginPath();
-      ctx.roundRect(brushX, 20, Math.min(brushW, 140), 22, [0, 0, 4, 0]);
+      ctx.roundRect(brushX, 20, Math.min(brushW, 145), 22, [0, 0, 4, 0]);
       ctx.fill();
 
       ctx.fillStyle = "#FFFFFF";
-      ctx.font = "bold 11px sans-serif";
+      ctx.font = "bold 10px monospace";
       const badgeText = isDragging ? `Brushing ${barCount} Bars` : `Pattern Window: ${barCount}b`;
       ctx.fillText(badgeText, brushX + 6, 35);
     }
@@ -236,13 +280,13 @@ export const ChartCanvas: React.FC<ChartCanvasProps> = ({
       ctx.fillRect(x - candleWidth * 0.35, bodyY, candleWidth * 0.7, bodyH);
     });
 
-    // 4. Hybrid Reality Cone (10th - 90th percentile fan)
-    if (realityCone && realityCone.p50 && realityCone.p50.length > 0) {
-      const anchorIdx = Math.min(selectedRange[1], candles.length - 1);
-      const anchorCandle = candles[anchorIdx];
-      const startConeX = anchorIdx * candleWidth + candleWidth / 2;
-      const basePrice = anchorCandle.close;
+    const anchorIdx = Math.min(selectedRange[1], candles.length - 1);
+    const anchorCandle = candles[anchorIdx];
+    const startConeX = anchorIdx * candleWidth + candleWidth / 2;
+    const basePrice = anchorCandle.close;
 
+    // 4. Hybrid Reality Cone (10th - 90th percentile Bayesian fan)
+    if (realityCone && realityCone.p50 && realityCone.p50.length > 0) {
       const p10Prices = realityCone.p10.map((pct) => basePrice * (1 + pct / 100));
       const p25Prices = realityCone.p25.map((pct) => basePrice * (1 + pct / 100));
       const p50Prices = realityCone.p50.map((pct) => basePrice * (1 + pct / 100));
@@ -281,24 +325,57 @@ export const ChartCanvas: React.FC<ChartCanvasProps> = ({
 
       ctx.fillStyle = "#C4B5FD";
       ctx.font = "bold 10px monospace";
-      ctx.fillText("Reality Cone (P50)", startConeX + p50Prices.length * candleWidth - 30, priceToY(p50Prices[p50Prices.length - 1]) - 8);
+      ctx.fillText("Bayesian Cone P50", startConeX + p50Prices.length * candleWidth - 35, priceToY(p50Prices[p50Prices.length - 1]) - 8);
     }
 
-    // 5. Ghost Analog Replay Path
+    // 5. SCALE-INVARIANT GHOST ANALOG REPLAY PATH
+    // Formula: P_ghost(t0 + k) = C_t0 * (1 + r_hist(k) * (sigma_live / sigma_hist))
     if (activeGhostTwin && activeGhostTwin.fwd_20_normalized_path) {
-      const anchorIdx = Math.min(selectedRange[1], candles.length - 1);
-      const anchorCandle = candles[anchorIdx];
-      const startConeX = anchorIdx * candleWidth + candleWidth / 2;
-      const basePrice = anchorCandle.close;
+      // Calculate live brushed window volatility sigma_live
+      const brushedCandles = candles.slice(activeStart, activeEnd + 1);
+      let sigmaLive = 0.01;
+      if (brushedCandles.length > 2) {
+        const rets: number[] = [];
+        for (let i = 1; i < brushedCandles.length; i++) {
+          const c0 = brushedCandles[i - 1].close;
+          const c1 = brushedCandles[i].close;
+          if (c0 > 0 && c1 > 0) rets.push(Math.log(c1 / c0));
+        }
+        if (rets.length > 1) {
+          const mean = rets.reduce((a, b) => a + b, 0) / rets.length;
+          const variance = rets.reduce((a, b) => a + Math.pow(b - mean, 2), 0) / (rets.length - 1);
+          sigmaLive = Math.sqrt(variance);
+        }
+      }
+
+      // Calculate historical twin volatility sigma_hist from normalized path
+      const histPath = activeGhostTwin.fwd_20_normalized_path;
+      let sigmaHist = 0.01;
+      if (histPath.length > 2) {
+        const hRets: number[] = [];
+        for (let i = 1; i < histPath.length; i++) {
+          hRets.push((histPath[i] - histPath[i - 1]) / 100);
+        }
+        if (hRets.length > 1) {
+          const hMean = hRets.reduce((a, b) => a + b, 0) / hRets.length;
+          const hVar = hRets.reduce((a, b) => a + Math.pow(b - hMean, 2), 0) / (hRets.length - 1);
+          sigmaHist = Math.sqrt(hVar);
+        }
+      }
+
+      // Precision Volatility Scaling Ratio kappa = sigma_live / sigma_hist (clamped to prevent distortion)
+      const kappa = sigmaHist > 0.0001 ? Math.min(3.5, Math.max(0.35, sigmaLive / sigmaHist)) : 1.0;
 
       ctx.strokeStyle = "#F59E0B";
-      ctx.lineWidth = 2.5;
+      ctx.lineWidth = 2.4;
       ctx.setLineDash([5, 3]);
       ctx.beginPath();
       ctx.moveTo(startConeX, priceToY(basePrice));
 
-      activeGhostTwin.fwd_20_normalized_path.forEach((pct, i) => {
-        const ghostP = basePrice * (1 + pct / 100);
+      histPath.forEach((pct, i) => {
+        // Apply Scale-Invariant Volatility Adjustment
+        const scaledReturnPct = pct * kappa;
+        const ghostP = basePrice * (1 + scaledReturnPct / 100);
         ctx.lineTo(startConeX + (i + 1) * candleWidth, priceToY(ghostP));
       });
       ctx.stroke();
@@ -306,9 +383,47 @@ export const ChartCanvas: React.FC<ChartCanvasProps> = ({
 
       ctx.fillStyle = "#F59E0B";
       ctx.font = "bold 10px sans-serif";
-      ctx.fillText(`Ghost Twin: ${activeGhostTwin.symbol} (${activeGhostTwin.match_pct}%)`, startConeX + 15, 60);
+      ctx.fillText(
+        `Scale-Invariant Ghost: ${activeGhostTwin.symbol} (${activeGhostTwin.match_pct}% match, σ_scale: ${kappa.toFixed(2)}x)`,
+        startConeX + 10,
+        priceToY(basePrice) - 25
+      );
     }
-  }, [candles, realityCone, activeGhostTwin, selectedRange, isDragging, dragStartIdx, dragCurrentIdx]);
+
+    ctx.restore();
+
+    // 6. Draw Right-Axis Bayesian Percentile Levels (P90, P50, P10) for exact limit-order positioning
+    if (realityCone && realityCone.p50 && realityCone.p50.length > 0) {
+      const p10P = basePrice * (1 + (realityCone.p10[19] || -2.8) / 100);
+      const p50P = basePrice * (1 + (realityCone.p50[19] || 1.85) / 100);
+      const p90P = basePrice * (1 + (realityCone.p90[19] || 5.6) / 100);
+
+      const targetTags = [
+        { label: "P90", price: p90P, bg: "#059669" },
+        { label: "P50", price: p50P, bg: "#6366F1" },
+        { label: "P10", price: p10P, bg: "#E11D48" },
+      ];
+
+      targetTags.forEach((tag) => {
+        const tagY = priceToY(tag.price);
+        if (tagY > 15 && tagY < height - 25) {
+          ctx.fillStyle = tag.bg;
+          ctx.beginPath();
+          ctx.roundRect(width - 68, tagY - 8, 65, 16, 3);
+          ctx.fill();
+
+          ctx.fillStyle = "#FFFFFF";
+          ctx.font = "bold 9px monospace";
+          ctx.fillText(`${tag.label}: ${tag.price.toFixed(1)}`, width - 64, tagY + 4);
+        }
+      });
+    }
+
+    // Watermark Logo
+    ctx.fillStyle = "rgba(107, 114, 128, 0.4)";
+    ctx.font = "bold 11px monospace";
+    ctx.fillText("XPREDICTOR INSTITUTIONAL // BAYESIAN CONE", 15, height - 15);
+  }, [candles, realityCone, activeGhostTwin, selectedRange, isDragging, isPanDragging, dragStartIdx, dragCurrentIdx, panOffset]);
 
   const currentCount = selectedRange[1] - selectedRange[0] + 1;
 
@@ -317,21 +432,39 @@ export const ChartCanvas: React.FC<ChartCanvasProps> = ({
       {/* Top Interactive Toolbar */}
       <div className="h-10 bg-surface/90 border-b border-gray-800 px-3 flex items-center justify-between text-xs select-none">
         <div className="flex items-center gap-2">
-          <span className="flex items-center gap-1.5 font-bold text-gray-200">
-            <MousePointer className="w-3.5 h-3.5 text-kronos" />
-            Brush Tool:
-          </span>
-          <span className="text-kronos font-mono font-bold bg-kronos/15 px-2 py-0.5 rounded border border-kronos/30">
+          {/* Brush vs Pan Mode Toggle */}
+          <div className="flex bg-surfaceElevated rounded border border-gray-700 p-0.5">
+            <button
+              onClick={() => setInteractionMode("brush")}
+              className={`flex items-center gap-1 px-2.5 py-0.5 rounded text-[11px] font-medium transition ${
+                interactionMode === "brush" ? "bg-kronos text-white font-bold" : "text-gray-400 hover:text-white"
+              }`}
+              title="Click and drag to select 32-128 bar pattern window"
+            >
+              <Search className="w-3 h-3" /> Select Pattern
+            </button>
+            <button
+              onClick={() => setInteractionMode("pan")}
+              className={`flex items-center gap-1 px-2.5 py-0.5 rounded text-[11px] font-medium transition ${
+                interactionMode === "pan" ? "bg-kronos text-white font-bold" : "text-gray-400 hover:text-white"
+              }`}
+              title="Click and drag to pan chart horizontally"
+            >
+              <Hand className="w-3 h-3" /> Pan Chart
+            </button>
+          </div>
+
+          <span className="text-kronos font-mono font-bold bg-kronos/15 px-2 py-0.5 rounded border border-kronos/30 text-[11px]">
             {currentCount} Bars Selected
           </span>
-          <span className="text-[11px] text-gray-400 hidden sm:inline">
-            (Click & Drag across candles or click a quick preset)
+          <span className="text-[11px] text-gray-400 hidden md:inline">
+            (Shift + Drag always brushes)
           </span>
         </div>
 
         {/* Quick Window Presets */}
         <div className="flex items-center gap-1.5">
-          <span className="text-gray-500 text-[11px]">Presets:</span>
+          <span className="text-gray-500 text-[11px] hidden sm:inline">Presets:</span>
           <button
             onClick={() => applyPreset(32)}
             className={`px-2 py-0.5 rounded text-[11px] font-medium transition ${
@@ -363,7 +496,7 @@ export const ChartCanvas: React.FC<ChartCanvasProps> = ({
       <div className="relative w-full h-[440px]">
         <canvas
           ref={canvasRef}
-          className="w-full h-full cursor-crosshair select-none"
+          className={`w-full h-full select-none ${interactionMode === "brush" ? "cursor-crosshair" : "cursor-grab active:cursor-grabbing"}`}
           onMouseDown={handleMouseDown}
           onMouseMove={handleMouseMove}
         />
@@ -371,7 +504,7 @@ export const ChartCanvas: React.FC<ChartCanvasProps> = ({
         {isDragging && dragStartIdx !== null && dragCurrentIdx !== null && (
           <div className="absolute top-3 left-3 bg-kronos text-white px-3 py-1 rounded shadow-lg text-xs font-bold flex items-center gap-1.5 animate-pulse">
             <Sparkles className="w-3.5 h-3.5" />
-            Selecting {Math.abs(dragCurrentIdx - dragStartIdx) + 1} Bars — Release to Scan
+            Selecting {Math.abs(dragCurrentIdx - dragStartIdx) + 1} Bars — Release to Query Vector Engine
           </div>
         )}
 
@@ -379,11 +512,13 @@ export const ChartCanvas: React.FC<ChartCanvasProps> = ({
           <div className="absolute inset-0 bg-background/30 backdrop-blur-[1px] flex items-center justify-center">
             <div className="bg-surface/90 border border-kronos px-4 py-2 rounded-lg text-xs font-bold text-kronos flex items-center gap-2 shadow-2xl">
               <span className="w-2.5 h-2.5 rounded-full bg-kronos animate-ping"></span>
-              Searching 50M+ Historical Windows in Qdrant...
+              Querying Qdrant HNSW & Kronos Foundation Model...
             </div>
           </div>
         )}
       </div>
     </div>
   );
-};
+});
+
+ChartCanvas.displayName = "ChartCanvas";

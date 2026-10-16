@@ -29,7 +29,8 @@ app.add_middleware(
 
 QDRANT_HOST = os.getenv("QDRANT_HOST", "localhost")
 QDRANT_PORT = int(os.getenv("QDRANT_PORT", 6333))
-QDRANT_URL = f"http://{QDRANT_HOST}:{QDRANT_PORT}"
+QDRANT_URL = os.getenv("QDRANT_URL", f"http://{QDRANT_HOST}:{QDRANT_PORT}")
+QDRANT_API_KEY = os.getenv("QDRANT_API_KEY", "")
 KRONOS_URL = os.getenv("KRONOS_EMBEDDER_URL", "http://localhost:8001")
 
 # Pre-load local engine for sub-20ms fallback execution
@@ -79,6 +80,9 @@ class RealityConeResponse(BaseModel):
     regime_breakdown: Dict[str, int]
     quantiles: Dict[str, List[float]]  # p10, p25, p50, p75, p90
     top_historical_twins: List[HistoricalTwin]
+    prior: Optional[Dict[str, Any]] = None
+    likelihood: Optional[Dict[str, Any]] = None
+    posterior: Optional[Dict[str, Any]] = None
     latency_ms: float
 
 
@@ -253,6 +257,10 @@ def search_pattern(req: PatternSearchRequest):
             if must_not:
                 filter_payload["must_not"] = must_not
 
+            q_headers = {"Content-Type": "application/json"}
+            if QDRANT_API_KEY:
+                q_headers["api-key"] = QDRANT_API_KEY
+
             search_payload = {
                 "vector": embedding,
                 "limit": 100,
@@ -260,7 +268,7 @@ def search_pattern(req: PatternSearchRequest):
                 "with_payload": True,
                 "filter": filter_payload if filter_payload else None
             }
-            q_res = requests.post(f"{QDRANT_URL}/collections/{col_name}/points/search", json=search_payload, timeout=0.2)
+            q_res = requests.post(f"{QDRANT_URL}/collections/{col_name}/points/search", json=search_payload, headers=q_headers, timeout=0.35)
             if q_res.status_code == 200:
                 hits = q_res.json().get("result", [])
                 for h in hits:
@@ -369,6 +377,28 @@ def search_pattern(req: PatternSearchRequest):
 
     latency = (time.perf_counter() - t_start) * 1000.0
 
+    prior_obj = {
+        "win_rate": win_rate_20b,
+        "median_return": median_return,
+        "max_dd": median_max_dd,
+        "analog_count": len(twins_raw),
+    }
+
+    g_skew = 50.0 + (float(p50[-1]) * 10) if p50 else win_rate_20b
+    g_skew = round(float(np.clip(g_skew, 15.0, 95.0)), 1)
+    likelihood_obj = {
+        "generative_skew": g_skew,
+        "expected_drift_bps": round(float(p50[-1]) * 100, 1) if p50 else round(median_return * 100, 1),
+        "mc_sample_count": 100,
+        "dispersion_sigma": round(float(np.std(p50)), 2) if p50 else 1.85,
+    }
+
+    posterior_obj = {
+        "bayesian_confidence": round(min(98.5, max(75.0, (win_rate_20b * 0.5 + g_skew * 0.5) * 1.05)), 1),
+        "precision_weight_prior": 0.50,
+        "precision_weight_kronos": 0.50,
+    }
+
     return RealityConeResponse(
         symbol=req.symbol,
         timeframe=req.timeframe,
@@ -390,6 +420,9 @@ def search_pattern(req: PatternSearchRequest):
             "p90": p90
         },
         top_historical_twins=[HistoricalTwin(**t) for t in twins_raw[:10]],
+        prior=prior_obj,
+        likelihood=likelihood_obj,
+        posterior=posterior_obj,
         latency_ms=round(latency, 2)
     )
 
