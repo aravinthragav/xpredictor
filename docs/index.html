@@ -1371,17 +1371,10 @@ engine.OnConeUpdate([&amp;](<span class="text-primary">const</span> xpred::ConeS
       document.getElementById("resting-iceberg").innerText = cfg.iceberg;
       document.getElementById("chart-subhead").innerText = `${cfg.displaySymbol} • ${timeframe.toUpperCase()} • ${sampleCandles.length} BARS`;
 
-      // Update Twin Match Cards
-      cfg.twins.forEach((twin, idx) => {
-        const i = idx + 1;
-        const lEl = document.getElementById(`twin-label-${i}`);
-        const mEl = document.getElementById(`twin-match-${i}`);
-        if (lEl) lEl.innerText = `#${i} ${twin.symbol}`;
-        if (mEl) mEl.innerText = `${twin.match} match`;
-      });
-
+      computeDynamicTwins();
       renderCanvas();
       connectWebSocket(symbol, timeframe);
+      queryRealVectorTwins(sampleCandles.slice(brushStart, brushEnd + 1));
 
       // Start Real-Time L2 Order Book Polling (Every 2.5s)
       if (depthPollTimer) clearInterval(depthPollTimer);
@@ -1998,8 +1991,8 @@ engine.OnConeUpdate([&amp;](<span class="text-primary">const</span> xpred::ConeS
 
         // 2. Historical analog benchmark volatility sigma_hist
         const sigmaHist = 0.0075;
-        // Volatility rescaling factor kappa (clamped to prevent distortion)
-        const kappa = Math.min(2.2, Math.max(0.45, sigmaLive / sigmaHist));
+        // Volatility rescaling factor kappa (clamped to prevent distortion across 1m to 4h timeframes)
+        const kappa = Math.min(2.5, Math.max(0.08, sigmaLive / sigmaHist));
 
         ctx.strokeStyle = "#d97706";
         ctx.lineWidth = 2.4;
@@ -2238,15 +2231,39 @@ engine.OnConeUpdate([&amp;](<span class="text-primary">const</span> xpred::ConeS
 
     const BACKEND_API_URL = "https://aravinthragav--xpredictor-api-fastapi-app.us-east.modal.run";
 
+    function resampleTo32(candles) {
+      if (!candles || candles.length === 0) return [];
+      if (candles.length >= 32) return candles;
+      const result = [];
+      const step = (candles.length - 1) / 31;
+      for (let i = 0; i < 32; i++) {
+        const exactIdx = i * step;
+        const lower = Math.floor(exactIdx);
+        const upper = Math.min(candles.length - 1, Math.ceil(exactIdx));
+        const weight = exactIdx - lower;
+        const c1 = candles[lower];
+        const c2 = candles[upper];
+        result.push({
+          open: c1.open + (c2.open - c1.open) * weight,
+          high: Math.max(c1.high, c2.high),
+          low: Math.min(c1.low, c2.low),
+          close: c1.close + (c2.close - c1.close) * weight
+        });
+      }
+      return result;
+    }
+
     async function queryRealVectorTwins(brushCandles) {
-      if (!brushCandles || brushCandles.length < 10) return;
+      if (!brushCandles || brushCandles.length < 5) return;
       try {
-        const formatted = brushCandles.map(c => [c.open, c.high, c.low, c.close, 1000, 1000 * c.close]);
+        const targetCandles = brushCandles.length < 32 ? resampleTo32(brushCandles) : brushCandles;
+        const formatted = targetCandles.map(c => [c.open, c.high, c.low, c.close, 1000, 1000 * c.close]);
+        const qSymbol = ASSETS[currentAssetKey].symbol === "PAXGUSDT" ? "XAUUSD" : ASSETS[currentAssetKey].symbol.replace("USDT", "");
         const res = await fetch(`${BACKEND_API_URL}/api/v1/search-pattern`, {
           method: "POST",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({
-            symbol: ASSETS[currentAssetKey].symbol,
+            symbol: qSymbol,
             timeframe: currentTimeframe,
             candles: formatted,
             asset_filter: "all"
@@ -2260,16 +2277,23 @@ engine.OnConeUpdate([&amp;](<span class="text-primary">const</span> xpred::ConeS
               const lEl = document.getElementById(`twin-label-${i}`);
               const mEl = document.getElementById(`twin-match-${i}`);
               if (lEl) lEl.innerText = `#${i} ${twin.symbol} (${twin.date_formatted})`;
-              if (mEl) mEl.innerText = `${twin.match_pct}% match`;
+              if (mEl) mEl.innerText = `${twin.match_pct.toFixed(1)}% match`;
             });
+            activeTwins = data.top_historical_twins.slice(0, 3).map(t => ({
+              symbol: t.symbol,
+              date: t.date_formatted,
+              matchScore: t.match_pct,
+              forwardAmp: t.fwd_20_ret_pct ? t.fwd_20_ret_pct / 100 : 0.014
+            }));
+            renderCanvas();
           }
-          if (data.posterior) {
+          if (data.posterior && data.posterior.bayesian_confidence) {
             const confEl = document.getElementById("hud-conf");
-            if (confEl) confEl.innerText = `${data.posterior.bayesian_confidence}%`;
+            if (confEl) confEl.innerText = `${(data.posterior.bayesian_confidence * 100).toFixed(1)}%`;
           }
-          if (data.prior) {
+          if (data.prior && data.prior.median_return !== undefined) {
             const alphaEl = document.getElementById("hud-alpha");
-            if (alphaEl) alphaEl.innerText = `${data.prior.median_return >= 0 ? '+' : ''}${(data.prior.median_return * 100).toFixed(0)} bps`;
+            if (alphaEl) alphaEl.innerText = `${data.prior.median_return >= 0 ? '+' : ''}${(data.prior.median_return * 10000).toFixed(1)} bps`;
           }
         }
       } catch (err) {
@@ -2371,7 +2395,27 @@ engine.OnConeUpdate([&amp;](<span class="text-primary">const</span> xpred::ConeS
 
     // Initialize Terminal on Page Load
     window.addEventListener('DOMContentLoaded', () => {
-      loadMarketData("XAUUSD", "1h");
+      const urlParams = new URLSearchParams(window.location.search);
+      const initAsset = urlParams.get('asset') || "XAUUSD";
+      const initTf = urlParams.get('tf') || "1h";
+      loadMarketData(initAsset, initTf).then(() => {
+        const testBrushStart = urlParams.get('brushStart');
+        const testBrushEnd = urlParams.get('brushEnd');
+        const testPan = urlParams.get('panOffset');
+        const testGhost = urlParams.get('ghost');
+
+        if (testPan) panOffset = parseFloat(testPan);
+        if (testBrushStart && testBrushEnd) {
+          brushStart = parseInt(testBrushStart, 10);
+          brushEnd = parseInt(testBrushEnd, 10);
+        }
+        if (testGhost) {
+          isGhostTwinActive = true;
+          hoveredTwinIndex = parseInt(testGhost, 10) || 1;
+        }
+        computeDynamicTwins();
+        renderCanvas();
+      });
       updateCalculator();
     });
   </script>
