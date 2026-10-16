@@ -32,6 +32,7 @@ image = (
         modal.Secret.from_dict({
             "QDRANT_URL": "https://317060a8-849e-400b-9c7b-0c2d561f6c04.sa-east-1-0.aws.cloud.qdrant.io:6333",
             "QDRANT_API_KEY": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJhY2Nlc3MiOiJtIiwic3ViamVjdCI6ImFwaS1rZXk6NjE4ODY2MzMtMTE3OC00YzMwLTkwZDUtZDFiOGIwNWVjODRiIn0.mUZrt_JLeLEE6yFtFXC3yr-SbiEGvGQfh9HKcFyxas8",
+            "QDRANT_HOST": "317060a8-849e-400b-9c7b-0c2d561f6c04.sa-east-1-0.aws.cloud.qdrant.io",
         })
     ]
 )

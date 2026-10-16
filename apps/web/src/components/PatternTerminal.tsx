@@ -243,19 +243,21 @@ export const PatternTerminal: React.FC = () => {
       let p = basePrice;
       const totalBars = 120;
       for (let i = 0; i < totalBars; i++) {
-        const ret = (Math.sin(i * 0.12) + (Math.random() - 0.48)) * 0.005;
+        const ret = (Math.sin(i * 0.12) + Math.cos(i * 0.07) * 0.5) * 0.0035;
         p = p * (1 + ret);
-        const high = p * (1 + Math.abs(Math.random() * 0.002));
-        const low = p * (1 - Math.abs(Math.random() * 0.002));
-        const open = low + Math.random() * (high - low);
-        const close = low + Math.random() * (high - low);
+        const wickSpread = p * (0.0018 + Math.abs(Math.sin(i * 0.25)) * 0.0015);
+        const high = p + wickSpread * 0.85;
+        const low = p - wickSpread * 0.85;
+        const isBull = Math.sin(i * 0.45) > 0;
+        const open = isBull ? low + (high - low) * 0.28 : high - (high - low) * 0.28;
+        const close = isBull ? high - (high - low) * 0.22 : low + (high - low) * 0.22;
         generated.push({
           time: Math.floor(Date.now() / 1000) - (totalBars - i) * 3600,
           open: Math.round(open * 100) / 100,
           high: Math.round(high * 100) / 100,
           low: Math.round(low * 100) / 100,
           close: Math.round(close * 100) / 100,
-          volume: Math.floor(1000 + Math.random() * 5000),
+          volume: Math.floor(2500 + Math.abs(Math.sin(i * 0.2)) * 3000),
         });
       }
 
