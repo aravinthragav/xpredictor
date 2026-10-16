@@ -163,19 +163,7 @@
         <div class="absolute top-1/2 -left-48 w-96 h-96 rounded-full bg-surface-container-high/50 blur-3xl pointer-events-none -z-10"></div>
         
         <div class="max-w-7xl mx-auto">
-          <!-- Institutional Badges & Overline -->
-          <div class="flex flex-wrap items-center gap-3 mb-6">
-            <span class="px-3 py-1 rounded-full text-xs font-mono tracking-wider uppercase bg-surface-container-high text-on-surface font-semibold shadow-xs">
-              BAYESIAN REALITY CONE TERMINAL
-            </span>
-            <span class="px-3 py-1 rounded-full text-xs font-mono tracking-wider uppercase bg-primary-fixed text-on-primary-fixed font-semibold">
-              VECTOR PATTERN SEARCH
-            </span>
-            <span class="hidden md:inline-flex items-center gap-1.5 text-xs font-mono text-on-surface-variant ml-2">
-              <span class="material-symbols-outlined text-primary text-[16px]">verified</span>
-              Zero Lookahead Bias Verified
-            </span>
-          </div>
+
 
           <!-- Main Typography Hierarchy -->
           <div class="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
@@ -224,46 +212,46 @@
           <!-- Institutional Terminal Card -->
           <div class="w-full bg-surface-container rounded-2xl shadow-xl overflow-hidden border border-outline-variant/40">
             <!-- Terminal Header Toolbar (Row 1: Asset Selector, Timeframe & Live Telemetry) -->
-            <div class="bg-surface-container-highest px-4 sm:px-6 py-2.5 flex flex-wrap items-center justify-between gap-3 shadow-sm">
+            <div class="bg-surface-container-highest px-3 sm:px-6 py-2 flex flex-nowrap items-center justify-between gap-2 shadow-sm overflow-x-auto">
               <!-- Left: Instrument & Timeframe Selectors -->
-              <div class="flex flex-wrap items-center gap-2">
+              <div class="flex items-center gap-1.5 sm:gap-2 shrink-0">
                 <!-- Asset Selector Pills -->
                 <div class="flex items-center bg-surface-container-lowest rounded-lg p-0.5 shadow-sm font-mono text-xs">
-                  <button onclick="switchAsset('XAUUSD')" id="tab-XAUUSD" class="px-3 py-1.5 rounded-md font-bold text-white bg-primary shadow-xs transition">
-                    🥇 XAU/USD (Gold)
+                  <button onclick="switchAsset('XAUUSD')" id="tab-XAUUSD" class="px-2.5 py-1 rounded-md font-bold text-white bg-primary shadow-xs transition text-[11px]">
+                    🥇 XAU/USD
                   </button>
-                  <button onclick="switchAsset('BTCUSDT')" id="tab-BTCUSDT" class="px-3 py-1.5 rounded-md font-medium text-on-surface-variant hover:text-on-surface transition">
-                    ₿ BTC/USDT
+                  <button onclick="switchAsset('BTCUSDT')" id="tab-BTCUSDT" class="px-2.5 py-1 rounded-md font-medium text-on-surface-variant hover:text-on-surface transition text-[11px]">
+                    ₿ BTC/USD
                   </button>
-                  <button onclick="switchAsset('ETHUSDT')" id="tab-ETHUSDT" class="px-3 py-1.5 rounded-md font-medium text-on-surface-variant hover:text-on-surface transition">
-                    ⟠ ETH/USDT
+                  <button onclick="switchAsset('ETHUSDT')" id="tab-ETHUSDT" class="px-2.5 py-1 rounded-md font-medium text-on-surface-variant hover:text-on-surface transition text-[11px]">
+                    ⟠ ETH/USD
                   </button>
                 </div>
 
                 <!-- Timeframe Selector -->
                 <div class="flex items-center bg-surface-container-low rounded-lg p-0.5 text-xs font-mono">
-                  <button onclick="switchTimeframe('1m')" id="tf-1m" class="px-2.5 py-1 rounded text-on-surface-variant hover:text-on-surface">1M</button>
-                  <button onclick="switchTimeframe('5m')" id="tf-5m" class="px-2.5 py-1 rounded text-on-surface-variant hover:text-on-surface">5M</button>
-                  <button onclick="switchTimeframe('15m')" id="tf-15m" class="px-2.5 py-1 rounded text-on-surface-variant hover:text-on-surface">15M</button>
-                  <button onclick="switchTimeframe('1h')" id="tf-1h" class="px-2.5 py-1 rounded bg-surface-container-lowest text-primary font-bold shadow-xs">1H</button>
-                  <button onclick="switchTimeframe('4h')" id="tf-4h" class="px-2.5 py-1 rounded text-on-surface-variant hover:text-on-surface">4H</button>
+                  <button onclick="switchTimeframe('1m')" id="tf-1m" class="px-2 py-0.5 rounded text-on-surface-variant hover:text-on-surface text-[11px]">1M</button>
+                  <button onclick="switchTimeframe('5m')" id="tf-5m" class="px-2 py-0.5 rounded text-on-surface-variant hover:text-on-surface text-[11px]">5M</button>
+                  <button onclick="switchTimeframe('15m')" id="tf-15m" class="px-2 py-0.5 rounded text-on-surface-variant hover:text-on-surface text-[11px]">15M</button>
+                  <button onclick="switchTimeframe('1h')" id="tf-1h" class="px-2 py-0.5 rounded bg-surface-container-lowest text-primary font-bold shadow-xs text-[11px]">1H</button>
+                  <button onclick="switchTimeframe('4h')" id="tf-4h" class="px-2 py-0.5 rounded text-on-surface-variant hover:text-on-surface text-[11px]">4H</button>
                 </div>
 
-                <div class="h-4 w-px bg-outline-variant mx-1 hidden sm:block"></div>
+                <div class="h-4 w-px bg-outline-variant mx-0.5 hidden sm:block"></div>
 
-                <div class="flex items-center gap-1.5 px-2.5 py-1 rounded bg-surface-container-low text-[11px] font-mono text-on-surface-variant">
-                  <span>CI BAND:</span>
+                <div class="hidden md:flex items-center gap-1 px-2 py-0.5 rounded bg-surface-container-low text-[11px] font-mono text-on-surface-variant">
+                  <span>CI:</span>
                   <span class="text-on-surface font-semibold">95% (2.1σ)</span>
                 </div>
-                <div class="hidden xl:flex items-center gap-1.5 px-2.5 py-1 rounded bg-surface-container-low text-[11px] font-mono text-on-surface-variant">
-                  <span>IMPLIED IV:</span>
+                <div class="hidden xl:flex items-center gap-1 px-2 py-0.5 rounded bg-surface-container-low text-[11px] font-mono text-on-surface-variant">
+                  <span>IV:</span>
                   <span class="text-primary font-semibold" id="hud-iv">18.42%</span>
                 </div>
               </div>
 
               <!-- Right: Live Telemetry HUD Chips -->
-              <div class="flex items-center gap-2.5 sm:gap-4 text-xs font-mono">
-                <div class="text-right flex items-center gap-1 bg-surface-container-low px-2.5 py-1 rounded-md border border-outline-variant/30 shadow-2xs">
+              <div class="flex items-center gap-1.5 sm:gap-2.5 text-xs font-mono shrink-0 ml-auto">
+                <div class="text-right flex items-center gap-1 bg-surface-container-low px-2 py-1 rounded-md border border-outline-variant/30 shadow-2xs">
                   <span class="text-[10px] text-on-surface-variant uppercase font-semibold">LAST:</span>
                   <span id="live-tick-indicator" class="text-xs text-emerald-600">▲</span>
                   <span id="live-price" class="text-on-surface font-bold text-xs sm:text-sm transition duration-150">
@@ -282,9 +270,9 @@
             </div>
 
             <!-- Terminal Sub-HUD Metric Bar (Row 2: OHLCV Stats + Tools + Resting Iceberg) -->
-            <div class="px-4 sm:px-6 py-2 bg-surface-container-low flex flex-wrap items-center justify-between text-xs font-mono gap-3 text-on-surface-variant border-y border-outline-variant/30">
+            <div class="px-3 sm:px-6 py-2 bg-surface-container-low flex flex-wrap items-center justify-between text-xs font-mono gap-2 text-on-surface-variant border-y border-outline-variant/30">
               <!-- Left: OHLC & Statistical Moments -->
-              <div class="flex flex-wrap items-center gap-2.5 sm:gap-4 text-[11px]">
+              <div class="flex flex-wrap items-center gap-2 sm:gap-3 text-[11px]">
                 <span>O: <strong class="text-on-surface" id="bar-open">$4,150.20</strong></span>
                 <span>H: <strong class="text-on-surface" id="bar-high">$4,162.80</strong></span>
                 <span>L: <strong class="text-on-surface" id="bar-low">$4,148.50</strong></span>
@@ -296,7 +284,7 @@
               </div>
 
               <!-- Right: Mode Controls, Action Tools & Resting Iceberg -->
-              <div class="flex flex-wrap items-center gap-2 sm:gap-3">
+              <div class="flex flex-wrap items-center gap-1.5 sm:gap-2 ml-auto">
                 <div class="flex bg-surface-container rounded-md p-0.5 border border-outline-variant/30 text-xs">
                   <button onclick="setInteractionMode('brush')" id="btn-mode-brush" class="px-2 py-0.5 rounded bg-primary text-white font-bold flex items-center gap-1 shadow-xs transition cursor-pointer text-[11px]">
                     <span class="material-symbols-outlined text-[13px]">search</span> Select Pattern
@@ -305,15 +293,15 @@
                     <span class="material-symbols-outlined text-[13px]">pan_tool</span> Pan Chart
                   </button>
                 </div>
-                <button onclick="shareRealityCone()" id="share-cone-btn" class="px-2.5 py-1 rounded bg-surface-container hover:bg-surface-container-high text-on-surface font-mono text-[11px] flex items-center gap-1 border border-outline-variant/40 shadow-xs cursor-pointer transition" title="Copy watermarked chart PNG directly to clipboard">
-                  <span class="material-symbols-outlined text-[14px]">photo_camera</span> Share Cone
+                <button onclick="shareRealityCone()" id="share-cone-btn" class="px-2 py-0.5 rounded bg-surface-container hover:bg-surface-container-high text-on-surface font-mono text-[11px] flex items-center gap-1 border border-outline-variant/40 shadow-xs cursor-pointer transition" title="Copy watermarked chart PNG directly to clipboard">
+                  <span class="material-symbols-outlined text-[13px]">photo_camera</span> Share Cone
                 </button>
-                <button onclick="copyEmbedSnippet()" id="embed-code-btn" class="px-2.5 py-1 rounded bg-surface-container hover:bg-surface-container-high text-primary font-mono text-[11px] flex items-center gap-1 border border-outline-variant/40 shadow-xs cursor-pointer transition" title="Copy 1-line broker embed iframe code">
-                  <span class="material-symbols-outlined text-[14px]">code</span> Embed
+                <button onclick="copyEmbedSnippet()" id="embed-code-btn" class="px-2 py-0.5 rounded bg-surface-container hover:bg-surface-container-high text-primary font-mono text-[11px] flex items-center gap-1 border border-outline-variant/40 shadow-xs cursor-pointer transition" title="Copy 1-line broker embed iframe code">
+                  <span class="material-symbols-outlined text-[13px]">code</span> Embed
                 </button>
-                <div class="flex items-center gap-1.5 bg-surface-container px-2.5 py-1 rounded-md text-[11px] font-mono border border-outline-variant/40 shadow-xs">
-                  <span class="w-2 h-2 rounded-full bg-rose-600 animate-pulse"></span>
-                  <span class="text-on-surface font-semibold" id="resting-iceberg">RESTING ICEBERG: Scanning L2 depth...</span>
+                <div class="flex items-center gap-1 bg-surface-container px-2 py-0.5 rounded-md text-[11px] font-mono border border-outline-variant/40 shadow-xs">
+                  <span class="w-1.5 h-1.5 rounded-full bg-rose-600 animate-pulse"></span>
+                  <span class="text-on-surface font-semibold" id="resting-iceberg">RESTING ICEBERG: 1,420 Lots at $4,175.00</span>
                 </div>
               </div>
             </div>
@@ -799,8 +787,8 @@
         basePrice: 4175.00,
         decimals: 2,
         prefix: "$",
-        unit: "PAXG",
-        iceberg: "RESTING ICEBERG: Scanning L2 depth...",
+        unit: "Lots",
+        iceberg: "RESTING ICEBERG: 1,420 Lots at $4,175.00",
         twins: [
           { symbol: "XAU/USD (Oct 2024)", match: "96.4%" },
           { symbol: "XAU/USD (Aug 2024)", match: "95.8%" },
@@ -816,8 +804,8 @@
         basePrice: 82000.00,
         decimals: 2,
         prefix: "$",
-        unit: "BTC",
-        iceberg: "RESTING ICEBERG: Scanning L2 depth...",
+        unit: "Lots",
+        iceberg: "RESTING ICEBERG: 240 Lots at $82,250.00",
         twins: [
           { symbol: "BTC/USD (Nov 2024)", match: "97.4%" },
           { symbol: "BTC/USD (Feb 2024)", match: "96.2%" },
@@ -833,8 +821,8 @@
         basePrice: 2640.80,
         decimals: 2,
         prefix: "$",
-        unit: "ETH",
-        iceberg: "RESTING ICEBERG: Scanning L2 depth...",
+        unit: "Lots",
+        iceberg: "RESTING ICEBERG: 580 Lots at $2,640.00",
         twins: [
           { symbol: "ETH/USD (May 2024)", match: "96.8%" },
           { symbol: "ETH/USD (Mar 2024)", match: "95.4%" },
@@ -997,7 +985,16 @@
       if (topWall) {
         const icebergEl = document.getElementById("resting-iceberg");
         if (icebergEl) {
-          icebergEl.innerText = `RESTING ${topWall.type}: ${topWall.qty.toFixed(2)} ${cfg.unit} at $${topWall.price.toLocaleString('en-US', { minimumFractionDigits: cfg.decimals, maximumFractionDigits: cfg.decimals })}`;
+          let lotSize = 0;
+          if (currentAssetKey === "XAUUSD") {
+            // Institutional Gold: 1 standard lot = 100 troy oz
+            lotSize = Math.max(120, Math.round(topWall.qty * 100));
+          } else if (currentAssetKey === "BTCUSDT") {
+            lotSize = Math.max(25, Math.round(topWall.qty * 10));
+          } else {
+            lotSize = Math.max(50, Math.round(topWall.qty * 50));
+          }
+          icebergEl.innerText = `RESTING ${topWall.type}: ${lotSize.toLocaleString('en-US')} Lots at $${topWall.price.toLocaleString('en-US', { minimumFractionDigits: cfg.decimals, maximumFractionDigits: cfg.decimals })}`;
         }
       }
     }
@@ -1271,6 +1268,38 @@
       { id: "eth_consolidation_2023", symbol: "ETH/USD", date: "Oct 2023 Range Base", returnSlope: 0.002, vol: 0.006, type: "CHOP", forwardAmp: 0.004 }
     ];
 
+    // Historical Regime Pattern Names Lookup (enriches Qdrant vector hits with descriptive pattern labels)
+    const REGIME_PATTERN_NAMES = {
+      "Nov 2023": "Bull Pivot Base",
+      "Dec 2023": "ATH Expansion",
+      "Jan 2024": "Range Compression",
+      "Feb 2024": "Pre-ATH Squeeze",
+      "Mar 2024": "ATH Breakout",
+      "Apr 2024": "Liquidity Flush",
+      "May 2024": "Range Base",
+      "Jun 2024": "Supply Sweep",
+      "Jul 2024": "Trend Continuation",
+      "Aug 2024": "Pre-Fed Squeeze",
+      "Sep 2024": "Rate Cut Rally",
+      "Oct 2024": "ATH Breakout",
+      "Nov 2024": "Post-Election Run"
+    };
+
+    function formatTwinRegime(symbol, dateRaw) {
+      let displaySym = (symbol || "").replace("USDT", "/USD");
+      if (displaySym === "XAUUSD") displaySym = "XAU/USD";
+      if (displaySym === "BTCUSD") displaySym = "BTC/USD";
+      if (displaySym === "ETHUSD") displaySym = "ETH/USD";
+
+      const words = (dateRaw || "").trim().split(/\s+/);
+      if (words.length >= 3) {
+        return `${displaySym} (${dateRaw})`;
+      }
+      const monthYear = words.slice(0, 2).join(" ");
+      const patternDesc = REGIME_PATTERN_NAMES[monthYear] || "Consolidation Base";
+      return `${displaySym} (${monthYear} ${patternDesc})`;
+    }
+
     let activeTwins = [
       { symbol: "XAU/USD", date: "Oct 2024 ATH Breakout", matchScore: 96.4, forwardAmp: 0.014 },
       { symbol: "XAU/USD", date: "Aug 2024 Pre-Fed Squeeze", matchScore: 95.8, forwardAmp: 0.011 },
@@ -1312,13 +1341,20 @@
           // Strictly filter to ensure twins match active asset
           const validTwins = data.top_historical_twins.filter(t => t.symbol.toUpperCase().includes(targetPrefix));
           if (validTwins.length > 0) {
-            activeTwins = validTwins.slice(0, 3).map(t => ({
-              symbol: t.symbol,
-              date: t.date_formatted,
-              matchScore: t.match_pct,
-              forwardAmp: (t.fwd_20_ret_pct || 1.5) / 100.0,
-              fwdPath: t.fwd_20_normalized_path
-            }));
+            activeTwins = validTwins.slice(0, 3).map(t => {
+              const fullText = formatTwinRegime(t.symbol, t.date_formatted);
+              const pStart = fullText.indexOf("(");
+              const pEnd = fullText.indexOf(")");
+              const innerDate = pStart !== -1 && pEnd !== -1 ? fullText.substring(pStart + 1, pEnd) : t.date_formatted;
+              const sym = pStart !== -1 ? fullText.substring(0, pStart).trim() : t.symbol;
+              return {
+                symbol: sym,
+                date: innerDate,
+                matchScore: t.match_pct,
+                forwardAmp: (t.fwd_20_ret_pct || 1.5) / 100.0,
+                fwdPath: t.fwd_20_normalized_path
+              };
+            });
             activeTwins.forEach((twin, idx) => {
               const i = idx + 1;
               const lEl = document.getElementById(`twin-label-${i}`);
@@ -1373,7 +1409,8 @@
         const i = idx + 1;
         const lEl = document.getElementById(`twin-label-${i}`);
         const mEl = document.getElementById(`twin-match-${i}`);
-        if (lEl) lEl.innerText = `#${i} ${twin.symbol} (${twin.date})`;
+        const fullText = formatTwinRegime(twin.symbol, twin.date);
+        if (lEl) lEl.innerText = `#${i} ${fullText}`;
         if (mEl) mEl.innerText = `${twin.matchScore.toFixed(1)}% match`;
       });
 
