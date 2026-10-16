@@ -163,6 +163,7 @@ class ConfidenceGrowthBot:
         tt = data["top_twin"]
         bias = "BULLISH" if data["is_bullish"] else "BEARISH"
         term_link = f"{LIVE_LANDING_URL}/?asset={symbol}&tf={timeframe}"
+        funnel_url = os.getenv("FUNNEL_URL", "https://aravinthragav.github.io/xpredictor/#contact")
 
         return (
             f"🚨 ${symbol} ({timeframe.upper()}) | HIGH CONVICTION REALITY CONE ALERT\n\n"
@@ -173,7 +174,9 @@ class ConfidenceGrowthBot:
             f"• Probability of Breakout Sweep: {tt['p_breakout']}%\n"
             f"• Bayesian Confidence: {data['confidence']:.1f}%\n"
             f"• Target Resolution: ${data['p50']:,.2f} (P50) | ${data['p90']:,.2f} (+2.1σ)\n\n"
-            f"Inspect the live Hybrid AI Reality Cone & replay historical analog paths:\n{term_link}\n\n"
+            f"🤖 Automated MT5 EA & Live Signals:\n"
+            f"👉 {funnel_url}\n\n"
+            f"Interactive Chart & Historical Replay:\n{term_link}\n\n"
             f"#AlgorithmicTrading #QuantitativeFinance #{symbol} #TradingAI"
         )
 
