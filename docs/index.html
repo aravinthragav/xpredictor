@@ -125,13 +125,6 @@
           </div>
           <span class="text-xl font-headline font-semibold tracking-tight text-on-surface">XPredictor</span>
         </a>
-        <div class="hidden xl:flex items-center gap-2 pl-4 py-1 text-xs text-on-surface-variant font-mono bg-surface-container-low rounded-full px-3">
-          <span class="relative flex h-2 w-2">
-            <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-500 opacity-75"></span>
-            <span class="relative inline-flex rounded-full h-2 w-2 bg-emerald-600"></span>
-          </span>
-          <span>QDRANT CLOUD HNSW: ONLINE</span>
-        </div>
       </div>
 
       <nav class="hidden lg:flex items-center gap-6 xl:gap-8 text-xs tracking-wider uppercase font-medium">
@@ -145,9 +138,6 @@
       <div class="flex items-center gap-4">
         <a class="hidden sm:inline-flex items-center justify-center px-4 py-2 rounded-lg bg-primary text-on-primary text-xs font-semibold uppercase tracking-wider hover:bg-primary-container hover:text-on-primary-container transition-all shadow-sm" href="#pilot">
           Request Pilot Access
-        </a>
-        <a href="https://github.com/aravinthragav/xpredictor" target="_blank" class="w-8 h-8 rounded-full bg-surface-container flex items-center justify-center hover:bg-surface-container-high transition-colors" title="GitHub Repository">
-          <svg class="w-4 h-4 text-on-surface" fill="currentColor" viewBox="0 0 24 24"><path fill-rule="evenodd" clip-rule="evenodd" d="M12 2C6.477 2 2 6.484 2 12.017c0 4.425 2.865 8.18 6.839 9.504.5.092.682-.217.682-.483 0-.237-.008-.868-.013-1.703-2.782.605-3.369-1.343-3.369-1.343-.454-1.158-1.11-1.466-1.11-1.466-.908-.62.069-.608.069-.608 1.003.07 1.53 1.032 1.53 1.032.892 1.53 2.341 1.088 2.91.832.092-.647.35-1.088.636-1.338-2.22-.253-4.555-1.113-4.555-4.951 0-1.093.39-1.988 1.029-2.688-.103-.253-.446-1.272.098-2.65 0 0 .84-.27 2.75 1.026A9.564 9.564 0 0112 6.844c.85.004 1.705.115 2.504.337 1.909-1.296 2.747-1.027 2.747-1.027.546 1.379.202 2.398.1 2.651.64.7 1.028 1.595 1.028 2.688 0 3.848-2.339 4.695-4.566 4.943.359.309.678.92.678 1.855 0 1.338-.012 2.419-.012 2.747 0 .268.18.58.688.482A10.019 10.019 0 0022 12.017C22 6.484 17.522 2 12 2z"/></svg>
         </a>
       </div>
     </div>
@@ -164,30 +154,15 @@
         
         <div class="max-w-7xl mx-auto">
 
-
           <!-- Main Typography Hierarchy -->
-          <div class="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
-            <div class="lg:col-span-8 space-y-5">
-              <h1 class="text-4xl sm:text-5xl lg:text-6xl font-headline font-semibold text-on-surface leading-[1.08] tracking-tight">
-                Deterministic price action synthesized with <span class="italic font-normal text-primary">probabilistic</span> market cones.
-              </h1>
-              <p class="text-base sm:text-lg text-on-surface-variant font-body leading-relaxed max-w-2xl font-normal">
-                Empowering proprietary trading desks, retail brokers, and quantitative traders with vectorized candlestick pattern search, empirical historical twin identification, and Bayesian probability cone modeling across multi-asset timeframes.
-              </p>
-            </div>
-            <div class="lg:col-span-4 flex flex-col sm:flex-row lg:flex-col gap-3 justify-end lg:pt-3">
-              <a class="inline-flex items-center justify-center gap-2 px-6 py-3.5 rounded-lg bg-primary text-on-primary font-semibold text-xs tracking-wider uppercase hover:bg-primary-container hover:text-on-primary-container transition-all shadow-md group" href="#terminal">
-                <span>Launch Interactive Terminal</span>
-                <span class="material-symbols-outlined text-[18px] group-hover:translate-x-1 transition-transform">arrow_forward</span>
-              </a>
-              <a class="inline-flex items-center justify-center gap-2 px-6 py-3.5 rounded-lg bg-surface-container-high text-on-surface hover:bg-surface-container-highest transition-colors font-medium text-xs tracking-wider uppercase shadow-sm" href="#brokers">
-                <span class="material-symbols-outlined text-[18px] text-primary">query_stats</span>
-                <span>Broker &amp; Prop Firm Economics</span>
-              </a>
-            </div>
+          <div class="max-w-4xl space-y-5">
+            <h1 class="text-4xl sm:text-5xl lg:text-6xl font-headline font-semibold text-on-surface leading-[1.08] tracking-tight">
+              Deterministic price action synthesized with <span class="italic font-normal text-primary">probabilistic</span> market cones.
+            </h1>
+            <p class="text-base sm:text-lg text-on-surface-variant font-body leading-relaxed max-w-3xl font-normal">
+              Empowering proprietary trading desks, retail brokers, and quantitative traders with vectorized candlestick pattern search, empirical historical twin identification, and Bayesian probability cone modeling across multi-asset timeframes.
+            </p>
           </div>
-        </div>
-      </section>
         </div>
       </section>
 
@@ -239,70 +214,55 @@
 
                 <div class="h-4 w-px bg-outline-variant mx-0.5 hidden sm:block"></div>
 
-                <div class="hidden md:flex items-center gap-1 px-2 py-0.5 rounded bg-surface-container-low text-[11px] font-mono text-on-surface-variant">
-                  <span>CI:</span>
+                <div class="hidden md:flex items-center gap-1 px-2 py-0.5 rounded bg-surface-container-low text-[11px] font-mono text-on-surface-variant cursor-help" title="CI (Confidence Interval 95% / 2.1σ): What you can infer: 95% of future simulated price paths will remain bounded between these envelopes over the next 20 bars. A candle closing outside this cone signals an anomalous momentum breakout or structural regime shift.">
+                  <span class="border-b border-dotted border-on-surface-variant/50">CI:</span>
                   <span class="text-on-surface font-semibold">95% (2.1σ)</span>
                 </div>
-                <div class="hidden xl:flex items-center gap-1 px-2 py-0.5 rounded bg-surface-container-low text-[11px] font-mono text-on-surface-variant">
-                  <span>IV:</span>
+                <div class="hidden xl:flex items-center gap-1 px-2 py-0.5 rounded bg-surface-container-low text-[11px] font-mono text-on-surface-variant cursor-help" title="IV (Implied Volatility): What you can infer: Annualized volatility expected by derivatives options markets. High IV expands the Reality Cone width; low IV compresses the cone into a tight squeeze channel anticipating an explosive expansion.">
+                  <span class="border-b border-dotted border-on-surface-variant/50">IV:</span>
                   <span class="text-primary font-semibold" id="hud-iv">18.42%</span>
                 </div>
               </div>
 
-              <!-- Right: Live Telemetry HUD Chips -->
+              <!-- Right: Live Telemetry HUD Chips with Inferential Tooltips -->
               <div class="flex items-center gap-1.5 sm:gap-2.5 text-xs font-mono shrink-0 ml-auto">
-                <div class="text-right flex items-center gap-1 bg-surface-container-low px-2 py-1 rounded-md border border-outline-variant/30 shadow-2xs">
-                  <span class="text-[10px] text-on-surface-variant uppercase font-semibold">LAST:</span>
+                <div class="text-right flex items-center gap-1 bg-surface-container-low px-2 py-1 rounded-md border border-outline-variant/30 shadow-2xs cursor-help" title="LAST TICK: What you can infer: Real-time streaming last traded price. Reflects the most recent execution tick across aggregated institutional liquidity feeds.">
+                  <span class="text-[10px] text-on-surface-variant uppercase font-semibold border-b border-dotted border-on-surface-variant/50">LAST:</span>
                   <span id="live-tick-indicator" class="text-xs text-emerald-600">▲</span>
                   <span id="live-price" class="text-on-surface font-bold text-xs sm:text-sm transition duration-150">
                     $4,175.00
                   </span>
                 </div>
-                <div class="text-right flex items-center gap-1 bg-surface-container-low px-2 py-1 rounded-md border border-outline-variant/30 shadow-2xs">
-                  <span class="text-[10px] text-on-surface-variant uppercase font-semibold">ALPHA:</span>
+                <div class="text-right flex items-center gap-1 bg-surface-container-low px-2 py-1 rounded-md border border-outline-variant/30 shadow-2xs cursor-help" title="ALPHA: What you can infer: Expected edge or excess return in basis points (1 bp = 0.01%) over benchmark drift when executing aligned with the Bayesian mean trajectory.">
+                  <span class="text-[10px] text-on-surface-variant uppercase font-semibold border-b border-dotted border-on-surface-variant/50">ALPHA:</span>
                   <span class="text-emerald-700 font-semibold text-xs sm:text-sm" id="hud-alpha">+42.6 bps</span>
                 </div>
-                <div class="text-right flex items-center gap-1 bg-surface-container-low px-2 py-1 rounded-md border border-outline-variant/30 shadow-2xs">
-                  <span class="text-[10px] text-on-surface-variant uppercase font-semibold">CONF:</span>
+                <div class="text-right flex items-center gap-1 bg-surface-container-low px-2 py-1 rounded-md border border-outline-variant/30 shadow-2xs cursor-help" title="CONF (Confidence Score): What you can infer: Posterior probability alignment across top vector twins in historical database. Scores > 85% indicate high structural similarity to past profitable setups.">
+                  <span class="text-[10px] text-on-surface-variant uppercase font-semibold border-b border-dotted border-on-surface-variant/50">CONF:</span>
                   <span class="text-primary font-semibold text-xs sm:text-sm" id="hud-conf">91.8%</span>
                 </div>
               </div>
             </div>
 
-            <!-- Terminal Sub-HUD Metric Bar (Row 2: OHLCV Stats + Tools + Resting Iceberg) -->
+            <!-- Terminal Sub-HUD Metric Bar (Row 2: OHLCV Stats + Statistical Moments + Resting Support) -->
             <div class="px-3 sm:px-6 py-2 bg-surface-container-low flex flex-wrap items-center justify-between text-xs font-mono gap-2 text-on-surface-variant border-y border-outline-variant/30">
-              <!-- Left: OHLC & Statistical Moments -->
+              <!-- Left: OHLC & Statistical Moments with inferential tooltips -->
               <div class="flex flex-wrap items-center gap-2 sm:gap-3 text-[11px]">
-                <span>O: <strong class="text-on-surface" id="bar-open">$4,150.20</strong></span>
-                <span>H: <strong class="text-on-surface" id="bar-high">$4,162.80</strong></span>
-                <span>L: <strong class="text-on-surface" id="bar-low">$4,148.50</strong></span>
-                <span>C: <strong class="text-on-surface" id="bar-close">$4,155.18</strong></span>
+                <span title="OPEN: Opening price of the currently active candlestick bar.">O: <strong class="text-on-surface" id="bar-open">$4,150.20</strong></span>
+                <span title="HIGH: Highest traded price reached during the current bar period.">H: <strong class="text-on-surface" id="bar-high">$4,162.80</strong></span>
+                <span title="LOW: Lowest traded price reached during the current bar period.">L: <strong class="text-on-surface" id="bar-low">$4,148.50</strong></span>
+                <span title="CLOSE: Latest closing or current mid price of the bar.">C: <strong class="text-on-surface" id="bar-close">$4,155.18</strong></span>
                 <span class="text-outline-variant hidden sm:inline">•</span>
-                <span class="hidden sm:inline">DRIFT: <strong class="text-emerald-700 font-medium" id="bar-drift">+0.22%</strong></span>
-                <span class="hidden md:inline">SKEW: <strong class="text-on-surface font-medium" id="bar-skew">1.14</strong></span>
-                <span class="hidden md:inline">KURT: <strong class="text-on-surface font-medium" id="bar-kurt">3.82</strong></span>
+                <span class="hidden sm:inline cursor-help" title="DRIFT: What you can infer: Directional velocity and underlying slope of the brushed window. Positive values indicate bullish momentum; negative values signal downward drag."><span class="border-b border-dotted border-on-surface-variant/50">DRIFT:</span> <strong class="text-emerald-700 font-medium" id="bar-drift">+0.22%</strong></span>
+                <span class="hidden md:inline cursor-help" title="SKEW: What you can infer: Return asymmetry. Positive skew implies upside breakout potential; negative skew indicates fat downside liquidation risk."><span class="border-b border-dotted border-on-surface-variant/50">SKEW:</span> <strong class="text-on-surface font-medium" id="bar-skew">1.14</strong></span>
+                <span class="hidden md:inline cursor-help" title="KURT (Kurtosis): What you can infer: Tail risk severity. Values > 3.0 indicate leptokurtic distribution with higher probability of sudden flash wicks and volatility spikes than standard normal distributions."><span class="border-b border-dotted border-on-surface-variant/50">KURT:</span> <strong class="text-on-surface font-medium" id="bar-kurt">3.82</strong></span>
               </div>
 
-              <!-- Right: Mode Controls, Action Tools & Resting Iceberg -->
-              <div class="flex flex-wrap items-center gap-1.5 sm:gap-2 ml-auto">
-                <div class="flex bg-surface-container rounded-md p-0.5 border border-outline-variant/30 text-xs">
-                  <button onclick="setInteractionMode('brush')" id="btn-mode-brush" class="px-2 py-0.5 rounded bg-primary text-white font-bold flex items-center gap-1 shadow-xs transition cursor-pointer text-[11px]">
-                    <span class="material-symbols-outlined text-[13px]">search</span> Select Pattern
-                  </button>
-                  <button onclick="setInteractionMode('pan')" id="btn-mode-pan" class="px-2 py-0.5 rounded text-on-surface-variant hover:text-on-surface flex items-center gap-1 transition cursor-pointer text-[11px]">
-                    <span class="material-symbols-outlined text-[13px]">pan_tool</span> Pan Chart
-                  </button>
-                </div>
-                <button onclick="shareRealityCone()" id="share-cone-btn" class="px-2 py-0.5 rounded bg-surface-container hover:bg-surface-container-high text-on-surface font-mono text-[11px] flex items-center gap-1 border border-outline-variant/40 shadow-xs cursor-pointer transition" title="Copy watermarked chart PNG directly to clipboard">
-                  <span class="material-symbols-outlined text-[13px]">photo_camera</span> Share Cone
-                </button>
-                <button onclick="copyEmbedSnippet()" id="embed-code-btn" class="px-2 py-0.5 rounded bg-surface-container hover:bg-surface-container-high text-primary font-mono text-[11px] flex items-center gap-1 border border-outline-variant/40 shadow-xs cursor-pointer transition" title="Copy 1-line broker embed iframe code">
-                  <span class="material-symbols-outlined text-[13px]">code</span> Embed
-                </button>
-                <div class="flex items-center gap-1 bg-surface-container px-2 py-0.5 rounded-md text-[11px] font-mono border border-outline-variant/40 shadow-xs">
-                  <span class="w-1.5 h-1.5 rounded-full bg-rose-600 animate-pulse"></span>
-                  <span class="text-on-surface font-semibold" id="resting-iceberg">RESTING ICEBERG: 1,420 Lots at $4,175.00</span>
-                </div>
+              <!-- Right: Resting Support / Iceberg (Aligned cleanly with metrics) -->
+              <div class="flex items-center gap-1.5 bg-surface-container px-2.5 py-1 rounded-md text-[11px] font-mono border border-outline-variant/40 shadow-xs ml-auto cursor-help"
+                   title="RESTING SUPPORT / ICEBERG: Large institutional limit orders resting in Level 2 depth. What you can infer: Acts as a major liquidity magnet, price rejection ceiling (Ask Iceberg), or absorption floor (Bid Support). Large clusters often trigger mean-reversion bounces or liquidity sweeps.">
+                <span class="w-1.5 h-1.5 rounded-full bg-rose-600 animate-pulse"></span>
+                <span class="text-on-surface font-semibold" id="resting-iceberg">RESTING ICEBERG: 1,420 Lots at $4,175.00</span>
               </div>
             </div>
 
@@ -711,7 +671,7 @@
   <!-- Institutional Footer -->
   <footer class="w-full bg-surface-container-low pt-16 pb-12 shadow-[0_-1px_8px_rgba(58,48,42,0.02)] border-t border-outline-variant/30">
     <div class="max-w-7xl mx-auto px-6 lg:px-12">
-      <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-10 pb-12">
+      <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-10 pb-12">
         <div class="lg:col-span-2 space-y-4">
           <div class="flex items-center gap-3">
             <div class="w-8 h-8 rounded-lg bg-primary text-white flex items-center justify-center font-bold text-xs tracking-wider">
@@ -726,17 +686,6 @@
             <span class="text-[11px] font-mono uppercase px-2.5 py-1 rounded bg-surface-container text-on-surface-variant">SOC 2 Type II Certified</span>
             <span class="text-[11px] font-mono uppercase px-2.5 py-1 rounded bg-surface-container text-on-surface-variant">ISO 27001 Registered</span>
           </div>
-        </div>
-
-        <div class="space-y-3">
-          <h3 class="text-xs font-semibold uppercase tracking-wider text-on-surface font-mono">Quantitative Engine</h3>
-          <ul class="space-y-2 text-xs text-on-surface-variant font-mono">
-            <li>Qdrant Cloud HNSW Index</li>
-            <li>PyTorch Causal Tokenizer</li>
-            <li>FastAPI REST &amp; WebSockets</li>
-            <li>1-Line Embed Widget SDK</li>
-            <li>Bayesian Reality Cone Fusion</li>
-          </ul>
         </div>
 
         <div class="space-y-3">
@@ -2141,13 +2090,15 @@
       const snippet = `<iframe src="https://aravinthragav.github.io/xpredictor/" width="100%" height="720" frameborder="0" style="border-radius: 12px; border: 1px solid #d8d0c8;"></iframe>`;
       navigator.clipboard.writeText(snippet).then(() => {
         const btn = document.getElementById("embed-code-btn");
-        const originalText = btn.innerHTML;
-        btn.innerHTML = `<span class="material-symbols-outlined text-[14px]">check</span> Embed Code Copied!`;
-        btn.className = "px-2.5 py-1 rounded bg-emerald-100 text-emerald-800 font-mono text-[11px] flex items-center gap-1 border border-emerald-300 shadow-xs cursor-pointer transition";
-        setTimeout(() => {
-          btn.innerHTML = originalText;
-          btn.className = "px-2.5 py-1 rounded bg-surface-container hover:bg-surface-container-high text-primary font-mono text-[11px] flex items-center gap-1 border border-outline-variant/40 shadow-xs cursor-pointer transition";
-        }, 3000);
+        if (btn) {
+          const originalText = btn.innerHTML;
+          btn.innerHTML = `<span class="material-symbols-outlined text-[14px]">check</span> Embed Code Copied!`;
+          btn.className = "px-2.5 py-1 rounded bg-emerald-100 text-emerald-800 font-mono text-[11px] flex items-center gap-1 border border-emerald-300 shadow-xs cursor-pointer transition";
+          setTimeout(() => {
+            btn.innerHTML = originalText;
+            btn.className = "px-2.5 py-1 rounded bg-surface-container hover:bg-surface-container-high text-primary font-mono text-[11px] flex items-center gap-1 border border-outline-variant/40 shadow-xs cursor-pointer transition";
+          }, 3000);
+        }
       }).catch(() => {
         prompt("Copy this 1-line broker embed code:", snippet);
       });
