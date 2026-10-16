@@ -266,17 +266,6 @@
                   <button onclick="switchTimeframe('1h')" id="tf-1h" class="px-2 py-0.5 rounded bg-surface-container-lowest text-primary font-bold shadow-xs text-[11px]">1H</button>
                   <button onclick="switchTimeframe('4h')" id="tf-4h" class="px-2 py-0.5 rounded text-on-surface-variant hover:text-on-surface text-[11px]">4H</button>
                 </div>
-
-                <div class="h-4 w-px bg-outline-variant mx-0.5 hidden sm:block"></div>
-
-                <div class="hidden md:flex items-center gap-1 px-2 py-0.5 rounded bg-surface-container-low text-[11px] font-mono text-on-surface-variant cursor-help" title="CI (Confidence Interval 95% / 2.1σ): What you can infer: 95% of future simulated price paths will remain bounded between these envelopes over the next 20 bars. A candle closing outside this cone signals an anomalous momentum breakout or structural regime shift.">
-                  <span class="border-b border-dotted border-on-surface-variant/50">CI:</span>
-                  <span class="text-on-surface font-semibold">95% (2.1σ)</span>
-                </div>
-                <div class="hidden xl:flex items-center gap-1 px-2 py-0.5 rounded bg-surface-container-low text-[11px] font-mono text-on-surface-variant cursor-help" title="IV (Implied Volatility): What you can infer: Annualized volatility expected by derivatives options markets. High IV expands the Reality Cone width; low IV compresses the cone into a tight squeeze channel anticipating an explosive expansion.">
-                  <span class="border-b border-dotted border-on-surface-variant/50">IV:</span>
-                  <span class="text-primary font-semibold" id="hud-iv">18.42%</span>
-                </div>
               </div>
 
               <!-- Right: Live Telemetry HUD Chips with Inferential Tooltips -->
@@ -292,14 +281,10 @@
                   <span class="text-[10px] text-on-surface-variant uppercase font-semibold border-b border-dotted border-on-surface-variant/50">ALPHA:</span>
                   <span class="text-emerald-700 font-semibold text-xs sm:text-sm" id="hud-alpha">+42.6 bps</span>
                 </div>
-                <div class="text-right flex items-center gap-1 bg-surface-container-low px-2 py-1 rounded-md border border-outline-variant/30 shadow-2xs cursor-help" title="CONF (Confidence Score): What you can infer: Posterior probability alignment across top vector twins in historical database. Scores > 85% indicate high structural similarity to past profitable setups.">
-                  <span class="text-[10px] text-on-surface-variant uppercase font-semibold border-b border-dotted border-on-surface-variant/50">CONF:</span>
-                  <span class="text-primary font-semibold text-xs sm:text-sm" id="hud-conf">91.8%</span>
-                </div>
               </div>
             </div>
 
-            <!-- Terminal Sub-HUD Metric Bar (Row 2: OHLCV Stats + Statistical Moments + Resting Support) -->
+            <!-- Terminal Sub-HUD Metric Bar (Row 2: OHLCV Stats + Statistical Moments + CI, IV, CONF + Resting Support) -->
             <div class="px-3 sm:px-6 py-2 bg-surface-container-low flex flex-wrap items-center justify-between text-xs font-mono gap-2 text-on-surface-variant border-y border-outline-variant/30">
               <!-- Left: OHLC & Statistical Moments with inferential tooltips -->
               <div class="flex flex-wrap items-center gap-2 sm:gap-3 text-[11px]">
@@ -313,11 +298,25 @@
                 <span class="hidden md:inline cursor-help" title="KURT (Kurtosis): What you can infer: Tail risk severity. Values > 3.0 indicate leptokurtic distribution with higher probability of sudden flash wicks and volatility spikes than standard normal distributions."><span class="border-b border-dotted border-on-surface-variant/50">KURT:</span> <strong class="text-on-surface font-medium" id="bar-kurt">3.82</strong></span>
               </div>
 
-              <!-- Right: Resting Support / Iceberg (Aligned cleanly with metrics) -->
-              <div class="flex items-center gap-1.5 bg-surface-container px-2.5 py-1 rounded-md text-[11px] font-mono border border-outline-variant/40 shadow-xs ml-auto cursor-help"
-                   title="RESTING SUPPORT / ICEBERG: Large institutional limit orders resting in Level 2 depth. What you can infer: Acts as a major liquidity magnet, price rejection ceiling (Ask Iceberg), or absorption floor (Bid Support). Large clusters often trigger mean-reversion bounces or liquidity sweeps.">
-                <span class="w-1.5 h-1.5 rounded-full bg-rose-600 animate-pulse"></span>
-                <span class="text-on-surface font-semibold" id="resting-iceberg">RESTING ICEBERG: 1,420 Lots at $4,175.00</span>
+              <!-- Right: CI, IV, CONF & Resting Support / Iceberg (Aligned cleanly with metrics) -->
+              <div class="flex flex-wrap items-center gap-1.5 sm:gap-2 ml-auto">
+                <div class="flex items-center gap-1 bg-surface-container px-2 py-1 rounded-md text-[11px] font-mono border border-outline-variant/40 shadow-xs cursor-help" title="CI (Confidence Interval 95% / 2.1σ): What you can infer: 95% of future simulated price paths will remain bounded between these envelopes over the next 20 bars. A candle closing outside this cone signals an anomalous momentum breakout or structural regime shift.">
+                  <span class="border-b border-dotted border-on-surface-variant/50 text-[10px]">CI:</span>
+                  <span class="text-on-surface font-semibold">95% (2.1σ)</span>
+                </div>
+                <div class="flex items-center gap-1 bg-surface-container px-2 py-1 rounded-md text-[11px] font-mono border border-outline-variant/40 shadow-xs cursor-help" title="IV (Implied Volatility): What you can infer: Annualized volatility expected by derivatives options markets. High IV expands the Reality Cone width; low IV compresses the cone into a tight squeeze channel anticipating an explosive expansion.">
+                  <span class="border-b border-dotted border-on-surface-variant/50 text-[10px]">IV:</span>
+                  <span class="text-primary font-semibold" id="hud-iv">18.42%</span>
+                </div>
+                <div class="flex items-center gap-1 bg-surface-container px-2 py-1 rounded-md border border-outline-variant/40 shadow-xs cursor-help text-[11px] font-mono" title="CONF (Confidence Score): What you can infer: Posterior probability alignment across top vector twins in historical database. Scores > 85% indicate high structural similarity to past profitable setups.">
+                  <span class="text-[10px] text-on-surface-variant uppercase font-semibold border-b border-dotted border-on-surface-variant/50">CONF:</span>
+                  <span class="text-primary font-semibold" id="hud-conf">91.8%</span>
+                </div>
+                <div class="flex items-center gap-1.5 bg-surface-container px-2.5 py-1 rounded-md text-[11px] font-mono border border-outline-variant/40 shadow-xs cursor-help"
+                     title="RESTING SUPPORT / ICEBERG: Large institutional limit orders resting in Level 2 depth. What you can infer: Acts as a major liquidity magnet, price rejection ceiling (Ask Iceberg), or absorption floor (Bid Support). Large clusters often trigger mean-reversion bounces or liquidity sweeps.">
+                  <span class="w-1.5 h-1.5 rounded-full bg-rose-600 animate-pulse"></span>
+                  <span class="text-on-surface font-semibold" id="resting-iceberg">RESTING ICEBERG: 1,420 Lots at $4,175.00</span>
+                </div>
               </div>
             </div>
 
@@ -340,7 +339,7 @@
                     <span class="material-symbols-outlined text-[14px]">crop_free</span>
                     <span class="hidden md:inline">Select Pattern</span>
                   </button>
-                  <button id="btn-mode-pan" onclick="setInteractionMode('pan')" class="px-2 py-1 rounded-md text-on-surface-variant hover:text-on-surface flex items-center gap-1 transition cursor-pointer text-[11px]" title="Pan: Drag chart horizontally">
+                  <button id="btn-mode-pan" onclick="setInteractionMode('pan')" class="px-2 py-1 rounded-md text-on-surface-variant hover:text-on-surface flex items-center gap-1 transition cursor-pointer text-[11px]" title="Pan: Drag chart horizontally or vertically">
                     <span class="material-symbols-outlined text-[14px]">pan_tool</span>
                     <span class="hidden md:inline">Pan</span>
                   </button>
@@ -353,7 +352,7 @@
                   <button onclick="zoomOut()" class="w-7 h-7 rounded-md text-on-surface-variant hover:text-on-surface hover:bg-surface-container flex items-center justify-center transition cursor-pointer active:scale-95" title="Zoom Out (Scroll Wheel Down or '-' key)">
                     <span class="material-symbols-outlined text-[16px]">remove</span>
                   </button>
-                  <button onclick="resetZoomAndPan()" id="zoom-level-badge" class="px-1.5 py-1 text-[10px] font-bold text-on-surface hover:text-primary transition cursor-pointer min-w-[36px] text-center" title="Click to Reset Zoom (100% or '0' key)">
+                  <button onclick="resetZoomAndPan()" id="zoom-level-badge" class="px-1.5 py-1 text-[10px] font-bold text-on-surface hover:text-primary transition cursor-pointer min-w-[36px] text-center" title="Click to Reset Zoom & Y-Scale (100% or '0' key)">
                     100%
                   </button>
                   <button onclick="zoomIn()" class="w-7 h-7 rounded-md text-on-surface-variant hover:text-on-surface hover:bg-surface-container flex items-center justify-center transition cursor-pointer active:scale-95" title="Zoom In (Scroll Wheel Up or '+' key)">
@@ -362,7 +361,7 @@
                 </div>
 
                 <!-- Recenter View Button -->
-                <button onclick="resetZoomAndPan()" class="w-7 h-7 rounded-lg bg-surface-container-low hover:bg-surface-container text-on-surface-variant hover:text-on-surface flex items-center justify-center border border-outline-variant/30 transition cursor-pointer active:scale-95 shadow-2xs" title="Reset View & Recenter">
+                <button onclick="resetZoomAndPan()" class="w-7 h-7 rounded-lg bg-surface-container-low hover:bg-surface-container text-on-surface-variant hover:text-on-surface flex items-center justify-center border border-outline-variant/30 transition cursor-pointer active:scale-95 shadow-2xs" title="Reset View & Recenter (Auto-fits Y-axis & Zoom to 100%)">
                   <span class="material-symbols-outlined text-[15px]">restart_alt</span>
                 </button>
 
@@ -978,6 +977,17 @@
     const MAX_ZOOM = 3.5;
     const ZOOM_STEP = 0.15;
 
+    // Y-Axis Interactive Scaling & Pan Configuration (TradingView-style vertical scaling)
+    let priceScaleY = 1.0;
+    let pricePanOffsetY = 0;
+    const MIN_PRICE_SCALE_Y = 0.25;
+    const MAX_PRICE_SCALE_Y = 5.0;
+    let isYScaleDragging = false;
+    let yDragStartY = 0;
+    let initialPriceScaleY = 1.0;
+    let panStartY = 0;
+    let initialPricePanOffsetY = 0;
+
     // Compute dynamic candle width scaled strictly with current zoom level
     function getCandleWidth(containerWidth) {
       const count = (sampleCandles && sampleCandles.length > 0) ? sampleCandles.length : 80;
@@ -1026,6 +1036,8 @@
     function resetZoomAndPan() {
       zoomLevel = 1.0;
       panOffset = 0;
+      priceScaleY = 1.0;
+      pricePanOffsetY = 0;
       updateZoomBadge();
       renderCanvas();
     }
@@ -1640,12 +1652,84 @@
 
       if (sampleCandles.length === 0) return;
 
-      let minP = Infinity, maxP = -Infinity;
-      sampleCandles.forEach(c => { minP = Math.min(minP, c.low); maxP = Math.max(maxP, c.high); });
-      const pad = (maxP - minP) * 0.16 || 10;
-      minP -= pad; maxP += pad;
-
       const candleW = getCandleWidth(w);
+
+      // 1. Calculate anchor candle, momentum drift, and Wiener dispersion envelope FIRST
+      const anchorIdx = Math.min(brushEnd, sampleCandles.length - 1);
+      const anchorCandle = sampleCandles[anchorIdx] || sampleCandles[sampleCandles.length - 1];
+      const firstBrushed = sampleCandles[brushStart] || anchorCandle;
+      const brushedSlope = (anchorCandle.close - firstBrushed.open) / (firstBrushed.open || 1);
+      let isDowntrend = brushedSlope < -0.002;
+
+      // Regime Modifiers
+      let varianceMult = 1.0;
+      let driftFactor = 1.0;
+      if (currentRegimeStress === 'vacuum') {
+        varianceMult = 1.85;
+        driftFactor = 0.7;
+      } else if (currentRegimeStress === 'cpi') {
+        varianceMult = 2.40;
+        driftFactor = 1.4;
+      } else if (currentRegimeStress === 'cascade') {
+        isDowntrend = true;
+        varianceMult = 2.10;
+        driftFactor = -1.8;
+      }
+
+      const trendSign = isDowntrend ? -1 : 1;
+      const C0 = anchorCandle.close;
+
+      // Empirical volatility calculated from brushed window returns
+      const brushed = sampleCandles.slice(brushStart, brushEnd + 1);
+      let sigmaLive = 0.0035;
+      if (brushed.length > 2) {
+        const rets = [];
+        for (let i = 1; i < brushed.length; i++) {
+          if (brushed[i-1].close > 0 && brushed[i].close > 0) {
+            rets.push(Math.log(brushed[i].close / brushed[i-1].close));
+          }
+        }
+        if (rets.length > 1) {
+          const meanR = rets.reduce((a, b) => a + b, 0) / rets.length;
+          const varR = rets.reduce((a, b) => a + Math.pow(b - meanR, 2), 0) / (rets.length - 1);
+          sigmaLive = Math.max(0.0018, Math.min(0.012, Math.sqrt(varR) * Math.sqrt(22)));
+        }
+      }
+
+      // Expected macro price return drift to T+22 horizon (scaled by brushed momentum)
+      const macroDrift = trendSign * Math.min(0.015, Math.max(0.004, Math.abs(brushedSlope) * 0.50)) * driftFactor;
+      // 1-sigma dispersion to T+22 horizon
+      const sigmaCone = sigmaLive * varianceMult;
+
+      // Exact terminal price levels at t+22 (P90 = +2.1 sigma, P50 = mean, P10 = -2.1 sigma)
+      const p90P = C0 * (1 + macroDrift + 2.1 * sigmaCone);
+      const p50P = C0 * (1 + macroDrift);
+      const p10P = C0 * (1 + macroDrift - 2.1 * sigmaCone);
+
+      // 2. Compute dynamic price bounds encompassing BOTH historical candles AND forward Reality Cone envelopes
+      let rawMinP = Infinity, rawMaxP = -Infinity;
+      sampleCandles.forEach(c => {
+        if (c.low < rawMinP) rawMinP = c.low;
+        if (c.high > rawMaxP) rawMaxP = c.high;
+      });
+      // CRITICAL: Ensure upper (+2.1σ) and lower (-2.1σ) cone projections are strictly encompassed
+      // This prevents the Reality Cone from clipping above the canvas top during strong bullish runs
+      rawMinP = Math.min(rawMinP, p10P);
+      rawMaxP = Math.max(rawMaxP, p90P);
+
+      const baseSpan = (rawMaxP - rawMinP) || 10;
+      const basePad = baseSpan * 0.16;
+      const autoMinP = rawMinP - basePad;
+      const autoMaxP = rawMaxP + basePad;
+      const autoSpan = autoMaxP - autoMinP;
+      const autoMidP = (autoMaxP + autoMinP) / 2;
+
+      // Apply interactive Y-axis scaling (priceScaleY) & vertical pan (pricePanOffsetY)
+      const adjustedSpan = autoSpan / (priceScaleY || 1.0);
+      const centerPrice = autoMidP + pricePanOffsetY;
+      const minP = centerPrice - adjustedSpan / 2;
+      const maxP = centerPrice + adjustedSpan / 2;
+
       const priceToY = p => h - 35 - ((p - minP) / (maxP - minP || 1)) * (h - 70);
 
       // Background Subtle Grid Lines & Y-Price Scale
@@ -1782,8 +1866,6 @@
       });
 
       // Live Price Anchor Node at t0 (Single clean demarcation without duplicate line or T0 label)
-      const anchorIdx = Math.min(brushEnd, sampleCandles.length - 1);
-      const anchorCandle = sampleCandles[anchorIdx];
       const startX = anchorIdx * candleW + candleW / 2 + panOffset;
       const baseY = priceToY(anchorCandle.close);
 
@@ -1792,56 +1874,6 @@
       ctx.beginPath();
       ctx.arc(startX, baseY, 4, 0, Math.PI * 2);
       ctx.fill();
-
-      // Determine Slope & Direction based on brushed regime + Stress Testing Modifiers
-      const firstBrushed = sampleCandles[brushStart] || anchorCandle;
-      const brushedSlope = (anchorCandle.close - firstBrushed.open) / (firstBrushed.open || 1);
-      let isDowntrend = brushedSlope < -0.002;
-
-      // Regime Modifiers
-      let varianceMult = 1.0;
-      let driftFactor = 1.0;
-      if (currentRegimeStress === 'vacuum') {
-        varianceMult = 1.85;
-        driftFactor = 0.7;
-      } else if (currentRegimeStress === 'cpi') {
-        varianceMult = 2.40;
-        driftFactor = 1.4;
-      } else if (currentRegimeStress === 'cascade') {
-        isDowntrend = true;
-        varianceMult = 2.10;
-        driftFactor = -1.8;
-      }
-
-      const trendSign = isDowntrend ? -1 : 1;
-      const C0 = anchorCandle.close;
-
-      // Empirical volatility calculated from brushed window returns
-      const brushed = sampleCandles.slice(brushStart, brushEnd + 1);
-      let sigmaLive = 0.0035;
-      if (brushed.length > 2) {
-        const rets = [];
-        for (let i = 1; i < brushed.length; i++) {
-          if (brushed[i-1].close > 0 && brushed[i].close > 0) {
-            rets.push(Math.log(brushed[i].close / brushed[i-1].close));
-          }
-        }
-        if (rets.length > 1) {
-          const meanR = rets.reduce((a, b) => a + b, 0) / rets.length;
-          const varR = rets.reduce((a, b) => a + Math.pow(b - meanR, 2), 0) / (rets.length - 1);
-          sigmaLive = Math.max(0.0018, Math.min(0.012, Math.sqrt(varR) * Math.sqrt(22)));
-        }
-      }
-
-      // Expected macro price return drift to T+22 horizon (scaled by brushed momentum)
-      const macroDrift = trendSign * Math.min(0.015, Math.max(0.004, Math.abs(brushedSlope) * 0.50)) * driftFactor;
-      // 1-sigma dispersion to T+22 horizon
-      const sigmaCone = sigmaLive * varianceMult;
-
-      // Exact terminal price levels at t+22 (P90 = +2.1 sigma, P50 = mean, P10 = -2.1 sigma)
-      const p90P = C0 * (1 + macroDrift + 2.1 * sigmaCone);
-      const p50P = C0 * (1 + macroDrift);
-      const p10P = C0 * (1 + macroDrift - 2.1 * sigmaCone);
 
       // Outer 95% Confidence Fan (+2.1σ to -2.1σ) rendered in real price space
       const outerGrad = ctx.createLinearGradient(startX, 0, startX + 22 * candleW, 0);
@@ -2069,6 +2101,17 @@
         ctx.fillStyle = Number(microDriftBps) >= 0 ? "#059669" : "#e11d48";
         ctx.fillText(`${driftPrefix}${microDriftBps} bps`, tipX + 96, tipY + 68);
       }
+
+      // Auto-Fit Reset Badge on Right Price Scale if Y-axis has been adjusted
+      if (Math.abs(priceScaleY - 1.0) > 0.02 || Math.abs(pricePanOffsetY) > 0.001) {
+        ctx.fillStyle = "#c2652a";
+        ctx.beginPath();
+        ctx.roundRect(w - 72, h - 26, 68, 18, 3);
+        ctx.fill();
+        ctx.fillStyle = "#ffffff";
+        ctx.font = "bold 8.5px 'JetBrains Mono', monospace";
+        ctx.fillText("↺ AUTO-FIT", w - 68, h - 14);
+      }
     }
 
     // Asset Switcher
@@ -2126,6 +2169,8 @@
       // 5. Update vector twins immediately for the newly selected asset
       computeDynamicTwins();
       panOffset = 0;
+      priceScaleY = 1.0;
+      pricePanOffsetY = 0;
 
       // 6. Fetch new market klines and initiate clean stream
       loadMarketData(key, currentTimeframe);
@@ -2135,6 +2180,8 @@
     function switchTimeframe(tf) {
       currentTimeframe = tf;
       panOffset = 0;
+      priceScaleY = 1.0;
+      pricePanOffsetY = 0;
       ['1m', '5m', '15m', '1h', '4h'].forEach(t => {
         const btn = document.getElementById(`tf-${t}`);
         if (!btn) return;
@@ -2179,12 +2226,30 @@
       renderCanvas();
     }
 
-    // Canvas Mouse Events: Drag & Brush + Pan + Crosshairs + Smooth Zoom
+    // Canvas Mouse Events: Drag & Brush + Pan + Crosshairs + Smooth Zoom + Interactive Y-Axis Scaling
     canvas.addEventListener('mousedown', (e) => {
       const rect = canvas.getBoundingClientRect();
       const x = e.clientX - rect.left;
-      const isBrush = interactionMode === "brush" || e.shiftKey;
+      const y = e.clientY - rect.top;
 
+      // 1. Interactive Y-Axis Dragging on the Right Price Scale [w - 75 to w]
+      if (x >= rect.width - 75) {
+        // If user clicks the "AUTO-FIT" badge, instantly reset Y-scale and vertical pan
+        if (y >= rect.height - 30 && y <= rect.height - 5 && (Math.abs(priceScaleY - 1.0) > 0.02 || Math.abs(pricePanOffsetY) > 0.001)) {
+          priceScaleY = 1.0;
+          pricePanOffsetY = 0;
+          renderCanvas();
+          return;
+        }
+        isYScaleDragging = true;
+        yDragStartY = e.clientY;
+        initialPriceScaleY = priceScaleY;
+        canvas.style.cursor = 'ns-resize';
+        return;
+      }
+
+      // 2. Chart Body Dragging (Brush or Pan)
+      const isBrush = interactionMode === "brush" || e.shiftKey;
       if (isBrush) {
         const candleW = getCandleWidth(rect.width);
         dragStartX = Math.floor((x - panOffset) / candleW);
@@ -2192,6 +2257,8 @@
       } else {
         isPanDragging = true;
         panStartX = e.clientX - panOffset;
+        panStartY = e.clientY;
+        initialPricePanOffsetY = pricePanOffsetY;
       }
     });
 
@@ -2200,6 +2267,28 @@
       const x = e.clientX - rect.left;
       const y = e.clientY - rect.top;
       crosshairPos = { x, y };
+
+      // Handle active Y-axis scale dragging
+      if (isYScaleDragging) {
+        const dy = e.clientY - yDragStartY;
+        // Drag down (dy > 0) compresses vertical scale to reveal higher/lower price ranges
+        // Drag up (dy < 0) stretches vertical scale to magnify candle waves
+        const scaleFactor = Math.exp(-dy * 0.006);
+        priceScaleY = Math.max(MIN_PRICE_SCALE_Y, Math.min(MAX_PRICE_SCALE_Y, initialPriceScaleY * scaleFactor));
+        renderCanvas();
+        return;
+      }
+
+      // Dynamic cursor styling based on hover zone
+      if (x >= rect.width - 75) {
+        canvas.style.cursor = 'ns-resize';
+      } else if (isPanDragging) {
+        canvas.style.cursor = 'grabbing';
+      } else if (interactionMode === "pan") {
+        canvas.style.cursor = 'grab';
+      } else {
+        canvas.style.cursor = 'crosshair';
+      }
 
       if (isDragging && sampleCandles.length > 0) {
         const candleW = getCandleWidth(rect.width);
@@ -2211,6 +2300,11 @@
         renderCanvas();
       } else if (isPanDragging) {
         panOffset = e.clientX - panStartX;
+        const dy = e.clientY - panStartY;
+        if (Math.abs(priceScaleY - 1.0) > 0.02 || Math.abs(pricePanOffsetY) > 0.001 || Math.abs(dy) > 15) {
+          const approxPriceRange = (sampleCandles.length > 1) ? Math.abs(sampleCandles[0].close - sampleCandles[sampleCandles.length - 1].close) + 20 : 50;
+          pricePanOffsetY = initialPricePanOffsetY + (dy / (rect.height - 70)) * (approxPriceRange / (priceScaleY || 1.0));
+        }
         renderCanvas();
       } else {
         renderCanvas();
@@ -2224,6 +2318,7 @@
         queryRealVectorTwins(sampleCandles.slice(brushStart, brushEnd + 1));
       }
       isPanDragging = false;
+      isYScaleDragging = false;
       renderCanvas();
     });
 
@@ -2237,20 +2332,32 @@
         isPanDragging = false;
         renderCanvas();
       }
+      if (isYScaleDragging) {
+        isYScaleDragging = false;
+        canvas.style.cursor = interactionMode === "brush" ? 'crosshair' : 'grab';
+        renderCanvas();
+      }
     });
 
-    // Mouse Wheel Zoom: Centered seamlessly at cursor position without disrupting cones or twin lines
+    // Mouse Wheel: Vertical Price Scaling on Right Axis, Horizontal/Focal Zoom on Chart Body
     canvas.addEventListener('wheel', (e) => {
       e.preventDefault();
       const rect = canvas.getBoundingClientRect();
       const mouseX = e.clientX - rect.left;
-      if (mouseX > rect.width - 75) return; // Prevent zooming if cursor is hovering over the right price scale
+
+      if (mouseX >= rect.width - 75) {
+        // Scroll wheel over right price scale adjusts vertical price scale
+        const factor = e.deltaY < 0 ? 1.08 : 0.92;
+        priceScaleY = Math.max(MIN_PRICE_SCALE_Y, Math.min(MAX_PRICE_SCALE_Y, priceScaleY * factor));
+        renderCanvas();
+        return;
+      }
 
       const factor = e.deltaY < 0 ? (1 + ZOOM_STEP) : (1 - ZOOM_STEP);
       setZoom(zoomLevel * factor, mouseX);
     }, { passive: false });
 
-    // Double-click to reset zoom and pan to 100%
+    // Double-click to reset zoom, pan, and Y-axis scale to 100% auto-fit
     canvas.addEventListener('dblclick', () => {
       resetZoomAndPan();
     });
