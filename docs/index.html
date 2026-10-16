@@ -318,7 +318,7 @@
               <!-- Top Left Chart Status Badge -->
               <div class="absolute left-4 sm:left-6 top-4 sm:top-6 flex items-center gap-2 bg-surface-container-lowest/90 backdrop-blur-md px-3 py-1.5 rounded-lg text-[11px] font-mono shadow-xs border border-outline-variant/30 pointer-events-none z-10">
                 <span class="w-2 h-2 rounded-full bg-primary"></span>
-                <span class="text-on-surface font-semibold" id="chart-subhead">XAU/USD 1H • 80 BARS</span>
+                <span class="text-on-surface font-semibold" id="chart-subhead">XAU/USD • 1H • LOADING...</span>
               </div>
 
               <!-- Bottom Left Chart Floating Controls (Zoom, Pan/Brush, Reset, Share) -->
@@ -978,6 +978,18 @@
     let panStartY = 0;
     let initialPricePanOffsetY = 0;
 
+    // Compute how many bars can fill the canvas at the MINIMUM zoom level (most zoomed-out state)
+    // so we always front-load enough data to prevent empty space at any zoom.
+    function getMaxVisibleBarCount() {
+      const container = document.getElementById('canvas-container');
+      const w = container ? container.getBoundingClientRect().width : 800;
+      // At MIN_ZOOM, what's the narrowest possible candle? Use that to compute max bars visible.
+      const narrowestCandleW = Math.max(2.5, Math.max(4.5, (w - 110) / 104) * MIN_ZOOM);
+      const maxBars = Math.floor((w - 110) / narrowestCandleW) + 24;
+      // Clamp to Binance API max of 1000, practical sweet spot 200-300 for performance
+      return Math.min(300, Math.max(80, maxBars));
+    }
+
     // Compute dynamic candle width scaled strictly with current zoom level
     function getCandleWidth(containerWidth) {
       const count = (sampleCandles && sampleCandles.length > 0) ? sampleCandles.length : 80;
@@ -986,6 +998,7 @@
     }
 
     // Mathematical focal-point zoom: keeps the point under focusX pinned during scaling
+    let backfillTimer = null;
     function setZoom(targetZoom, focusX) {
       const rect = canvas.getBoundingClientRect();
       const w = rect.width || 800;
@@ -1013,6 +1026,52 @@
 
       updateZoomBadge();
       renderCanvas();
+
+      // Lazy backfill: if user zooms out and canvas can fit more bars than we have, fetch more
+      if (backfillTimer) clearTimeout(backfillTimer);
+      backfillTimer = setTimeout(() => backfillCandles(w), 250);
+    }
+
+    // Backfill older candles when canvas has room for more bars than currently loaded
+    async function backfillCandles(canvasWidth) {
+      const candleW = getCandleWidth(canvasWidth);
+      const visibleSlots = Math.ceil((canvasWidth - 110) / candleW);
+      const currentCount = sampleCandles.length;
+      if (visibleSlots <= currentCount + 10) return; // Already have enough data (+10 buffer)
+
+      const needed = Math.min(1000, visibleSlots + 24); // Binance max is 1000
+      if (needed <= currentCount) return;
+
+      const cfg = ASSETS[currentAssetKey];
+      const symbol = cfg.symbol;
+
+      try {
+        const res = await fetch(`https://api.binance.com/api/v3/klines?symbol=${symbol}&interval=${currentTimeframe}&limit=${needed}`);
+        if (!res.ok) return;
+        const raw = await res.json();
+        if (!Array.isArray(raw) || raw.length <= currentCount) return;
+
+        sampleCandles = raw.map(bar => ({
+          open: parseFloat(bar[1]),
+          high: parseFloat(bar[2]),
+          low: parseFloat(bar[3]),
+          close: parseFloat(bar[4])
+        }));
+
+        // Preserve brush anchored to the same candle relative to the end
+        const oldDistFromEnd = currentCount - 1 - brushEnd;
+        brushEnd = sampleCandles.length - 1 - oldDistFromEnd;
+        brushStart = Math.max(0, brushEnd - selectedCount + 1);
+
+        if (document.getElementById("chart-subhead")) {
+          document.getElementById("chart-subhead").innerText = `${cfg.displaySymbol} • ${currentTimeframe.toUpperCase()} • ${sampleCandles.length} BARS`;
+        }
+
+        computeDynamicTwins();
+        renderCanvas();
+      } catch (e) {
+        // Silent fail — the existing bars still render fine
+      }
     }
 
     function zoomIn(focusX) {
@@ -1098,7 +1157,7 @@
     function generateFallbackCandles(basePrice) {
       const candles = [];
       let p = basePrice * 0.985;
-      const count = 80;
+      const count = getMaxVisibleBarCount();
       for (let i = 0; i < count; i++) {
         // Deterministic cyclical price action (zero synthetic random)
         const delta = Math.sin(i * 0.16) * 0.0024 + Math.cos(i * 0.09) * 0.0014;
@@ -1115,9 +1174,10 @@
     }
 
     // Fetch Real MT5 Production Candles from Modal Cloud Serverless Engine
-    async function fetchModalCandles(symbol, timeframe) {
+    async function fetchModalCandles(symbol, timeframe, limit) {
+      const fetchLimit = limit || getMaxVisibleBarCount();
       try {
-        const res = await fetch(`${MODAL_API_URL}/api/v1/candles?symbol=${symbol}&timeframe=${timeframe}&limit=80`);
+        const res = await fetch(`${MODAL_API_URL}/api/v1/candles?symbol=${symbol}&timeframe=${timeframe}&limit=${fetchLimit}`);
         if (!res.ok) throw new Error("Modal candles HTTP " + res.status);
         const data = await res.json();
         if (data.candles && data.candles.length > 0) {
@@ -1194,8 +1254,10 @@
       const statusEl = document.getElementById("ws-status");
       if (statusEl) statusEl.innerText = `Loading ${cfg.displaySymbol}...`;
 
+      const barCount = getMaxVisibleBarCount();
+
       try {
-        const res = await fetch(`https://api.binance.com/api/v3/klines?symbol=${symbol}&interval=${timeframe}&limit=80`);
+        const res = await fetch(`https://api.binance.com/api/v3/klines?symbol=${symbol}&interval=${timeframe}&limit=${barCount}`);
         if (!res.ok) throw new Error("Binance REST error: " + res.status);
         const raw = await res.json();
         if (currentAssetKey !== targetKey) return; // Discard if user switched away
