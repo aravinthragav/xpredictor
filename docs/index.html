@@ -195,6 +195,18 @@
                   <button onclick="switchAsset('XAUUSD')" id="tab-XAUUSD" class="px-2.5 py-1 rounded-md font-bold text-white bg-primary shadow-xs transition text-[11px]">
                     🥇 XAU/USD
                   </button>
+                  <button onclick="switchAsset('SPX')" id="tab-SPX" class="px-2.5 py-1 rounded-md font-medium text-on-surface-variant hover:text-on-surface transition text-[11px]">
+                    📈 S&P 500
+                  </button>
+                  <button onclick="switchAsset('NDX')" id="tab-NDX" class="px-2.5 py-1 rounded-md font-medium text-on-surface-variant hover:text-on-surface transition text-[11px]">
+                    ⚡ NASDAQ
+                  </button>
+                  <button onclick="switchAsset('DAX')" id="tab-DAX" class="px-2.5 py-1 rounded-md font-medium text-on-surface-variant hover:text-on-surface transition text-[11px]">
+                    🇩🇪 DAX 40
+                  </button>
+                  <button onclick="switchAsset('OIL')" id="tab-OIL" class="px-2.5 py-1 rounded-md font-medium text-on-surface-variant hover:text-on-surface transition text-[11px]">
+                    🛢️ OIL
+                  </button>
                   <button onclick="switchAsset('BTCUSDT')" id="tab-BTCUSDT" class="px-2.5 py-1 rounded-md font-medium text-on-surface-variant hover:text-on-surface transition text-[11px]">
                     ₿ BTC/USD
                   </button>
@@ -771,6 +783,74 @@
         alpha: "+36.5 bps",
         conf: "89.6%",
         iv: "44.80%"
+      },
+      SPX: {
+        symbol: "SPX",
+        displaySymbol: "S&P 500 Index",
+        basePrice: 7744.00,
+        decimals: 2,
+        prefix: "$",
+        unit: "Contracts",
+        iceberg: "RESTING ICEBERG: 2,850 Contracts at $7,740.00",
+        twins: [
+          { symbol: "SPX (Nov 2024)", match: "97.2%" },
+          { symbol: "SPX (Mar 2024)", match: "96.5%" },
+          { symbol: "SPX (Nov 2022)", match: "95.1%" }
+        ],
+        alpha: "+28.4 bps",
+        conf: "92.5%",
+        iv: "14.20%"
+      },
+      NDX: {
+        symbol: "NDX",
+        displaySymbol: "NASDAQ 100 Index",
+        basePrice: 24850.00,
+        decimals: 2,
+        prefix: "$",
+        unit: "Contracts",
+        iceberg: "RESTING ICEBERG: 1,940 Contracts at $24,800.00",
+        twins: [
+          { symbol: "NDX (Dec 2024)", match: "97.8%" },
+          { symbol: "NDX (May 2024)", match: "96.1%" },
+          { symbol: "NDX (Jan 2023)", match: "94.9%" }
+        ],
+        alpha: "+48.6 bps",
+        conf: "94.1%",
+        iv: "19.80%"
+      },
+      DAX: {
+        symbol: "DAX",
+        displaySymbol: "DAX 40 Index (Germany)",
+        basePrice: 21450.00,
+        decimals: 2,
+        prefix: "€",
+        unit: "Contracts",
+        iceberg: "RESTING ICEBERG: 1,120 Contracts at €21,400.00",
+        twins: [
+          { symbol: "DAX (Oct 2024)", match: "96.9%" },
+          { symbol: "DAX (Feb 2024)", match: "95.7%" },
+          { symbol: "DAX (Oct 2023)", match: "94.5%" }
+        ],
+        alpha: "+32.1 bps",
+        conf: "91.2%",
+        iv: "16.10%"
+      },
+      OIL: {
+        symbol: "OIL",
+        displaySymbol: "WTI Crude Oil",
+        basePrice: 74.50,
+        decimals: 2,
+        prefix: "$",
+        unit: "Barrels",
+        iceberg: "RESTING ICEBERG: 3,500 Barrels at $74.20",
+        twins: [
+          { symbol: "OIL (Apr 2024)", match: "96.2%" },
+          { symbol: "OIL (Sep 2023)", match: "95.3%" },
+          { symbol: "OIL (Jun 2023)", match: "94.0%" }
+        ],
+        alpha: "+51.2 bps",
+        conf: "90.8%",
+        iv: "28.50%"
       }
     };
 
@@ -1252,7 +1332,16 @@
     async function queryLiveVectorSearch(brushed) {
       if (brushed.length < 32) return;
       const targetAsset = currentAssetKey;
-      const targetPrefix = currentAssetKey === "BTCUSDT" ? "BTC" : currentAssetKey === "ETHUSDT" ? "ETH" : "XAU";
+      const prefixMap = {
+        XAUUSD: "GOLD",
+        BTCUSDT: "BTC",
+        ETHUSDT: "ETH",
+        SPX: "SPX",
+        NDX: "NDX",
+        DAX: "DAX",
+        OIL: "OIL"
+      };
+      const targetPrefix = prefixMap[currentAssetKey] || currentAssetKey;
 
       try {
         const candlesPayload = brushed.map(c => [
@@ -1278,8 +1367,9 @@
 
         const data = await res.json();
         if (data.top_historical_twins && data.top_historical_twins.length > 0) {
-          // Strictly filter to ensure twins match active asset
-          const validTwins = data.top_historical_twins.filter(t => t.symbol.toUpperCase().includes(targetPrefix));
+          // Filter to ensure twins match active asset or use top multi-asset twins
+          let validTwins = data.top_historical_twins.filter(t => t.symbol.toUpperCase().includes(targetPrefix));
+          if (!validTwins.length) validTwins = data.top_historical_twins;
           if (validTwins.length > 0) {
             activeTwins = validTwins.slice(0, 3).map(t => {
               const fullText = formatTwinRegime(t.symbol, t.date_formatted);
@@ -1290,6 +1380,8 @@
               return {
                 symbol: sym,
                 date: innerDate,
+                session: t.session || "New York",
+                macroRegime: t.macro_regime || "Trend Expansion",
                 matchScore: t.match_pct,
                 forwardAmp: (t.fwd_20_ret_pct || 1.5) / 100.0,
                 fwdPath: t.fwd_20_normalized_path
@@ -1299,7 +1391,7 @@
               const i = idx + 1;
               const lEl = document.getElementById(`twin-label-${i}`);
               const mEl = document.getElementById(`twin-match-${i}`);
-              if (lEl) lEl.innerText = `#${i} ${twin.symbol} (${twin.date})`;
+              if (lEl) lEl.innerHTML = `#${i} <span class="font-bold">${twin.symbol}</span> <span class="text-on-surface-variant font-normal">(${twin.date})</span>`;
               if (mEl) mEl.innerText = `${twin.matchScore.toFixed(1)}% match`;
             });
             if (data.posterior && document.getElementById("hud-conf")) {
@@ -1853,13 +1945,13 @@
       }
 
       // 3. Update tab button UI styles
-      ['XAUUSD', 'BTCUSDT', 'ETHUSDT'].forEach(k => {
+      ['XAUUSD', 'SPX', 'NDX', 'DAX', 'OIL', 'BTCUSDT', 'ETHUSDT'].forEach(k => {
         const btn = document.getElementById(`tab-${k}`);
         if (!btn) return;
         if (k === key) {
-          btn.className = "px-3 py-1.5 rounded-md font-bold text-white bg-primary shadow-xs transition";
+          btn.className = "px-2.5 py-1 rounded-md font-bold text-white bg-primary shadow-xs transition text-[11px]";
         } else {
-          btn.className = "px-3 py-1.5 rounded-md font-medium text-on-surface-variant hover:text-on-surface transition";
+          btn.className = "px-2.5 py-1 rounded-md font-medium text-on-surface-variant hover:text-on-surface transition text-[11px]";
         }
       });
 

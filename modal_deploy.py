@@ -21,6 +21,7 @@ image = (
     )
     .add_local_dir("services/api", remote_path="/root/services/api")
     .add_local_dir("services/kronos-embedder", remote_path="/root/services/kronos-embedder")
+    .add_local_dir("data_lake", remote_path="/root/data_lake")
 )
 
 @app.function(

@@ -63,6 +63,9 @@ class HistoricalTwin(BaseModel):
     fwd_20_ret_pct: float
     fwd_20_max_dd_pct: float
     fwd_20_normalized_path: List[float]
+    session: Optional[str] = "New York (US Afternoon)"
+    vol_regime: Optional[str] = "Normal Volatility"
+    macro_regime: Optional[str] = "Standard Macro Flow"
 
 
 class RealityConeResponse(BaseModel):
@@ -145,13 +148,17 @@ def health():
 def get_supported_tickers():
     return {
         "tickers": [
-            {"symbol": "XAUUSD", "name": "Gold / US Dollar", "asset_class": "fx_gold"},
+            {"symbol": "XAUUSD", "name": "Gold Spot / US Dollar", "asset_class": "fx_gold"},
+            {"symbol": "SPX", "name": "S&P 500 Index", "asset_class": "equities"},
+            {"symbol": "NDX", "name": "NASDAQ 100 Index", "asset_class": "equities"},
+            {"symbol": "DJI", "name": "Dow Jones Industrial Average", "asset_class": "equities"},
+            {"symbol": "DAX", "name": "DAX 40 Index (Germany)", "asset_class": "equities"},
+            {"symbol": "N225", "name": "Nikkei 225 Index (Japan)", "asset_class": "equities"},
+            {"symbol": "FTSE", "name": "FTSE 100 Index (UK)", "asset_class": "equities"},
+            {"symbol": "OIL", "name": "WTI Crude Oil Futures", "asset_class": "commodities"},
             {"symbol": "BTCUSD", "name": "Bitcoin / USD", "asset_class": "crypto"},
             {"symbol": "ETHUSD", "name": "Ethereum / USD", "asset_class": "crypto"},
-            {"symbol": "EURUSD", "name": "Euro / US Dollar", "asset_class": "fx_gold"},
-            {"symbol": "NAS100", "name": "Nasdaq 100 Index", "asset_class": "equities"},
-            {"symbol": "NVDA", "name": "NVIDIA Corporation", "asset_class": "equities"},
-            {"symbol": "SPY", "name": "S&P 500 ETF", "asset_class": "equities"}
+            {"symbol": "PAXGUSD", "name": "Paxos Gold Spot", "asset_class": "fx_gold"}
         ],
         "timeframes": ["15m", "1h", "4h", "1d"]
     }
@@ -171,6 +178,40 @@ def get_candles(symbol: str = "XAUUSD", timeframe: str = "1h", limit: int = 150)
             raw_candles = data["candles"][-limit:]
         except Exception:
             pass
+
+    # Check data_lake historical dataset files
+    lake_candidates = [
+        os.path.abspath(os.path.join(os.path.dirname(__file__), "..", "..", "data_lake", f"{symbol.lower()}_historical_dataset.json")),
+        f"/root/data_lake/{symbol.lower()}_historical_dataset.json",
+        os.path.join(r"C:\Users\ragav\OneDrive\XPredictor_Data_Lake", f"{symbol.lower()}_historical_dataset.json")
+    ]
+    for lp in lake_candidates:
+        if os.path.exists(lp):
+            try:
+                with open(lp, "r", encoding="utf-8") as f:
+                    ds = json.load(f)
+                c_key = "hourly_candles" if timeframe.lower() in ["1h", "15m", "4h"] else "daily_candles"
+                c_list = ds.get(c_key, []) or ds.get("daily_candles", [])
+                if c_list:
+                    selected = c_list[-limit:]
+                    return {
+                        "symbol": symbol,
+                        "timeframe": timeframe,
+                        "source": "data_lake",
+                        "candles": [
+                            {
+                                "time": c["timestamp"],
+                                "open": c["open"],
+                                "high": c["high"],
+                                "low": c["low"],
+                                "close": c["close"],
+                                "volume": int(c.get("volume", 0))
+                            }
+                            for c in selected
+                        ]
+                    }
+            except Exception:
+                pass
 
     if raw_candles is None:
         # Fallback realistic generator
@@ -267,6 +308,12 @@ def search_pattern(req: PatternSearchRequest):
                 "vector": embedding,
                 "limit": 100,
                 "with_payload": True,
+                "params": {
+                    "quantization": {
+                        "rescore": True,
+                        "oversampling": 2.0
+                    }
+                },
                 "filter": filter_payload if filter_payload else None
             }
             q_res = requests.post(f"{QDRANT_URL}/collections/{col_name}/points/search", json=search_payload, headers=q_headers, timeout=5.0)
@@ -294,7 +341,10 @@ def search_pattern(req: PatternSearchRequest):
                         "match_pct": calibrated_match,
                         "fwd_20_ret_pct": p.get("fwd_20_ret_pct", 1.5),
                         "fwd_20_max_dd_pct": p.get("fwd_20_max_dd_pct", -0.5),
-                        "fwd_20_normalized_path": p.get("fwd_20_normalized_path", [])
+                        "fwd_20_normalized_path": p.get("fwd_20_normalized_path", []),
+                        "session": p.get("session", "New York (US Afternoon)"),
+                        "vol_regime": p.get("vol_regime", "Normal Volatility"),
+                        "macro_regime": p.get("macro_regime", "Standard Macro Flow")
                     })
             else:
                 print(f"[WARN] Qdrant search returned {q_res.status_code}: {q_res.text}")
