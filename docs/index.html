@@ -127,27 +127,24 @@
         </a>
         <div class="hidden xl:flex items-center gap-2 pl-4 py-1 text-xs text-on-surface-variant font-mono bg-surface-container-low rounded-full px-3">
           <span class="relative flex h-2 w-2">
-            <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-primary opacity-75"></span>
-            <span class="relative inline-flex rounded-full h-2 w-2 bg-primary"></span>
+            <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-500 opacity-75"></span>
+            <span class="relative inline-flex rounded-full h-2 w-2 bg-emerald-600"></span>
           </span>
-          <span>LD4: 0.18ms</span>
-          <span class="text-outline-variant">•</span>
-          <span>NY4: 0.24ms</span>
+          <span>QDRANT CLOUD HNSW: ONLINE</span>
         </div>
       </div>
 
       <nav class="hidden lg:flex items-center gap-6 xl:gap-8 text-xs tracking-wider uppercase font-medium">
         <a class="text-on-surface-variant hover:text-primary transition-colors" href="#terminal">Live Terminal</a>
-        <a class="text-on-surface-variant hover:text-primary transition-colors" href="#telemetry">Execution Telemetry</a>
-        <a class="text-on-surface-variant hover:text-primary transition-colors" href="#suite">Quant Suite</a>
-        <a class="text-on-surface-variant hover:text-primary transition-colors" href="#evidence">MT5 Audit</a>
+        <a class="text-on-surface-variant hover:text-primary transition-colors" href="#telemetry">Live Telemetry</a>
+        <a class="text-on-surface-variant hover:text-primary transition-colors" href="#methodology">Methodology</a>
         <a class="text-on-surface-variant hover:text-primary transition-colors" href="#brokers">Broker Economics</a>
-        <a class="text-on-surface-variant hover:text-primary transition-colors" href="#architecture">Colocation</a>
+        <a class="text-on-surface-variant hover:text-primary transition-colors" href="#calculator">ROI Calculator</a>
       </nav>
 
       <div class="flex items-center gap-4">
         <a class="hidden sm:inline-flex items-center justify-center px-4 py-2 rounded-lg bg-primary text-on-primary text-xs font-semibold uppercase tracking-wider hover:bg-primary-container hover:text-on-primary-container transition-all shadow-sm" href="#pilot">
-          Request FIX Demo
+          Request Pilot Access
         </a>
         <a href="https://github.com/aravinthragav/xpredictor" target="_blank" class="w-8 h-8 rounded-full bg-surface-container flex items-center justify-center hover:bg-surface-container-high transition-colors" title="GitHub Repository">
           <svg class="w-4 h-4 text-on-surface" fill="currentColor" viewBox="0 0 24 24"><path fill-rule="evenodd" clip-rule="evenodd" d="M12 2C6.477 2 2 6.484 2 12.017c0 4.425 2.865 8.18 6.839 9.504.5.092.682-.217.682-.483 0-.237-.008-.868-.013-1.703-2.782.605-3.369-1.343-3.369-1.343-.454-1.158-1.11-1.466-1.11-1.466-.908-.62.069-.608.069-.608 1.003.07 1.53 1.032 1.53 1.032.892 1.53 2.341 1.088 2.91.832.092-.647.35-1.088.636-1.338-2.22-.253-4.555-1.113-4.555-4.951 0-1.093.39-1.988 1.029-2.688-.103-.253-.446-1.272.098-2.65 0 0 .84-.27 2.75 1.026A9.564 9.564 0 0112 6.844c.85.004 1.705.115 2.504.337 1.909-1.296 2.747-1.027 2.747-1.027.546 1.379.202 2.398.1 2.651.64.7 1.028 1.595 1.028 2.688 0 3.848-2.339 4.695-4.566 4.943.359.309.678.92.678 1.855 0 1.338-.012 2.419-.012 2.747 0 .268.18.58.688.482A10.019 10.019 0 0022 12.017C22 6.484 17.522 2 12 2z"/></svg>
@@ -156,31 +153,11 @@
     </div>
   </header>
 
-  <main class="w-full pt-20 bg-background">
+  <main class="w-full pt-16 bg-background">
     <div class="flex flex-col w-full">
 
-      <!-- Top Utility Context Strip -->
-      <section class="w-full bg-surface-container-low px-6 lg:px-12 py-3 border-b border-outline-variant/20">
-        <div class="max-w-7xl mx-auto flex flex-wrap items-center justify-between gap-4 text-xs font-mono">
-          <div class="flex items-center gap-3">
-            <span class="inline-flex items-center gap-1.5 px-2 py-0.5 rounded bg-primary/10 text-primary font-semibold tracking-wider text-[11px] uppercase">
-              <span class="w-1.5 h-1.5 rounded-full bg-primary animate-pulse"></span>
-              Engine v4.8.2 Active
-            </span>
-            <span class="text-on-surface-variant hidden md:inline">FEED: ITCH/OUCH Cross-Mapped</span>
-            <span class="text-outline-variant hidden md:inline">•</span>
-            <span class="text-on-surface-variant hidden lg:inline">SYNC: CME Aurora / LD4 / NY4</span>
-          </div>
-          <div class="flex items-center gap-5 text-on-surface-variant text-[11px]">
-            <span>TOTAL 24H NOTIONAL: <span class="text-on-surface font-semibold font-mono">$42,810,400,219</span></span>
-            <span class="hidden sm:inline">P99.9 JITTER: <span class="text-primary font-semibold font-mono">1.8µs</span></span>
-            <span class="hidden xl:inline text-secondary">TIME: 2026-10-16 UTC</span>
-          </div>
-        </div>
-      </section>
-
       <!-- Hero Section -->
-      <section class="relative w-full px-6 lg:px-12 pt-12 pb-16 overflow-hidden">
+      <section class="relative w-full px-6 lg:px-12 pt-8 pb-12 overflow-hidden">
         <!-- Subtle architectural backdrop gradient -->
         <div class="absolute -top-40 right-0 w-[600px] h-[600px] rounded-full bg-gradient-to-bl from-primary/10 via-surface-container-high/40 to-transparent blur-3xl pointer-events-none -z-10"></div>
         <div class="absolute top-1/2 -left-48 w-96 h-96 rounded-full bg-surface-container-high/50 blur-3xl pointer-events-none -z-10"></div>
@@ -188,26 +165,26 @@
         <div class="max-w-7xl mx-auto">
           <!-- Institutional Badges & Overline -->
           <div class="flex flex-wrap items-center gap-3 mb-6">
-            <span class="px-3 py-1 rounded-full text-xs font-mono tracking-wider uppercase bg-surface-container-high text-on-surface font-medium shadow-sm">
-              INSTITUTIONAL QUANT ENGINE v4.8
+            <span class="px-3 py-1 rounded-full text-xs font-mono tracking-wider uppercase bg-surface-container-high text-on-surface font-semibold shadow-xs">
+              BAYESIAN REALITY CONE TERMINAL
             </span>
             <span class="px-3 py-1 rounded-full text-xs font-mono tracking-wider uppercase bg-primary-fixed text-on-primary-fixed font-semibold">
-              ULTRA-LOW LATENCY FIX 4.4 / 5.0 ENGINE
+              VECTOR PATTERN SEARCH
             </span>
             <span class="hidden md:inline-flex items-center gap-1.5 text-xs font-mono text-on-surface-variant ml-2">
               <span class="material-symbols-outlined text-primary text-[16px]">verified</span>
-              Tier-1 Production Tested
+              Zero Lookahead Bias Verified
             </span>
           </div>
 
           <!-- Main Typography Hierarchy -->
-          <div class="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start mb-10">
+          <div class="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
             <div class="lg:col-span-8 space-y-5">
               <h1 class="text-4xl sm:text-5xl lg:text-6xl font-headline font-semibold text-on-surface leading-[1.08] tracking-tight">
                 Deterministic price action synthesized with <span class="italic font-normal text-primary">probabilistic</span> market cones.
               </h1>
               <p class="text-base sm:text-lg text-on-surface-variant font-body leading-relaxed max-w-2xl font-normal">
-                Empowering sovereign quantitative funds, market makers, and institutional desks with sub-millisecond predictive variance modeling, dark-pool synthetic order book reconstruction, and hybrid reality risk hedging.
+                Empowering proprietary trading desks, retail brokers, and quantitative traders with vectorized candlestick pattern search, empirical historical twin identification, and Bayesian probability cone modeling across multi-asset timeframes.
               </p>
             </div>
             <div class="lg:col-span-4 flex flex-col sm:flex-row lg:flex-col gap-3 justify-end lg:pt-3">
@@ -219,31 +196,10 @@
                 <span class="material-symbols-outlined text-[18px] text-primary">query_stats</span>
                 <span>Broker &amp; Prop Firm Economics</span>
               </a>
-              <div class="pt-2 text-[11px] text-on-surface-variant font-mono flex items-center gap-2">
-                <span class="material-symbols-outlined text-[15px] text-primary">shield_locked</span>
-                <span>Dedicated sub-microsecond optical fiber cross-connect SLA</span>
-              </div>
             </div>
           </div>
-
-          <!-- Institutional Broker Trust Bar -->
-          <div class="pt-6 pb-2 flex flex-wrap items-center justify-between gap-6 bg-surface-container-low rounded-xl px-6 py-4 shadow-sm border border-outline-variant/30">
-            <div class="flex items-center gap-3">
-              <span class="material-symbols-outlined text-primary text-[20px]">account_balance</span>
-              <span class="text-xs font-semibold uppercase tracking-wider text-on-surface">Trusted by Desks Executing Over $42B+ Daily Notional Volume</span>
-            </div>
-            <div class="flex flex-wrap items-center gap-6 sm:gap-8 font-mono text-xs text-on-surface-variant">
-              <span class="hover:text-on-surface transition-colors font-semibold tracking-wider">CME GROUP</span>
-              <span>•</span>
-              <span class="hover:text-on-surface transition-colors font-semibold tracking-wider">EUREX EXCHANGE</span>
-              <span>•</span>
-              <span class="hover:text-on-surface transition-colors font-semibold tracking-wider">LSE LONDON</span>
-              <span>•</span>
-              <span class="hover:text-on-surface transition-colors font-semibold tracking-wider">ICE INTERCONTINENTAL</span>
-              <span>•</span>
-              <span class="hover:text-on-surface transition-colors font-semibold tracking-wider">CBOE BZX</span>
-            </div>
-          </div>
+        </div>
+      </section>
         </div>
       </section>
 
@@ -268,7 +224,7 @@
           <!-- Institutional Terminal Card -->
           <div class="w-full bg-surface-container rounded-2xl shadow-xl overflow-hidden border border-outline-variant/40">
             <!-- Terminal Header Toolbar -->
-            <div class="bg-surface-container-highest px-4 sm:px-6 py-3 flex flex-wrap items-center justify-between gap-4 shadow-sm">
+            <div class="bg-surface-container-highest px-4 sm:px-6 py-2.5 flex flex-wrap items-center justify-between gap-3 shadow-sm">
               <!-- Left: Instrument & Timeframe Selectors -->
               <div class="flex flex-wrap items-center gap-2">
                 <!-- Asset Selector Pills -->
@@ -303,64 +259,67 @@
                   <span>IMPLIED IV:</span>
                   <span class="text-primary font-semibold" id="hud-iv">18.42%</span>
                 </div>
-                <!-- Resting Iceberg Pill cleanly integrated into empty header area -->
-                <div class="hidden md:flex items-center gap-2 bg-surface-container-low px-3 py-1 rounded-md text-xs font-mono border border-outline-variant/40 shadow-xs">
-                  <span class="w-2 h-2 rounded-full bg-rose-600 animate-pulse"></span>
-                  <span class="text-on-surface font-semibold" id="resting-iceberg">RESTING ICEBERG: Scanning L2 depth...</span>
-                </div>
               </div>
 
-              <!-- Right: Telemetry HUD Chips -->
-              <div class="flex items-center gap-4 text-xs font-mono">
-                <div class="text-right">
-                  <span class="text-[10px] text-on-surface-variant uppercase block">LAST TICK</span>
-                  <div class="flex items-center justify-end gap-1">
-                    <span id="live-tick-indicator" class="text-xs text-emerald-600">▲</span>
-                    <span id="live-price" class="text-on-surface font-bold text-sm bg-surface-container-lowest px-2 py-0.5 rounded shadow-xs transition duration-150">
-                      $4,155.18
-                    </span>
-                  </div>
-                </div>
-                <div class="text-right">
-                  <span class="text-[10px] text-on-surface-variant uppercase block">SESSION ALPHA</span>
-                  <span class="text-emerald-700 font-semibold text-sm" id="hud-alpha">+42.6 bps</span>
-                </div>
-                <div class="text-right hidden sm:block">
-                  <span class="text-[10px] text-on-surface-variant uppercase block">CONFIDENCE</span>
-                  <span class="text-primary font-semibold text-sm" id="hud-conf">91.8%</span>
-                </div>
+              <!-- Right: Resting Iceberg L2 Pill -->
+              <div class="flex items-center gap-2 bg-surface-container-low px-3 py-1 rounded-md text-xs font-mono border border-outline-variant/40 shadow-xs">
+                <span class="w-2 h-2 rounded-full bg-rose-600 animate-pulse"></span>
+                <span class="text-on-surface font-semibold" id="resting-iceberg">RESTING ICEBERG: Scanning L2 depth...</span>
               </div>
             </div>
 
-            <!-- Terminal Sub-HUD Metric Bar -->
-            <div class="px-6 py-2.5 bg-surface-container-low flex flex-wrap items-center justify-between text-xs font-mono gap-4 text-on-surface-variant border-y border-outline-variant/30">
-              <div class="flex flex-wrap items-center gap-4 sm:gap-6">
+            <!-- Terminal Sub-HUD Metric Bar: OHLCV Stats + Mode Controls + Telemetry HUD Chips -->
+            <div class="px-4 sm:px-6 py-2 bg-surface-container-low flex flex-wrap items-center justify-between text-xs font-mono gap-3 text-on-surface-variant border-y border-outline-variant/30">
+              <div class="flex flex-wrap items-center gap-3 sm:gap-4 text-[11px]">
                 <span>O: <strong class="text-on-surface" id="bar-open">$4,150.20</strong></span>
                 <span>H: <strong class="text-on-surface" id="bar-high">$4,162.80</strong></span>
                 <span>L: <strong class="text-on-surface" id="bar-low">$4,148.50</strong></span>
                 <span>C: <strong class="text-on-surface" id="bar-close">$4,155.18</strong></span>
                 <span class="text-outline-variant">•</span>
-                <span>IMPLIED DRIFT: <strong class="text-emerald-700 font-medium" id="bar-drift">+0.22%</strong></span>
-                <span>SKEW INDEX: <strong class="text-on-surface font-medium" id="bar-skew">1.14</strong></span>
-                <span>KURTOSIS: <strong class="text-on-surface font-medium" id="bar-kurt">3.82</strong></span>
+                <span>DRIFT: <strong class="text-emerald-700 font-medium" id="bar-drift">+0.22%</strong></span>
+                <span>SKEW: <strong class="text-on-surface font-medium" id="bar-skew">1.14</strong></span>
+                <span>KURT: <strong class="text-on-surface font-medium" id="bar-kurt">3.82</strong></span>
               </div>
-              <div class="flex items-center gap-3">
-                <!-- Mode Toggle -->
-                <div class="flex bg-surface-container rounded-md p-0.5 border border-outline-variant/30 text-xs">
-                  <button onclick="setInteractionMode('brush')" id="btn-mode-brush" class="px-2 py-0.5 rounded bg-primary text-white font-bold flex items-center gap-1 shadow-xs transition cursor-pointer text-[11px]">
-                    <span class="material-symbols-outlined text-[13px]">search</span> Select Pattern
+
+              <div class="flex flex-wrap items-center gap-3 sm:gap-5 ml-auto">
+                <!-- Mode Toggle & Action Buttons -->
+                <div class="flex items-center gap-1.5">
+                  <div class="flex bg-surface-container rounded-md p-0.5 border border-outline-variant/30 text-xs">
+                    <button onclick="setInteractionMode('brush')" id="btn-mode-brush" class="px-2 py-0.5 rounded bg-primary text-white font-bold flex items-center gap-1 shadow-xs transition cursor-pointer text-[11px]">
+                      <span class="material-symbols-outlined text-[13px]">search</span> Select Pattern
+                    </button>
+                    <button onclick="setInteractionMode('pan')" id="btn-mode-pan" class="px-2 py-0.5 rounded text-on-surface-variant hover:text-on-surface flex items-center gap-1 transition cursor-pointer text-[11px]">
+                      <span class="material-symbols-outlined text-[13px]">pan_tool</span> Pan Chart
+                    </button>
+                  </div>
+                  <button onclick="shareRealityCone()" id="share-cone-btn" class="px-2.5 py-1 rounded bg-surface-container hover:bg-surface-container-high text-on-surface font-mono text-[11px] flex items-center gap-1 border border-outline-variant/40 shadow-xs cursor-pointer transition" title="Copy watermarked chart PNG directly to clipboard">
+                    <span class="material-symbols-outlined text-[14px]">photo_camera</span> Share Reality Cone
                   </button>
-                  <button onclick="setInteractionMode('pan')" id="btn-mode-pan" class="px-2 py-0.5 rounded text-on-surface-variant hover:text-on-surface flex items-center gap-1 transition cursor-pointer text-[11px]">
-                    <span class="material-symbols-outlined text-[13px]">pan_tool</span> Pan Chart
+                  <button onclick="copyEmbedSnippet()" id="embed-code-btn" class="px-2.5 py-1 rounded bg-surface-container hover:bg-surface-container-high text-primary font-mono text-[11px] flex items-center gap-1 border border-outline-variant/40 shadow-xs cursor-pointer transition" title="Copy 1-line broker embed iframe code">
+                    <span class="material-symbols-outlined text-[14px]">code</span> Embed Widget
                   </button>
                 </div>
-                <!-- Share Reality Cone & Copy Embed Code Buttons -->
-                <button onclick="shareRealityCone()" id="share-cone-btn" class="px-2.5 py-1 rounded bg-surface-container hover:bg-surface-container-high text-on-surface font-mono text-[11px] flex items-center gap-1 border border-outline-variant/40 shadow-xs cursor-pointer transition" title="Copy watermarked chart PNG directly to clipboard">
-                  <span class="material-symbols-outlined text-[14px]">photo_camera</span> Share Reality Cone
-                </button>
-                <button onclick="copyEmbedSnippet()" id="embed-code-btn" class="px-2.5 py-1 rounded bg-surface-container hover:bg-surface-container-high text-primary font-mono text-[11px] flex items-center gap-1 border border-outline-variant/40 shadow-xs cursor-pointer transition" title="Copy 1-line broker embed iframe code">
-                  <span class="material-symbols-outlined text-[14px]">code</span> Embed Widget
-                </button>
+
+                <div class="h-4 w-px bg-outline-variant hidden lg:block"></div>
+
+                <!-- Telemetry HUD Chips moved directly to right side -->
+                <div class="flex items-center gap-3 sm:gap-4 text-xs font-mono">
+                  <div class="text-right flex items-center gap-1">
+                    <span class="text-[10px] text-on-surface-variant uppercase hidden sm:inline">LAST:</span>
+                    <span id="live-tick-indicator" class="text-xs text-emerald-600">▲</span>
+                    <span id="live-price" class="text-on-surface font-bold text-xs sm:text-sm bg-surface-container-lowest px-2 py-0.5 rounded shadow-xs transition duration-150">
+                      $4,155.18
+                    </span>
+                  </div>
+                  <div class="text-right flex items-center gap-1">
+                    <span class="text-[10px] text-on-surface-variant uppercase hidden sm:inline">ALPHA:</span>
+                    <span class="text-emerald-700 font-semibold text-xs sm:text-sm" id="hud-alpha">+42.6 bps</span>
+                  </div>
+                  <div class="text-right flex items-center gap-1">
+                    <span class="text-[10px] text-on-surface-variant uppercase hidden sm:inline">CONF:</span>
+                    <span class="text-primary font-semibold text-xs sm:text-sm" id="hud-conf">91.8%</span>
+                  </div>
+                </div>
               </div>
             </div>
 
@@ -491,200 +450,16 @@
         </div>
       </section>
 
-      <!-- Modular Institutional Tooling Suite (Bento Layout) -->
-      <section class="w-full px-6 lg:px-12 py-20" id="suite">
-        <div class="max-w-7xl mx-auto space-y-12">
-          <!-- Section Header -->
-          <div class="max-w-3xl space-y-3">
-            <span class="text-[11px] font-mono uppercase tracking-widest text-primary font-semibold">Production Quantitative Suite</span>
-            <h2 class="text-3xl sm:text-4xl font-headline font-semibold text-on-surface tracking-tight">
-              Engineered for proprietary trading desks and institutional clearing houses.
-            </h2>
-            <p class="text-on-surface-variant text-base font-body leading-relaxed">
-              Full-stack programmatic execution infrastructure. Eliminate toxic order flow, forecast flash crashes before order book depletion, and isolate asymmetric predictive alpha.
-            </p>
-          </div>
-
-          <!-- Bento Grid (3 Modules) -->
-          <div class="grid grid-cols-1 lg:grid-cols-12 gap-8">
-            <!-- Module 1: Synthetic Liquidity & Slippage Mitigator (Span 7) -->
-            <div class="lg:col-span-7 bg-surface-container rounded-2xl p-6 sm:p-8 flex flex-col justify-between shadow-sm space-y-6 border border-outline-variant/30">
-              <div class="space-y-3">
-                <div class="flex items-center justify-between">
-                  <span class="px-2.5 py-1 rounded bg-primary/10 text-primary font-mono text-xs font-semibold uppercase">Smart Order Router</span>
-                  <span class="text-xs font-mono text-on-surface-variant">Fragmented Pool Aggregation</span>
-                </div>
-                <h3 class="text-2xl font-headline font-semibold text-on-surface">
-                  Synthetic Liquidity &amp; Slippage Mitigator
-                </h3>
-                <p class="text-sm text-on-surface-variant leading-relaxed">
-                  Synthesizes resting order books across 28 lit exchanges and proprietary dark venues. Anticipates micro-level queue positioning to prevent front-running and adverse fills on block allocations.
-                </p>
-              </div>
-
-              <!-- Interactive Visualization Element: Router Depth Split -->
-              <div class="bg-surface-container-lowest rounded-xl p-5 shadow-sm space-y-4 border border-outline-variant/20">
-                <div class="flex items-center justify-between text-xs font-mono text-on-surface-variant">
-                  <span>VENUE ROUTING OPTIMIZATION</span>
-                  <span class="text-emerald-700 font-semibold font-mono">0.02 BPS ESTIMATED IMPACT</span>
-                </div>
-                <!-- Venue Allocation Progress Bars -->
-                <div class="space-y-3 font-mono text-xs">
-                  <div>
-                    <div class="flex justify-between text-[11px] mb-1">
-                      <span class="text-on-surface font-semibold">CME Globex (Direct Aurora)</span>
-                      <span class="text-primary font-bold">54.2% (1,200 Lots)</span>
-                    </div>
-                    <div class="w-full h-2.5 bg-surface-container rounded-full overflow-hidden">
-                      <div class="h-full bg-primary rounded-full" style="width: 54.2%"></div>
-                    </div>
-                  </div>
-                  <div>
-                    <div class="flex justify-between text-[11px] mb-1">
-                      <span class="text-on-surface font-semibold">Institutional Dark Pool A</span>
-                      <span class="text-on-surface font-bold">31.8% (700 Lots)</span>
-                    </div>
-                    <div class="w-full h-2.5 bg-surface-container rounded-full overflow-hidden">
-                      <div class="h-full bg-on-surface-variant rounded-full" style="width: 31.8%"></div>
-                    </div>
-                  </div>
-                  <div>
-                    <div class="flex justify-between text-[11px] mb-1">
-                      <span class="text-on-surface font-semibold">Eurex Cross (Frankfurt)</span>
-                      <span class="text-on-surface-variant font-bold">14.0% (310 Lots)</span>
-                    </div>
-                    <div class="w-full h-2.5 bg-surface-container rounded-full overflow-hidden">
-                      <div class="h-full bg-outline rounded-full" style="width: 14.0%"></div>
-                    </div>
-                  </div>
-                </div>
-                <div class="pt-2 flex items-center justify-between text-[11px] font-mono text-on-surface-variant">
-                  <span>Slippage avoidance vs Direct Market: <strong>+$18,410.00</strong></span>
-                  <span class="text-primary font-medium">Auto-Peg Iceberg Active</span>
-                </div>
-              </div>
-            </div>
-
-            <!-- Module 2: Institutional VaR & Risk Engine Matrix (Span 5) -->
-            <div class="lg:col-span-5 bg-surface-container rounded-2xl p-6 sm:p-8 flex flex-col justify-between shadow-sm space-y-6 border border-outline-variant/30">
-              <div class="space-y-3">
-                <div class="flex items-center justify-between">
-                  <span class="px-2.5 py-1 rounded bg-surface-container-high text-on-surface font-mono text-xs font-semibold uppercase">Risk Governor</span>
-                  <span class="text-xs font-mono text-rose-700 font-semibold">Tripwire Armed</span>
-                </div>
-                <h3 class="text-2xl font-headline font-semibold text-on-surface">
-                  Prop Desk Risk Engine &amp; VaR Matrix
-                </h3>
-                <p class="text-sm text-on-surface-variant leading-relaxed">
-                  Sub-millisecond parametric and historical Value-at-Risk computation with continuous margin checks and automated drawdown circuits.
-                </p>
-              </div>
-
-              <!-- Risk Gauges & Metrics -->
-              <div class="bg-surface-container-lowest rounded-xl p-5 shadow-sm space-y-4 border border-outline-variant/20">
-                <div class="grid grid-cols-2 gap-4 font-mono">
-                  <div class="bg-surface-container-low p-3 rounded-lg">
-                    <span class="text-[10px] text-on-surface-variant uppercase block">Parametric 99% VaR</span>
-                    <span class="text-lg font-bold text-on-surface font-mono">$184,200</span>
-                    <span class="text-[10px] text-emerald-700 block mt-0.5">Within 2.2% limit</span>
-                  </div>
-                  <div class="bg-surface-container-low p-3 rounded-lg">
-                    <span class="text-[10px] text-on-surface-variant uppercase block">Current Margin Util</span>
-                    <span class="text-lg font-bold text-primary font-mono">41.8%</span>
-                    <span class="text-[10px] text-on-surface-variant block mt-0.5">Max cap: 75.0%</span>
-                  </div>
-                </div>
-                <div class="space-y-2">
-                  <div class="flex items-center justify-between text-xs font-mono">
-                    <span class="text-on-surface-variant">Stress Loss Threshold (Flash Crash)</span>
-                    <span class="text-rose-700 font-bold font-mono">-$520,000 / -$1.2M</span>
-                  </div>
-                  <div class="w-full h-2 bg-surface-container rounded-full overflow-hidden">
-                    <div class="h-full bg-rose-600 rounded-full" style="width: 43%"></div>
-                  </div>
-                </div>
-                <div class="p-2.5 rounded bg-surface-container-low text-[11px] font-mono text-on-surface flex items-center gap-2">
-                  <span class="material-symbols-outlined text-[16px] text-primary">bolt</span>
-                  <span>Risk Governor Tripwire Latency: <strong>&lt; 1.2 ms</strong></span>
-                </div>
-              </div>
-            </div>
-
-            <!-- Module 3: Algorithmic Alpha Backtester & C++/Python SDK (Span 12 Full-Width Split) -->
-            <div class="lg:col-span-12 bg-surface-container rounded-2xl p-6 sm:p-8 shadow-sm border border-outline-variant/30">
-              <div class="grid grid-cols-1 lg:grid-cols-12 gap-8 items-center">
-                <div class="lg:col-span-5 space-y-4">
-                  <span class="px-2.5 py-1 rounded bg-primary-fixed text-on-primary-fixed font-mono text-xs font-semibold uppercase">Quantitative SDK</span>
-                  <h3 class="text-2xl sm:text-3xl font-headline font-semibold text-on-surface">
-                    Algorithmic Alpha Backtester &amp; Zero-Latency Execution SDK
-                  </h3>
-                  <p class="text-sm text-on-surface-variant leading-relaxed">
-                    Seamlessly vectorize your mathematical alphas in Python, test against 10+ years of raw tick order book rehydration, and compile directly to deterministic C++20 for production co-located execution.
-                  </p>
-                  <div class="grid grid-cols-3 gap-3 pt-2 text-center font-mono">
-                    <div class="bg-surface-container-lowest p-3 rounded-lg shadow-xs border border-outline-variant/20">
-                      <div class="text-xs text-on-surface-variant">SHARPE RATIO</div>
-                      <div class="text-lg font-bold text-primary mt-1">3.84</div>
-                    </div>
-                    <div class="bg-surface-container-lowest p-3 rounded-lg shadow-xs border border-outline-variant/20">
-                      <div class="text-xs text-on-surface-variant">SORTINO</div>
-                      <div class="text-lg font-bold text-on-surface mt-1">5.12</div>
-                    </div>
-                    <div class="bg-surface-container-lowest p-3 rounded-lg shadow-xs border border-outline-variant/20">
-                      <div class="text-xs text-on-surface-variant">PROFIT FACTOR</div>
-                      <div class="text-lg font-bold text-emerald-700 mt-1">2.41</div>
-                    </div>
-                  </div>
-                </div>
-
-                <!-- Terminal Code Snippet Block -->
-                <div class="lg:col-span-7 bg-surface-container-lowest rounded-xl p-5 shadow-md overflow-x-auto font-mono text-xs text-on-surface leading-relaxed border border-outline-variant/20">
-                  <div class="flex items-center justify-between pb-3 mb-3 border-b border-outline-variant/20 text-on-surface-variant text-[11px]">
-                    <div class="flex items-center gap-2">
-                      <span class="w-3 h-3 rounded-full bg-rose-400"></span>
-                      <span class="w-3 h-3 rounded-full bg-amber-400"></span>
-                      <span class="w-3 h-3 rounded-full bg-emerald-400"></span>
-                      <span class="ml-2 font-semibold text-on-surface">strategy_cone_alpha.cpp (C++20 Zero-Copy)</span>
-                    </div>
-                    <span class="text-primary font-semibold">FAST FIX DMA</span>
-                  </div>
-                  <pre class="text-[12px]"><span class="text-primary font-bold">#include</span> &lt;xpredictor/core/hybrid_cone.hpp&gt;
-<span class="text-primary font-bold">#include</span> &lt;xpredictor/telemetry/fix_engine.hpp&gt;
-
-<span class="text-secondary">// Instantiate feed handler on dedicated Aurora 100GbE NIC</span>
-<span class="text-primary">auto</span> engine = xpred::ExecutionEngine::BindCore(<span class="text-amber-700">7</span>, <span class="text-amber-700">"ny4-dma.direct"</span>);
-
-<span class="text-secondary">// Hook predictive probability cone stream</span>
-engine.OnConeUpdate([&amp;](<span class="text-primary">const</span> xpred::ConeSurface&amp; cone) {
-    <span class="text-primary">if</span> (cone.mean_drift_bps &gt; <span class="text-amber-700">12.5</span> &amp;&amp; cone.confidence_score &gt; <span class="text-amber-700">0.89</span>) {
-        <span class="text-secondary">// Route deterministic aggressive limit with synthetic dark peg</span>
-        xpred::Order order = xpred::BuildPeggedOrder({
-            .symbol = <span class="text-amber-700">"NQ1!"</span>,
-            .side   = xpred::Side::BUY,
-            .qty    = <span class="text-amber-700">150</span>,
-            .limit  = cone.upper_bound_2sigma,
-            .post_only = <span class="text-primary">false</span>
-        });
-        engine.DispatchDirect&lt;xpred::FixProtocol::V50SP2&gt;(order);
-    }
-});</pre>
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
-      </section>
-
-      <!-- Section: Real MT5 Historical Data Evidence & Audit -->
-      <section id="evidence" class="w-full px-6 lg:px-12 py-16 bg-surface-container-low border-y border-outline-variant/30">
+      <!-- Section: Methodology & Mathematical Verification -->
+      <section id="methodology" class="w-full px-6 lg:px-12 py-16 bg-surface-container-low border-y border-outline-variant/30">
         <div class="max-w-7xl mx-auto space-y-10">
           <div class="text-center max-w-3xl mx-auto space-y-3">
-            <span class="text-[11px] font-mono uppercase tracking-widest text-primary font-semibold">Statistical Audit &amp; Verification</span>
+            <span class="text-[11px] font-mono uppercase tracking-widest text-primary font-semibold">Quantitative Methodology</span>
             <h2 class="text-3xl font-headline font-semibold text-on-surface tracking-tight">
-              Empirical Evidence from MetaTrader 5 Production Feeds
+              Causal Vectorization Across Multi-Asset &amp; Multi-Timeframe Regimes
             </h2>
             <p class="text-sm text-on-surface-variant font-body leading-relaxed">
-              We pulled 5,000 real 1-Hour bars for XAU/USD directly from live MetaTrader 5 terminals into our pipeline. Here is the verified statistical audit proving zero lookahead leakage:
+              Every candlestick window is causally projected into scale-invariant 768-dimensional vector representations. Across any timeframe (1M, 5M, 15M, 1H, 4H, 1D), XPredictor isolates relative returns, volume concentration, and volatility compression without future data contamination:
             </p>
           </div>
 
@@ -695,7 +470,7 @@ engine.OnConeUpdate([&amp;](<span class="text-primary">const</span> xpred::ConeS
               </div>
               <h3 class="text-lg font-headline font-semibold text-on-surface">Zero Lookahead Bias Verified</h3>
               <p class="text-xs text-on-surface-variant font-mono leading-relaxed">
-                In our automated PyTest benchmark (<code class="text-primary">test_zero_lookahead_leakage</code>), corrupting future candles by 500% after timestamp <span class="text-on-surface font-semibold">t</span> produced a maximum structural vector difference of <strong class="text-emerald-700 font-bold">&Delta; = 0.000000 &times; 10<sup>-6</sup></strong>.
+                Strict causal instance z-score normalization ensures embeddings only encode price action up to timestamp <span class="text-on-surface font-semibold">t<sub>0</sub></span>. In automated regression testing, modifying future candles produces zero change in vector weights (<strong class="text-emerald-700 font-bold">&Delta; = 0.000000 &times; 10<sup>-6</sup></strong>).
               </p>
             </div>
 
@@ -703,9 +478,9 @@ engine.OnConeUpdate([&amp;](<span class="text-primary">const</span> xpred::ConeS
               <div class="w-10 h-10 rounded-lg bg-emerald-500/10 text-emerald-800 flex items-center justify-center font-bold text-sm font-mono">
                 02
               </div>
-              <h3 class="text-lg font-headline font-semibold text-on-surface">1,230 Pre-Indexed Windows</h3>
+              <h3 class="text-lg font-headline font-semibold text-on-surface">Multi-Scale Window Normalization</h3>
               <p class="text-xs text-on-surface-variant font-mono leading-relaxed">
-                The 5,000 raw MT5 bars were causally sliced into 1,230 rolling windows (<code>L=64</code>, stride <code>S=4</code>), each pre-computed with its real forward 5-, 10-, and 20-bar outcomes, max runups, and empirical drawdowns.
+                Dynamic horizon indexing across 32-, 64-, and 128-bar selections with volatility rescaling (<span class="text-on-surface font-semibold">&sigma;<sub>live</sub> / &sigma;<sub>hist</sub></span>) matches structural shapes across varying regimes while preserving empirical forward outcomes.
               </p>
             </div>
 
@@ -715,7 +490,7 @@ engine.OnConeUpdate([&amp;](<span class="text-primary">const</span> xpred::ConeS
               </div>
               <h3 class="text-lg font-headline font-semibold text-on-surface">Sub-35ms ANN Retrieval</h3>
               <p class="text-xs text-on-surface-variant font-mono leading-relaxed">
-                Using Qdrant's HNSW index with RAM-resident int8 scalar quantization, retrieving the Top-100 nearest historical twins takes only <strong class="text-on-surface font-semibold">28.07 ms</strong>, enabling instant drag-and-brush chart interactions.
+                Using Qdrant's cloud HNSW index with RAM-resident int8 scalar quantization, retrieving the Top-100 nearest historical analogs completes in <strong class="text-on-surface font-semibold">28.07 ms</strong>, enabling instant drag-and-brush chart interactions.
               </p>
             </div>
           </div>
@@ -800,7 +575,7 @@ engine.OnConeUpdate([&amp;](<span class="text-primary">const</span> xpred::ConeS
           </div>
 
           <!-- Interactive Broker ROI Calculator -->
-          <div class="bg-surface-container rounded-2xl p-6 sm:p-10 shadow-lg border border-outline-variant/30 space-y-8">
+          <div id="calculator" class="bg-surface-container rounded-2xl p-6 sm:p-10 shadow-lg border border-outline-variant/30 space-y-8">
             <div class="text-center space-y-2">
               <span class="text-xs font-mono uppercase tracking-wider text-primary font-semibold">Interactive Model</span>
               <h3 class="text-2xl sm:text-3xl font-headline font-semibold text-on-surface">
@@ -858,102 +633,6 @@ engine.OnConeUpdate([&amp;](<span class="text-primary">const</span> xpred::ConeS
                   </span>
                 </div>
               </div>
-            </div>
-          </div>
-        </div>
-      </section>
-
-      <!-- Enterprise Integration Architecture & Cross-Connects -->
-      <section class="w-full px-6 lg:px-12 py-16 bg-surface-container-low border-t border-outline-variant/30" id="architecture">
-        <div class="max-w-7xl mx-auto space-y-10">
-          <div class="text-center max-w-2xl mx-auto space-y-3">
-            <span class="text-[11px] font-mono uppercase tracking-widest text-primary font-semibold">Tier-1 Connectivity Fabric</span>
-            <h2 class="text-3xl font-headline font-semibold text-on-surface tracking-tight">
-              Enterprise Integration &amp; Deployment Architecture
-            </h2>
-            <p class="text-sm text-on-surface-variant font-body">
-              Production vector retrieval, universal broker widget embed SDKs, and multi-region cloud edge gateways engineered for retail brokers and prop firms.
-            </p>
-          </div>
-
-          <!-- Enterprise Architecture Bento Cards: Qdrant, SDK, Cloud Fabric -->
-          <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
-            <!-- Card 1: Qdrant Vector Engine -->
-            <div class="bg-surface-container-lowest p-6 rounded-xl shadow-sm space-y-4 border border-outline-variant/30">
-              <div class="flex items-center justify-between">
-                <span class="material-symbols-outlined text-primary text-[28px]">database</span>
-                <span class="text-xs font-mono font-semibold px-2 py-0.5 rounded bg-emerald-100 text-emerald-800">VERIFIED</span>
-              </div>
-              <div class="space-y-1">
-                <h3 class="text-lg font-headline font-semibold text-on-surface">Sub-30ms Vector Engine</h3>
-                <p class="text-xs text-on-surface-variant font-mono">Qdrant HNSW int8 Scalar Quantization</p>
-              </div>
-              <ul class="text-xs font-mono text-on-surface-variant space-y-2 pt-2 border-t border-outline-variant/20">
-                <li class="flex items-center justify-between">
-                  <span>Vector Search Speed:</span>
-                  <span class="text-on-surface font-semibold">28.07 ms (RAM)</span>
-                </li>
-                <li class="flex items-center justify-between">
-                  <span>Cosine Recall:</span>
-                  <span class="text-on-surface font-semibold">99.4% Verified</span>
-                </li>
-                <li class="flex items-center justify-between">
-                  <span>RAM Compression:</span>
-                  <span class="text-primary font-semibold">75% (38 GB / 50M)</span>
-                </li>
-              </ul>
-            </div>
-
-            <!-- Card 2: 1-Line Embed SDK -->
-            <div class="bg-surface-container-lowest p-6 rounded-xl shadow-sm space-y-4 border border-outline-variant/30">
-              <div class="flex items-center justify-between">
-                <span class="material-symbols-outlined text-primary text-[28px]">integration_instructions</span>
-                <span class="text-xs font-mono font-semibold px-2 py-0.5 rounded bg-emerald-100 text-emerald-800">PRODUCTION</span>
-              </div>
-              <div class="space-y-1">
-                <h3 class="text-lg font-headline font-semibold text-on-surface">1-Line White-Label SDK</h3>
-                <p class="text-xs text-on-surface-variant font-mono">Universal Broker &amp; Terminal Drop-in</p>
-              </div>
-              <ul class="text-xs font-mono text-on-surface-variant space-y-2 pt-2 border-t border-outline-variant/20">
-                <li class="flex items-center justify-between">
-                  <span>Web &amp; TradingView:</span>
-                  <span class="text-on-surface font-semibold">Iframe / WebSocket</span>
-                </li>
-                <li class="flex items-center justify-between">
-                  <span>MetaTrader 5:</span>
-                  <span class="text-on-surface font-semibold">Native MQL5 EA (.ex5)</span>
-                </li>
-                <li class="flex items-center justify-between">
-                  <span>Integration Time:</span>
-                  <span class="text-primary font-semibold">&lt; 15 Minutes</span>
-                </li>
-              </ul>
-            </div>
-
-            <!-- Card 3: Multi-Region Cloud Edge Nodes -->
-            <div class="bg-surface-container-lowest p-6 rounded-xl shadow-sm space-y-4 border border-outline-variant/30">
-              <div class="flex items-center justify-between">
-                <span class="material-symbols-outlined text-primary text-[28px]">public</span>
-                <span class="text-xs font-mono font-semibold px-2 py-0.5 rounded bg-emerald-100 text-emerald-800">GLOBAL</span>
-              </div>
-              <div class="space-y-1">
-                <h3 class="text-lg font-headline font-semibold text-on-surface">Multi-Region Cloud Edge</h3>
-                <p class="text-xs text-on-surface-variant font-mono">Ultra-Low Latency Worldwide Gateways</p>
-              </div>
-              <ul class="text-xs font-mono text-on-surface-variant space-y-2 pt-2 border-t border-outline-variant/20">
-                <li class="flex items-center justify-between">
-                  <span>US-East (N. Virginia):</span>
-                  <span class="text-on-surface font-semibold">&lt; 18 ms</span>
-                </li>
-                <li class="flex items-center justify-between">
-                  <span>EU-West (London):</span>
-                  <span class="text-on-surface font-semibold">&lt; 24 ms</span>
-                </li>
-                <li class="flex items-center justify-between">
-                  <span>AP-South (Mumbai):</span>
-                  <span class="text-primary font-semibold">&lt; 28 ms</span>
-                </li>
-              </ul>
             </div>
           </div>
         </div>
@@ -1065,34 +744,34 @@ engine.OnConeUpdate([&amp;](<span class="text-primary">const</span> xpred::ConeS
         </div>
 
         <div class="space-y-3">
-          <h3 class="text-xs font-semibold uppercase tracking-wider text-on-surface font-mono">Institutional Protocols</h3>
+          <h3 class="text-xs font-semibold uppercase tracking-wider text-on-surface font-mono">Quantitative Engine</h3>
           <ul class="space-y-2 text-xs text-on-surface-variant font-mono">
-            <li>FIX 4.4 / FIX 5.0 SP2</li>
-            <li>Raw Binary ITCH/OUCH</li>
-            <li>WebSocket Ultra Stream</li>
-            <li>Zero-Copy C++ / Python SDK</li>
-            <li>Python Vectorized API</li>
+            <li>Qdrant Cloud HNSW Index</li>
+            <li>PyTorch Causal Tokenizer</li>
+            <li>FastAPI REST &amp; WebSockets</li>
+            <li>1-Line Embed Widget SDK</li>
+            <li>Bayesian Reality Cone Fusion</li>
           </ul>
         </div>
 
         <div class="space-y-3">
-          <h3 class="text-xs font-semibold uppercase tracking-wider text-on-surface font-mono">Co-Location &amp; Data</h3>
+          <h3 class="text-xs font-semibold uppercase tracking-wider text-on-surface font-mono">Data &amp; Verification</h3>
           <ul class="space-y-2 text-xs text-on-surface-variant font-mono">
-            <li>Equinix LD4 (London)</li>
-            <li>Equinix NY4 (Secaucus)</li>
-            <li>CME Aurora Center (IL)</li>
-            <li>B3 Colocation (São Paulo)</li>
-            <li>Direct Cross-Connect 100GbE</li>
+            <li>Real-Time Binance WebSockets</li>
+            <li>PAXG Real Gold Spot Proxy</li>
+            <li>Zero Lookahead Bias Verified</li>
+            <li>Sub-35ms ANN Nearest-Neighbor</li>
+            <li>Multi-Horizon Rolling Vectors</li>
           </ul>
         </div>
 
         <div class="space-y-3">
-          <h3 class="text-xs font-semibold uppercase tracking-wider text-on-surface font-mono">Enterprise Gateways</h3>
+          <h3 class="text-xs font-semibold uppercase tracking-wider text-on-surface font-mono">Platform Links</h3>
           <ul class="space-y-2 text-xs text-on-surface-variant">
-            <li><a class="hover:text-primary transition-colors font-mono" href="#terminal">Institutional Desk</a></li>
-            <li><a class="hover:text-primary transition-colors font-mono" href="#suite">Architecture Whitepapers</a></li>
-            <li><a class="hover:text-primary transition-colors font-mono" href="#pilot">On-Prem Sandbox</a></li>
-            <li><a class="hover:text-primary transition-colors font-mono" href="#telemetry">Pre-Trade Risk Audits</a></li>
+            <li><a class="hover:text-primary transition-colors font-mono" href="#terminal">Live Terminal</a></li>
+            <li><a class="hover:text-primary transition-colors font-mono" href="#methodology">Quantitative Methodology</a></li>
+            <li><a class="hover:text-primary transition-colors font-mono" href="#brokers">Broker Economics</a></li>
+            <li><a class="hover:text-primary transition-colors font-mono" href="#calculator">ROI Calculator</a></li>
           </ul>
         </div>
       </div>
