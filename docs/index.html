@@ -291,6 +291,11 @@
                   <span>IMPLIED IV:</span>
                   <span class="text-primary font-semibold" id="hud-iv">18.42%</span>
                 </div>
+                <!-- Resting Iceberg Pill cleanly integrated into empty header area -->
+                <div class="hidden md:flex items-center gap-2 bg-surface-container-low px-3 py-1 rounded-md text-xs font-mono border border-outline-variant/40 shadow-xs">
+                  <span class="w-2 h-2 rounded-full bg-rose-600 animate-pulse"></span>
+                  <span class="text-on-surface font-semibold" id="resting-iceberg">RESTING ICEBERG: Scanning L2 depth...</span>
+                </div>
               </div>
 
               <!-- Right: Telemetry HUD Chips -->
@@ -352,11 +357,7 @@
               <!-- Canvas Component -->
               <canvas id="marketCanvas" class="w-full h-full cursor-crosshair block"></canvas>
 
-              <!-- Order Book Resting Liquidity Callout Pill (Moved down to top-11 to prevent canvas text clipping) -->
-              <div class="absolute right-4 top-11 hidden md:flex items-center gap-2 bg-surface-container-high/95 backdrop-blur-md px-3 py-1 rounded-lg text-xs font-mono shadow-sm border border-outline-variant/40 pointer-events-none z-20">
-                <span class="w-2 h-2 rounded-full bg-rose-600 animate-pulse"></span>
-                <span class="text-on-surface font-semibold" id="resting-iceberg">RESTING ICEBERG: Scanning L2 depth...</span>
-              </div>
+
 
               <!-- Top Left Chart Status Badge -->
               <div class="absolute left-6 top-6 flex items-center gap-2 bg-surface-container-lowest/90 backdrop-blur-md px-3 py-1 rounded-lg text-[11px] font-mono shadow-xs border border-outline-variant/30 pointer-events-none">
@@ -1616,60 +1617,74 @@ engine.OnConeUpdate([&amp;](<span class="text-primary">const</span> xpred::ConeS
         liveDepth.bids.forEach(b => { if (b.qty > maxQty) maxQty = b.qty; });
       }
 
-      // 1. Draw Real Asks Depth (Red Limit Sell Walls above current market)
+      const currentMidY = priceToY(lastPrice);
+      const barH = 7;
+      const barGap = 4; // Guaranteed 4px separation prevents ANY collision
+
+      // Subtle Mid-Market Spread Division Dotted Line
+      ctx.strokeStyle = "rgba(194, 101, 42, 0.45)";
+      ctx.lineWidth = 1;
+      ctx.setLineDash([2, 3]);
+      ctx.beginPath();
+      ctx.moveTo(w - 110, currentMidY);
+      ctx.lineTo(w - 75, currentMidY);
+      ctx.stroke();
+      ctx.setLineDash([]);
+
+      // 1. Draw Real Asks Depth (Red Limit Sell Walls STRICTLY ABOVE mid price)
       if (liveDepth.asks.length > 0) {
-        liveDepth.asks.slice(0, 8).forEach(ask => {
-          const barY = priceToY(ask.price);
+        liveDepth.asks.slice(0, 8).forEach((ask, idx) => {
+          const rawY = priceToY(ask.price);
+          // Strictly step upward from mid-market: no two ask bars collide, and asks never touch bids
+          const barY = Math.min(rawY, currentMidY - 7 - idx * (barH + barGap));
           if (barY > 15 && barY < h - 35) {
-            const barW = Math.min(120, Math.max(16, (ask.qty / maxQty) * 120));
+            const barW = Math.min(110, Math.max(16, (ask.qty / maxQty) * 110));
             const grad = ctx.createLinearGradient(w - 75, 0, w - 75 - barW, 0);
-            grad.addColorStop(0, "rgba(225, 29, 72, 0.28)");
+            grad.addColorStop(0, "rgba(225, 29, 72, 0.32)");
             grad.addColorStop(1, "rgba(225, 29, 72, 0.0)");
             ctx.fillStyle = grad;
-            ctx.fillRect(w - 75 - barW, barY - 6, barW, 11);
+            ctx.fillRect(w - 75 - barW, barY - barH / 2, barW, barH);
           }
         });
       } else {
-        // Fallback placeholder depth while fetching
-        const depthY1 = priceToY(lastPrice * 1.002);
-        for (let b = 1; b <= 6; b++) {
-          const barY = depthY1 - b * 18;
+        for (let b = 0; b < 6; b++) {
+          const barY = currentMidY - 7 - b * (barH + barGap);
           if (barY > 15) {
             const barW = 35 + ((b * 37) % 65);
             const grad = ctx.createLinearGradient(w - 75, 0, w - 75 - barW, 0);
             grad.addColorStop(0, "rgba(225, 29, 72, 0.22)");
             grad.addColorStop(1, "rgba(225, 29, 72, 0.0)");
             ctx.fillStyle = grad;
-            ctx.fillRect(w - 75 - barW, barY, barW, 12);
+            ctx.fillRect(w - 75 - barW, barY - barH / 2, barW, barH);
           }
         }
       }
 
-      // 2. Draw Real Bids Depth (Green Limit Buy Walls below current market)
+      // 2. Draw Real Bids Depth (Green Limit Buy Walls STRICTLY BELOW mid price)
       if (liveDepth.bids.length > 0) {
-        liveDepth.bids.slice(0, 8).forEach(bid => {
-          const barY = priceToY(bid.price);
+        liveDepth.bids.slice(0, 8).forEach((bid, idx) => {
+          const rawY = priceToY(bid.price);
+          // Strictly step downward from mid-market: no two bid bars collide, and bids never touch asks
+          const barY = Math.max(rawY, currentMidY + 7 + idx * (barH + barGap));
           if (barY > 15 && barY < h - 35) {
-            const barW = Math.min(120, Math.max(16, (bid.qty / maxQty) * 120));
+            const barW = Math.min(110, Math.max(16, (bid.qty / maxQty) * 110));
             const grad = ctx.createLinearGradient(w - 75, 0, w - 75 - barW, 0);
-            grad.addColorStop(0, "rgba(5, 150, 105, 0.28)");
+            grad.addColorStop(0, "rgba(5, 150, 105, 0.32)");
             grad.addColorStop(1, "rgba(5, 150, 105, 0.0)");
             ctx.fillStyle = grad;
-            ctx.fillRect(w - 75 - barW, barY - 6, barW, 11);
+            ctx.fillRect(w - 75 - barW, barY - barH / 2, barW, barH);
           }
         });
       } else {
-        // Fallback placeholder depth while fetching
-        const depthY2 = priceToY(lastPrice * 0.998);
-        for (let b = 1; b <= 6; b++) {
-          const barY = depthY2 + b * 18;
+        for (let b = 0; b < 6; b++) {
+          const barY = currentMidY + 7 + b * (barH + barGap);
           if (barY < h - 45) {
             const barW = 40 + ((b * 41) % 75);
             const grad = ctx.createLinearGradient(w - 75, 0, w - 75 - barW, 0);
             grad.addColorStop(0, "rgba(5, 150, 105, 0.22)");
             grad.addColorStop(1, "rgba(5, 150, 105, 0.0)");
             ctx.fillStyle = grad;
-            ctx.fillRect(w - 75 - barW, barY, barW, 12);
+            ctx.fillRect(w - 75 - barW, barY - barH / 2, barW, barH);
           }
         }
       }
@@ -1842,6 +1857,7 @@ engine.OnConeUpdate([&amp;](<span class="text-primary">const</span> xpred::ConeS
       // Formula: P_ghost(t0 + k) = C_t0 * (1 + r_hist(k) * (sigma_live / sigma_hist))
       if (isGhostTwinActive || hoveredTwinIndex !== null) {
         const twinNum = hoveredTwinIndex || 1;
+        const currentTwin = (activeTwins && activeTwins[twinNum - 1]) || activeTwins[0] || { symbol: "XAU/USD", date: "Oct 2024 Breakout", matchScore: 96.4, forwardAmp: 0.014 };
         const cfg = ASSETS[currentAssetKey];
 
         // 1. Calculate live brushed window volatility sigma_live
@@ -1864,7 +1880,7 @@ engine.OnConeUpdate([&amp;](<span class="text-primary">const</span> xpred::ConeS
         // 2. Historical analog benchmark volatility sigma_hist
         const sigmaHist = 0.0075;
         // Volatility rescaling factor kappa (clamped to prevent distortion)
-        const kappa = Math.min(3.2, Math.max(0.35, sigmaLive / sigmaHist));
+        const kappa = Math.min(2.2, Math.max(0.45, sigmaLive / sigmaHist));
 
         ctx.strokeStyle = "#d97706";
         ctx.lineWidth = 2.4;
@@ -1872,28 +1888,41 @@ engine.OnConeUpdate([&amp;](<span class="text-primary">const</span> xpred::ConeS
         ctx.beginPath();
         ctx.moveTo(startX, baseY);
 
-        const freq = twinNum === 1 ? 0.38 : (twinNum === 2 ? 0.28 : 0.48);
-        const amp = (twinNum === 1 ? 0.012 : (twinNum === 2 ? 0.018 : -0.010));
+        // Trend sign for financial returns: +1 for Bullish, -1 for Bearish (Independent of canvas pixel Y)
+        const trendSign = isDowntrend ? -1 : 1;
+        const twinAmp = currentTwin.forwardAmp || 0.014;
+        const twinFreq = twinNum === 1 ? 0.35 : (twinNum === 2 ? 0.26 : 0.44);
 
+        let lastGhostX = startX;
+        let lastGhostY = baseY;
         for (let i = 1; i <= 22; i++) {
-          const r_hist_k = (dir * i * 0.0016 * driftFactor) + (Math.sin(i * freq) * amp);
-          // Scale-Invariant price calculation
-          const scaledReturn = r_hist_k * kappa;
-          const ghostPrice = anchorCandle.close * (1 + scaledReturn);
-          ctx.lineTo(startX + i * candleW, priceToY(ghostPrice));
+          // Macro drift follows the regime direction harmoniously with the Reality Cone
+          const macroDrift = trendSign * (i / 22) * Math.abs(twinAmp) * driftFactor;
+          // Micro-structure analog cycle: realistic historical consolidation/retest (25% of amplitude)
+          const microCycle = Math.sin(i * twinFreq) * (Math.abs(twinAmp) * 0.25);
+          const r_hist_k = (macroDrift + microCycle) * kappa;
+          const ghostPrice = anchorCandle.close * (1 + r_hist_k);
+          const gx = startX + i * candleW;
+          const gy = priceToY(ghostPrice);
+          ctx.lineTo(gx, gy);
+          if (i === 22) {
+            lastGhostX = gx;
+            lastGhostY = gy;
+          }
         }
         ctx.stroke();
         ctx.setLineDash([]);
 
         ctx.fillStyle = "#d97706";
         ctx.font = "bold 9px 'JetBrains Mono', monospace";
-        ctx.fillText(`Scale-Invariant Ghost #${twinNum} (σ_scale: ${kappa.toFixed(2)}x)`, startX + 22 * candleW - 55, baseY + dir * 22 * 1.12 * driftFactor + 16);
+        ctx.fillText(`Scale-Invariant Ghost #${twinNum} (σ_scale: ${kappa.toFixed(2)}x)`, lastGhostX - 90, lastGhostY - 10);
       }
 
-      // Bayesian Price Levels on Right Price Axis (P90, P50, P10)
-      const p90P = anchorCandle.close * (1 + (dir * 0.024 * driftFactor) + (2.1 * 0.006 * varianceMult));
-      const p50P = anchorCandle.close * (1 + (dir * 0.012 * driftFactor));
-      const p10P = anchorCandle.close * (1 + (dir * 0.002 * driftFactor) - (2.1 * 0.006 * varianceMult));
+      // Bayesian Price Levels on Right Price Axis (P90, P50, P10) - Corrected Financial Direction
+      const trendSign = isDowntrend ? -1 : 1;
+      const p90P = anchorCandle.close * (1 + (trendSign * 0.016 * driftFactor) + (2.1 * 0.005 * varianceMult));
+      const p50P = anchorCandle.close * (1 + (trendSign * 0.009 * driftFactor));
+      const p10P = anchorCandle.close * (1 + (trendSign * 0.002 * driftFactor) - (2.1 * 0.005 * varianceMult));
 
       const bayesLevels = [
         { label: "P90", price: p90P, bg: "#059669" },
