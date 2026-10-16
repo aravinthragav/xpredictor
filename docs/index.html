@@ -978,22 +978,19 @@
     let panStartY = 0;
     let initialPricePanOffsetY = 0;
 
-    // Compute how many bars can fill the canvas at the MINIMUM zoom level (most zoomed-out state)
-    // so we always front-load enough data to prevent empty space at any zoom.
+    // Compute balanced bar count: loads enough to scroll and explore, but caps at 180 bars
+    // to preserve rapid loading time, lightweight memory footprint, and snappy 60fps rendering.
     function getMaxVisibleBarCount() {
       const container = document.getElementById('canvas-container');
       const w = container ? container.getBoundingClientRect().width : 800;
-      // At MIN_ZOOM, what's the narrowest possible candle? Use that to compute max bars visible.
-      const narrowestCandleW = Math.max(2.5, Math.max(4.5, (w - 110) / 104) * MIN_ZOOM);
-      const maxBars = Math.floor((w - 110) / narrowestCandleW) + 24;
-      // Clamp to Binance API max of 1000, practical sweet spot 200-300 for performance
-      return Math.min(300, Math.max(80, maxBars));
+      const baseVisible = Math.floor((w - 110) / 9.5) + 24;
+      return Math.min(180, Math.max(80, baseVisible));
     }
 
-    // Compute dynamic candle width scaled strictly with current zoom level
+    // Dynamic candle width: scales strictly with zoomLevel while keeping comfortable readability
     function getCandleWidth(containerWidth) {
-      const count = (sampleCandles && sampleCandles.length > 0) ? sampleCandles.length : 80;
-      const baseW = Math.max(4.5, (containerWidth - 110) / (count + 24));
+      const defaultBarsInView = 75;
+      const baseW = Math.max(6.5, (containerWidth - 110) / defaultBarsInView);
       return Math.max(2.5, baseW * zoomLevel);
     }
 
@@ -1039,7 +1036,8 @@
       const currentCount = sampleCandles.length;
       if (visibleSlots <= currentCount + 10) return; // Already have enough data (+10 buffer)
 
-      const needed = Math.min(1000, visibleSlots + 24); // Binance max is 1000
+      const MAX_BACKFILL_BARS = 180;
+      const needed = Math.min(MAX_BACKFILL_BARS, visibleSlots + 20);
       if (needed <= currentCount) return;
 
       const cfg = ASSETS[currentAssetKey];
@@ -1082,11 +1080,23 @@
       setZoom(zoomLevel * (1 - ZOOM_STEP), focusX);
     }
 
+    // Reset chart view: aligns the most recent candle and Reality Cone comfortably in view
     function resetZoomAndPan() {
       zoomLevel = 1.0;
-      panOffset = 0;
       priceScaleY = 1.0;
       pricePanOffsetY = 0;
+
+      const rect = canvas.getBoundingClientRect();
+      const w = rect.width || 800;
+      const candleW = getCandleWidth(w);
+      const totalCandles = sampleCandles.length || 80;
+
+      // Position the latest candle (and beginning of Reality Cone) with ample room for the 22-bar fan
+      // Target latest candle X around ~68% of chart viewport
+      const targetAnchorX = (w - 75) * 0.65;
+      const naturalAnchorX = (totalCandles - 1) * candleW + candleW / 2;
+      panOffset = targetAnchorX - naturalAnchorX;
+
       updateZoomBadge();
       renderCanvas();
     }
@@ -1296,7 +1306,7 @@
       if (document.getElementById("chart-subhead")) document.getElementById("chart-subhead").innerText = `${cfg.displaySymbol} • ${timeframe.toUpperCase()} • ${sampleCandles.length} BARS`;
 
       computeDynamicTwins();
-      renderCanvas();
+      resetZoomAndPan(); // Automatically centers recent candles & forward Reality Cone
       connectWebSocket(symbol, timeframe);
 
       // Start Real-Time L2 Order Book Polling (Every 2.5s)
@@ -1758,12 +1768,21 @@
       const p50P = C0 * (1 + macroDrift);
       const p10P = C0 * (1 + macroDrift - 2.1 * sigmaCone);
 
-      // 2. Compute dynamic price bounds encompassing BOTH historical candles AND forward Reality Cone envelopes
+      // 2. Compute dynamic price bounds encompassing visible candles AND forward Reality Cone envelopes
       let rawMinP = Infinity, rawMaxP = -Infinity;
-      sampleCandles.forEach(c => {
-        if (c.low < rawMinP) rawMinP = c.low;
-        if (c.high > rawMaxP) rawMaxP = c.high;
+      sampleCandles.forEach((c, idx) => {
+        const x = idx * candleW + candleW / 2 + panOffset;
+        // Focus auto-scaling strictly on visible bars to maximize price action resolution
+        if (x >= -40 && x <= w - 40) {
+          if (c.low < rawMinP) rawMinP = c.low;
+          if (c.high > rawMaxP) rawMaxP = c.high;
+        }
       });
+      if (rawMinP === Infinity) {
+        // Fallback to latest bar if panning far away
+        rawMinP = anchorCandle.low;
+        rawMaxP = anchorCandle.high;
+      }
       // CRITICAL: Ensure upper (+2.1σ) and lower (-2.1σ) cone projections are strictly encompassed
       // This prevents the Reality Cone from clipping above the canvas top during strong bullish runs
       rawMinP = Math.min(rawMinP, p10P);
@@ -1896,9 +1915,12 @@
       ctx.strokeRect(bx, 15, bw, h - 50);
       ctx.setLineDash([]);
 
-      // Deterministic Candlesticks
+      // High-Performance Viewport-Culled Candlesticks
       sampleCandles.forEach((c, idx) => {
         const x = idx * candleW + candleW / 2 + panOffset;
+        // Viewport Culling: Skip rendering off-screen candles for instant 60fps performance
+        if (x < -20 || x > w - 60) return;
+
         const isUp = c.close >= c.open;
         const color = isUp ? "#059669" : "#e11d48";
         ctx.strokeStyle = color;
@@ -2351,7 +2373,14 @@
         computeDynamicTwins();
         renderCanvas();
       } else if (isPanDragging) {
-        panOffset = e.clientX - panStartX;
+        const rawPan = e.clientX - panStartX;
+        const candleW = getCandleWidth(rect.width);
+        const totalW = (sampleCandles.length + 22) * candleW;
+        // Bounded Pan: Allow dragging back into history, but prevent dragging past reasonable limits
+        const minPan = Math.min(0, (rect.width - 75) - totalW - 40);
+        const maxPan = 60;
+        panOffset = Math.max(minPan, Math.min(maxPan, rawPan));
+
         const dy = e.clientY - panStartY;
         if (Math.abs(priceScaleY - 1.0) > 0.02 || Math.abs(pricePanOffsetY) > 0.001 || Math.abs(dy) > 15) {
           const approxPriceRange = (sampleCandles.length > 1) ? Math.abs(sampleCandles[0].close - sampleCandles[sampleCandles.length - 1].close) + 20 : 50;
