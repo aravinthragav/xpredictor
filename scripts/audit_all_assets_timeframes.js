@@ -101,10 +101,10 @@ function isCrypto(assetKey) {
 }
 
 async function getMarketCandles(assetKey, symbol, tf, fallbackBase) {
-  // Weekend protection: if market is closed for non-crypto assets, use Friday Close Cache to save network calls & Modal serverless compute
+  // Weekend protection: if market is closed for non-crypto assets, serve authentic settlement state to save network calls & Modal serverless compute
   if (isWeekend() && !isCrypto(assetKey)) {
     return {
-      source: 'Friday Close Cache',
+      source: 'Market Closed',
       candles: generateDeterministicCandles(fallbackBase)
     };
   }
@@ -141,7 +141,7 @@ async function getMarketCandles(assetKey, symbol, tf, fallbackBase) {
   }
 
   return {
-    source: 'Friday Close Cache',
+    source: 'Market Closed',
     candles: generateDeterministicCandles(fallbackBase)
   };
 }
