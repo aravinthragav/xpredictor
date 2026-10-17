@@ -86,7 +86,29 @@ function generateDeterministicCandles(basePrice) {
   return candles;
 }
 
-async function getMarketCandles(symbol, tf, fallbackBase) {
+function isWeekend() {
+  const d = new Date();
+  const day = d.getUTCDay();
+  const hour = d.getUTCHours();
+  if (day === 5 && hour >= 22) return true;
+  if (day === 6) return true;
+  if (day === 0 && hour < 22) return true;
+  return false;
+}
+
+function isCrypto(assetKey) {
+  return assetKey === "BTCUSDT" || assetKey === "ETHUSDT";
+}
+
+async function getMarketCandles(assetKey, symbol, tf, fallbackBase) {
+  // Weekend protection: if market is closed for non-crypto assets, use Friday Close Cache to save network calls & Modal serverless compute
+  if (isWeekend() && !isCrypto(assetKey)) {
+    return {
+      source: 'Friday Close Cache',
+      candles: generateDeterministicCandles(fallbackBase)
+    };
+  }
+
   try {
     const binanceUrl = `https://api.binance.com/api/v3/klines?symbol=${symbol}&interval=${tf}&limit=80`;
     const raw = await fetchJson(binanceUrl);
@@ -119,7 +141,7 @@ async function getMarketCandles(symbol, tf, fallbackBase) {
   }
 
   return {
-    source: 'Deterministic Seed',
+    source: 'Friday Close Cache',
     candles: generateDeterministicCandles(fallbackBase)
   };
 }
@@ -247,7 +269,7 @@ async function runDailyAudit() {
     for (const tf of TIMEFRAMES) {
       totalTests++;
       try {
-        const { source, candles } = await getMarketCandles(cfg.symbol, tf, cfg.basePrice);
+        const { source, candles } = await getMarketCandles(key, cfg.symbol, tf, cfg.basePrice);
         if (!candles || candles.length < 30) {
           throw new Error(`Insufficient candle count: ${candles ? candles.length : 0}`);
         }
