@@ -1086,14 +1086,15 @@
       priceScaleY = 1.0;
       pricePanOffsetY = 0;
 
-      const rect = canvas.getBoundingClientRect();
-      const w = rect.width || 800;
+      const container = canvas.parentElement || canvas;
+      const rect = container.getBoundingClientRect();
+      const w = rect.width || (canvas.width ? canvas.width / window.devicePixelRatio : 800);
       const candleW = getCandleWidth(w);
       const totalCandles = sampleCandles.length || 80;
 
-      // Position the latest candle (and beginning of Reality Cone) with ample room for the 22-bar fan
-      // Target latest candle X around ~68% of chart viewport
-      const targetAnchorX = (w - 75) * 0.65;
+      // Position latest candle so the entire 22-bar Reality Cone is comfortably in view
+      // with breathing room before the right-hand price/depth scale (w - 75)
+      const targetAnchorX = Math.max(candleW * 5, (w - 75) - 24 * candleW);
       const naturalAnchorX = (totalCandles - 1) * candleW + candleW / 2;
       panOffset = targetAnchorX - naturalAnchorX;
 
@@ -1542,7 +1543,7 @@
         if (dotEl) dotEl.className = "w-2 h-2 rounded-full bg-amber-500";
 
         computeDynamicTwins();
-        renderCanvas();
+        resetZoomAndPan();
         return; // ZERO NETWORK CALLS MADE!
       }
 
@@ -2561,7 +2562,6 @@
 
       // 5. Update vector twins immediately for the newly selected asset
       computeDynamicTwins();
-      panOffset = 0;
       priceScaleY = 1.0;
       pricePanOffsetY = 0;
 
@@ -2572,7 +2572,6 @@
     // Timeframe Switcher
     function switchTimeframe(tf) {
       currentTimeframe = tf;
-      panOffset = 0;
       priceScaleY = 1.0;
       pricePanOffsetY = 0;
       ['1m', '5m', '15m', '1h', '4h'].forEach(t => {
@@ -2898,6 +2897,16 @@
 
     // Window Resize Observer for Responsive Canvas
     window.addEventListener('resize', () => {
+      if (zoomLevel === 1.0 && sampleCandles.length > 0) {
+        const container = canvas.parentElement || canvas;
+        const rect = container.getBoundingClientRect();
+        const w = rect.width || (canvas.width ? canvas.width / window.devicePixelRatio : 800);
+        const candleW = getCandleWidth(w);
+        const totalCandles = sampleCandles.length;
+        const targetAnchorX = Math.max(candleW * 5, (w - 75) - 24 * candleW);
+        const naturalAnchorX = (totalCandles - 1) * candleW + candleW / 2;
+        panOffset = targetAnchorX - naturalAnchorX;
+      }
       renderCanvas();
     });
 
