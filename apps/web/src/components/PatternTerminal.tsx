@@ -495,11 +495,11 @@ export const PatternTerminal: React.FC = () => {
 
           {/* Timeframe Select */}
           <div className="flex bg-surfaceElevated rounded border border-gray-700 p-0.5">
-            {["1m", "5m", "15m", "1h", "4h", "1d"].map((tf) => (
+            {["15m", "1h", "4h", "1d"].map((tf) => (
               <button
                 key={tf}
                 onClick={() => setSelectedTimeframe(tf)}
-                className={`px-2 py-0.5 rounded font-medium transition ${
+                className={`px-2.5 py-0.5 rounded font-medium transition ${
                   selectedTimeframe === tf ? "bg-kronos text-white" : "text-gray-400 hover:text-white"
                 }`}
               >

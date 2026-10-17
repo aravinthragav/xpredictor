@@ -22,7 +22,7 @@ const ASSETS = {
   ETHUSDT: { symbol: "ETHUSDT",  name: "Ethereum",      decimals: 2, basePrice: 3320.00 }
 };
 
-const TIMEFRAMES = ["1m", "5m", "15m", "1h", "4h"];
+const TIMEFRAMES = ["15m", "1h", "4h"];
 const MODAL_API_URL = "https://aravinthragav--xpredictor-api-fastapi-app.us-east.modal.run";
 const GITHUB_PAGES_URL = "https://aravinthragav.github.io/xpredictor/";
 

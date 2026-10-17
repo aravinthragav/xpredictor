@@ -248,13 +248,11 @@
                   </button>
                 </div>
 
-                <!-- Timeframe Selector -->
+                <!-- Timeframe Selector (Institutional Alpha Regimes) -->
                 <div class="flex items-center bg-surface-container-low rounded-lg p-0.5 text-xs font-mono">
-                  <button onclick="switchTimeframe('1m')" id="tf-1m" class="px-2 py-0.5 rounded text-on-surface-variant hover:text-on-surface text-[11px]">1M</button>
-                  <button onclick="switchTimeframe('5m')" id="tf-5m" class="px-2 py-0.5 rounded text-on-surface-variant hover:text-on-surface text-[11px]">5M</button>
-                  <button onclick="switchTimeframe('15m')" id="tf-15m" class="px-2 py-0.5 rounded text-on-surface-variant hover:text-on-surface text-[11px]">15M</button>
-                  <button onclick="switchTimeframe('1h')" id="tf-1h" class="px-2 py-0.5 rounded bg-surface-container-lowest text-primary font-bold shadow-xs text-[11px]">1H</button>
-                  <button onclick="switchTimeframe('4h')" id="tf-4h" class="px-2 py-0.5 rounded text-on-surface-variant hover:text-on-surface text-[11px]">4H</button>
+                  <button onclick="switchTimeframe('15m')" id="tf-15m" class="px-2.5 py-0.5 rounded text-on-surface-variant hover:text-on-surface text-[11px]">15M</button>
+                  <button onclick="switchTimeframe('1h')" id="tf-1h" class="px-2.5 py-0.5 rounded bg-surface-container-lowest text-primary font-bold shadow-xs text-[11px]">1H</button>
+                  <button onclick="switchTimeframe('4h')" id="tf-4h" class="px-2.5 py-0.5 rounded text-on-surface-variant hover:text-on-surface text-[11px]">4H</button>
                 </div>
               </div>
 
@@ -485,7 +483,7 @@
               Causal Vectorization Across Multi-Asset &amp; Multi-Timeframe Regimes
             </h2>
             <p class="text-sm text-on-surface-variant font-body leading-relaxed">
-              Every candlestick window is causally projected into scale-invariant 768-dimensional vector representations. Across any timeframe (1M, 5M, 15M, 1H, 4H, 1D), XPredictor isolates relative returns, volume concentration, and volatility compression without future data contamination:
+              Every candlestick window is causally projected into scale-invariant 768-dimensional vector representations. Across institutional timeframes (15M, 1H, 4H, 1D), XPredictor isolates relative returns, volume concentration, and volatility compression without future data contamination:
             </p>
           </div>
 
@@ -2574,7 +2572,7 @@
       currentTimeframe = tf;
       priceScaleY = 1.0;
       pricePanOffsetY = 0;
-      ['1m', '5m', '15m', '1h', '4h'].forEach(t => {
+      ['15m', '1h', '4h'].forEach(t => {
         const btn = document.getElementById(`tf-${t}`);
         if (!btn) return;
         if (t === tf) {
