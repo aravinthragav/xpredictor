@@ -1,0 +1,35 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "XPredictor_Risk_Webhook_Event",
+  "description": "Standardized event dispatched when price breaches Bayesian Reality Cone envelopes (+2.1σ / -2.1σ) or matches a high-confidence historical regime.",
+  "type": "object",
+  "properties": {
+    "event_id": { "type": "string", "example": "evt_xp_894812a" },
+    "partner_key": { "type": "string", "example": "FUNDEDNEXT" },
+    "event_type": {
+      "type": "string",
+      "enum": ["CONE_BREACH_UPPER", "CONE_BREACH_LOWER", "REGIME_SHOCK_WARNING", "HIGH_CONF_SETUP"]
+    },
+    "timestamp": { "type": "integer", "example": 1792205387 },
+    "asset": { "type": "string", "example": "XAUUSD" },
+    "timeframe": { "type": "string", "example": "1h" },
+    "current_price": { "type": "number", "example": 4182.50 },
+    "bayesian_cone": {
+      "type": "object",
+      "properties": {
+        "p90_upper_level": { "type": "number", "example": 4210.80 },
+        "p50_mean_target": { "type": "number", "example": 4188.20 },
+        "p10_lower_level": { "type": "number", "example": 4154.60 },
+        "confidence_score": { "type": "number", "example": 91.8 },
+        "dispersion_sigma": { "type": "number", "example": 1.44 },
+        "implied_volatility": { "type": "string", "example": "18.4%" }
+      },
+      "required": ["p90_upper_level", "p50_mean_target", "p10_lower_level", "confidence_score"]
+    },
+    "risk_advisory": {
+      "type": "string",
+      "example": "Volatility expansion detected. Approaching +2.1σ upper threshold. Advise traders against chasing momentum near exhaustion bounds."
+    }
+  },
+  "required": ["event_id", "partner_key", "event_type", "timestamp", "asset", "timeframe", "current_price", "bayesian_cone"]
+}
