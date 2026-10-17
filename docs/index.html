@@ -124,10 +124,24 @@
 </head>
 <body class="bg-background font-body text-on-surface antialiased selection:bg-primary selection:text-white">
 
+  <!-- Dynamic Partner Co-Branded Institutional Top Banner -->
+  <div id="partner-top-banner" class="hidden fixed top-0 w-full z-[60] bg-gradient-to-r from-[#1c222b] via-[#2a1a12] to-[#1c222b] text-white px-4 py-1.5 text-xs font-mono items-center justify-between shadow-md border-b border-primary/30">
+    <div class="flex items-center gap-2 max-w-7xl mx-auto w-full justify-between">
+      <div class="flex items-center gap-2">
+        <span class="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span>
+        <span class="text-white/80">INSTITUTIONAL SANDBOX ACTIVE:</span>
+        <span id="partner-banner-text" class="text-primary font-bold">PROVISIONED FOR PARTNER DESK</span>
+      </div>
+      <a href="#contact" class="hidden sm:inline-flex items-center gap-1 text-[11px] font-bold text-primary hover:text-white transition">
+        Enterprise Integration Guide <span class="material-symbols-outlined text-[13px]">arrow_forward</span>
+      </a>
+    </div>
+  </div>
+
   <!-- Fixed Institutional Navigation Header -->
-  <header class="fixed top-0 w-full z-50 bg-surface/90 backdrop-blur-xl shadow-[0_1px_8px_rgba(58,48,42,0.04)] border-b border-outline-variant/30">
+  <header id="main-header" class="fixed top-0 w-full z-50 bg-surface/90 backdrop-blur-xl shadow-[0_1px_8px_rgba(58,48,42,0.04)] border-b border-outline-variant/30">
     <div class="h-20 max-w-7xl mx-auto px-6 lg:px-12 flex items-center justify-between gap-6">
-      <div class="flex items-center gap-6">
+      <div class="flex items-center gap-4">
         <a class="flex items-center gap-3.5 group select-none" href="#terminal">
           <!-- Institutional Geometric Logo Mark -->
           <div class="w-10 h-10 rounded-xl bg-gradient-to-br from-[#161f2c] to-[#0c1117] p-1 border border-[#273547] shadow-sm flex items-center justify-center group-hover:border-primary/70 transition-all duration-300 shrink-0">
@@ -158,6 +172,12 @@
             <span class="text-primary font-black">X</span>PREDICTOR
           </span>
         </a>
+
+        <!-- Dynamic Partner White-Label Co-Branding Badge -->
+        <div id="partner-badge" class="hidden items-center gap-1.5 pl-3 border-l border-outline-variant/40">
+          <span class="text-[11px] font-mono font-bold text-on-surface-variant uppercase tracking-wider">✕</span>
+          <span id="partner-badge-name" class="px-2 py-0.5 rounded bg-primary/10 text-primary font-mono font-bold text-[11px] border border-primary/20 tracking-wider">PARTNER EDITION</span>
+        </div>
       </div>
 
       <nav class="hidden lg:flex items-center gap-6 xl:gap-8 text-xs tracking-wider uppercase font-medium">
@@ -2994,9 +3014,62 @@
       });
     }
 
+    // Dynamic Partner Co-Branding Engine for Prop Firms & FX/CFD Brokers
+    function initPartnerWhiteLabel(partnerKey) {
+      if (!partnerKey) return;
+      const PARTNER_PRESETS = {
+        ftmo: { name: "FTMO", title: "FTMO Proprietary Trading", type: "Prop Firm" },
+        fundednext: { name: "FundedNext", title: "FundedNext Stellar Risk Suite", type: "Prop Firm" },
+        topstep: { name: "Topstep", title: "Topstep Trading Combine Copilot", type: "Prop Firm" },
+        apex: { name: "Apex", title: "Apex Trader Funding Suite", type: "Prop Firm" },
+        icmarkets: { name: "IC Markets", title: "IC Markets Raw Spread ECN Desk", type: "Broker" },
+        pepperstone: { name: "Pepperstone", title: "Pepperstone Razor AI Copilot", type: "Broker" },
+        exness: { name: "Exness", title: "Exness Pro Trading Desk", type: "Broker" }
+      };
+
+      const key = partnerKey.toLowerCase().replace(/[^a-z0-9]/g, '');
+      const partner = PARTNER_PRESETS[key] || {
+        name: partnerKey.toUpperCase(),
+        title: `${partnerKey.toUpperCase()} Institutional Desk`,
+        type: "Partner"
+      };
+
+      // 1. Show top institutional sandbox banner
+      const topBanner = document.getElementById("partner-top-banner");
+      const bannerText = document.getElementById("partner-banner-text");
+      const header = document.getElementById("main-header");
+      if (topBanner && bannerText) {
+        topBanner.classList.remove("hidden");
+        topBanner.classList.add("flex");
+        bannerText.innerText = `PROVISIONED FOR ${partner.title.toUpperCase()} // ZERO LOOKAHEAD VERIFIED`;
+        if (header) header.style.top = "28px";
+        document.body.style.paddingTop = "28px";
+      }
+
+      // 2. Show header badge
+      const badge = document.getElementById("partner-badge");
+      const badgeName = document.getElementById("partner-badge-name");
+      if (badge && badgeName) {
+        badge.classList.remove("hidden");
+        badge.classList.add("flex");
+        badgeName.innerText = `${partner.name.toUpperCase()} EDITION`;
+      }
+
+      // 3. Pre-fill contact form firm input
+      const firmInput = document.getElementById("contact-firm");
+      if (firmInput) {
+        firmInput.value = partner.name;
+      }
+    }
+
     // Initialize Terminal on Page Load
     window.addEventListener('DOMContentLoaded', () => {
       const urlParams = new URLSearchParams(window.location.search);
+      const partnerParam = urlParams.get('partner');
+      if (partnerParam) {
+        initPartnerWhiteLabel(partnerParam);
+      }
+
       const initAsset = urlParams.get('asset') || "XAUUSD";
       const initTf = urlParams.get('tf') || "1h";
       loadMarketData(initAsset, initTf).then(() => {
